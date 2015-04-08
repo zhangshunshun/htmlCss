@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="product/layout-iframe">
+<head lang="en">
+    <meta charset="UTF-8"/>
+    <title>商品弹窗</title>
+
+    <!--表格样式 开始-->
+    <style type="text/css">
+        body {
+            width: 95%;
+            margin: 0px;
+            padding: 0px;
+        }
+        .bd .dealer_table thead tr td{
+            font-size: 15px;
+            white-space:nowrap;
+            overflow: hidden;
+        }
+        .bd .dealer_table tbody tr td div{
+            font-size: 13px;
+            white-space:nowrap;
+            overflow: hidden;
+        }
+    </style>
+    <!--表格样式 结束-->
+
+    <!--选择产品 开始-->
+    <script type="text/javascript">
+        function selectProduct(id) {
+            var isexce = $('#isexce'+id).val() == 4?3:4;
+            $('#loadingDiv').show();
+            $.ajax({
+                type:"POST",
+                dataTyep:"JSON",
+                url:"/memberCenter/excellentProductSelect.json",
+                data:{
+                    id:id,
+                    isexce:isexce
+                },
+                success:function(o){
+                    if(o.flag){
+                        $('#isexce'+id).val(isexce);
+                        $('#loadingDiv').hide();
+                    }else{
+                        alert('换位失败，'+o.msg);
+                        $('#loadingDiv').hide();
+                    }
+                },
+                error:function(a,b,c){
+                    alert('换位失败，网络连接异常');
+                    $('#loadingDiv').hide();
+                }
+            })
+        }
+
+    </script>
+    <!--选择产品 结束-->
+</head>
+<body scroll="" style="overflow-x:hidden">
+<div id="content" layout:fragment="content">
+<div class="dialog_box" style="left: 0;top:0;margin: 0;padding: 0;overflow: scroll;">
+    <div class="bd">
+        <div class="dialog_search">
+            <div class="search_tit">快速检索</div>
+            <div class="head_search">
+                <div class="head_search_con" style="margin-top: 23px;">
+                    <form>
+                        <input type="text" placeholder="输入名字/拼音首字母" class="keyword"/>
+                        <input type="button" class="search_btn" value="搜索" title="搜 索"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <table class="dealer_table" cellspacing="5px" width="757px">
+            <thead style="height: 15px; margin:0;padding: 0;">
+            <tr style="height: 15px; margin:0;padding: 0;">
+                <td width="32px">选择</td>
+                <td width="190px">名称</td>
+                <td width="289px">品牌</td>
+                <td width="159px">型号</td>
+                <td width="51px">原产地</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="product:${productList}">
+                <td width="32px"><div style="width:20px">
+                    <!--<input type="checkbox" th:checked="${product[isexce]== 4}" onchange="alert(1)" />-->
+                    <input th:id="${'isexce'+product[id]}" th:value="${product[isexce]}" type="checkbox" th:checked="${product[isexce]== 4}" th:onchange="'selectProduct('+${product[id]}+')'"/>
+                </div></td>
+                <td width="190px"><div style="width:180px" th:text="${product[name]}"></div></td>
+                <td width="289px"><div style="width:279px" th:text="${product[brand]}"></div></td>
+                <td width="159px"><div style="width:149px" th:text="${product[version]}"></div></td>
+                <td width="51px"><div style="width:43px" th:text="${product[area]}"></div></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+</body>
+</html>

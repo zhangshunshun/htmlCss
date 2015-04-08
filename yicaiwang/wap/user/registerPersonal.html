@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	  xmlns:th="http://www.thymeleaf.org"
+	  layout:decorator="foreground/layout-user">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=8" />
+	<title>个人注册</title>
+	<script type="text/javascript">
+		jQuery(function() {
+			$("#codeError").hide();
+			$('[name=agree]').click(function(){
+				$('#btn_submit').prop('disabled',!this.checked);
+			});
+			//提交更新
+			$("#registerForm").validate({
+				checkStart : true,
+				errorElement: 'span',
+				errorClass: 'help-inline',
+				focusInvalid: false,
+				rules : {
+					loginName : {required: true,minlength:4,maxlength:30},
+					password:{required:true,minlength:6},
+					surePassword:{required:true,equalTo:"#password"},
+					companyName : {required: true},
+					jobTitle : {required: true},
+					email : {required: true,email:true },
+					code : {required: true }
+
+				},
+				messages : {
+					loginName : {required: "请填写登录名",minlength:"登录名最少为4个字符",maxlength:"登录名最多为30个字符"},
+					password : {required: "请填写密码",minlength:"密码最少为6个字符"},
+					surePassword : {required: "请填写确认密码",equalTo:"两次密码输入不一致"},
+					companyName:{required: "请填写公司名"},
+					jobTitle:{required: "请填写职位"},
+					email:{required: "请填写邮箱",email:"请输入正确的邮箱格式"},
+					code:{required: "请填写验证码"}
+				},
+				submitHandler : function(form) {
+					$("#loadingDiv").show();
+					$("#registerForm").ajaxSubmit({
+						dataType:"json",
+						type:"post",
+						success:function(date,res,me){
+							if(date.suc){
+								$("#loadingDiv").hide();
+								$.alert("创建成功,请登录!",function(){
+									window.location.href = "/login/toLogin.htm";
+								});
+							}else {
+								if(date.msg=='验证码错误'){
+									$("#codeError").show();
+									$("#loadingDiv").hide();
+								}else{
+									$("#loadingDiv").hide();
+									$.alert("创建失败了！" + date.msg);
+								}
+
+
+							}
+						},error:function(a,b){
+							console.info(a,b);
+						}
+					});
+				},
+				highlight: function (e) {
+					$(e).closest('.control-group').removeClass('info').addClass('error');
+				}
+			});
+		});
+
+		function GetImage(){
+			document.getElementById("imageCode").src="/user/getCode3.htm?"+Math.random();
+		}
+	</script>
+	<style>
+	.btn_key[disabled]:hover {background-color:rgb(238,238,238);color:rgb(132,132,132);}
+	</style>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+	<div class="signin_wrap">
+		<div class="signin_mod">
+			<div class="hd hd_tab">
+				<a href="javascript:void(0)" class="current">个人注册</a>
+				<a href="/user/toRegisterCompany.htm">企业注册</a>
+			</div>
+
+			<div class="bd">
+				<form action="/user/DoRegisterPersonal.json" method="post" id="registerForm" >
+					<ul class="filed_info item_filed">
+						<li>
+							<label class="keyName"><em class="star">*</em>用户名：</label>
+							<div class="filed_con control-group"><input name="loginName" type="text" class="input_txt"  placeholder=""/></div>
+							<p class="tip_text">4-30位字符，可包含英文字母、数字、“－”和“_”</p>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>登入密码：</label>
+							<div class="filed_con control-group"><input name="password" type="password" id="password" class="input_txt" placeholder="请设置密码"/></div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>确认密码：</label>
+							<div class="filed_con control-group"><input name="surePassword" type="password" class="input_txt" placeholder="请再次输入密码"/></div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>公司名称：</label>
+							<div class="filed_con control-group"><input name="companyName" type="text" class="input_txt" placeholder=""/></div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>职  位：</label>
+							<div class="filed_con control-group"><input type="text" name="jobTitle" class="input_txt" placeholder=""/></div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>常用邮箱：</label>
+							<div class="filed_con control-group"><input name="email" type="text" class="input_txt" placeholder="请输入常用邮箱"/></div>
+							<!--<p class="tip_text arrow_tip">审核通过后，会通过该邮箱通知</p>-->
+						</li>
+
+
+						<li class="verify">
+							<label class="keyName"><em class="star">*</em>验证码：</label>
+							<div class="filed_con control-group">
+								<input type="text" name="code" class="input_txt w_s" placeholder="请输入验证码"/>
+
+								<img id="imageCode" onclick="GetImage();" src="/user/getCode3.htm" alt="" />
+
+								<a href="javascript:GetImage();">换一张</a></div>
+								<p id="codeError" class="tip_text arrow_tip">验证码错误</p>
+						</li>
+
+
+						<li class="checkbox_area">
+							<div class="filed_con"><label class=""><input name="agree" type="checkbox" />创建网站账号的同时，我同意遵守 <a href="javascript:void(0)">《医采网服务条款》</a></label></div>
+						</li>
+						<li class="filed_action">
+						<input style="cursor: pointer" type="submit" id="btn_submit" class="btn_key" disabled="disabled" value="提交申请"/>
+						<a href="/login/toLogin.htm" class="text_link">已有账号登陆&gt;&gt;</a></li>
+					</ul>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

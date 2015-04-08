@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>产品中心</title>
+    <link href="../../../static/css/product.css" th:href="@{/static/css/product.css}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+        /*<![CDATA[*/
+        $(function() {
+            var options = {
+                currentPage: $("[name=page]").val(),
+                totalPages: $("[name=totalPage]").val(),
+                onPageClicked: function (e, type, page) {
+                    $("[name=page]").val(page);
+                    $("#searchForm").submit();
+                }
+            }
+            $('#page').bootstrapPaginator(options);
+        });
+        function compare(){
+            var firstId=0;
+            var secondId=0;
+            var thirdId=0;
+            var categoryId;
+            if(2>$("input[name=checkGroup]:checked").size()){
+                $.alert("必须选择了2个以上产品");
+                return;
+            }
+            $("input[name=checkGroup]:checked").each(function(index,item){
+                if(index==0){
+                    firstId=$(item).attr("id");
+                    categoryId=$("#"+$(item).attr("id")+"categoryId").val()
+                }
+                if(index==1){
+                    secondId=$(item).attr("id");
+                    if(categoryId!=$("#"+$(item).attr("id")+"categoryId").val()){
+                        $.alert("必须选择相同的产品类型才可进行参数对比");
+                        return
+                    }
+                }
+                if(index==2){
+                    thirdId=$(item).attr("id");
+                    if(categoryId!=$("#"+$(item).attr("id")+"categoryId").val()){
+                        $.alert("必须选择相同的产品类型才可进行参数对比");
+                        return
+                    }
+                }
+            })
+            window.location.href="/product/compare.html?firstId="+firstId+"&secondId="+secondId+"&threeId="+thirdId;
+
+        }
+        function countNum(item){
+            if($("input[name=checkGroup]:checked").size()>3){
+                $.alert("最多可以选择3个产品");
+                $(item).attr("checked",false);
+            }
+        }
+        function changeClass(id){
+            $("#category").val(id);
+            $("input[name=page]").val("1");
+            $("#searchForm").submit();
+        }
+        function changeBrand(text){
+            $("#brand").val(text);
+            $("input[name=page]").val("1");
+            $("#searchForm").submit();
+        }
+        function priceChange(text){
+            var price=text.split('-');
+            if(price[1]!='') {
+                if (price[0] > price[1]) {
+                    $.alert("最高价" + price[1] + "小于最低价" + price[0])
+                    return
+                }
+            }
+            if(price.length==2){
+                $("#minPrice").val(price[0]);
+                $("#maxPrice").val(price[1]);
+            }else {
+                $("#minPrice").val(3000);
+            }
+            $("input[name=page]").val("1");
+            $("#searchForm").submit();
+        }
+        function gotoDetail(id){
+            window.location.href="/product/productStandard.html?productId="+id;
+        }
+        function moreBrand(item){
+            $(item).remove();
+            $(".only").removeAttr("hidden");
+        }
+        /*]]>*/
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+<div class="container">
+<div class="wrap">
+<div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><a href="javascript:void(0)">产品中心</a><span class="gt">&gt;</span><span class="current_page">产品信息搜索</span></div>
+<div class="mod_col2">
+<div class="mod_p_aside">
+    <div class="mod_p_sortnav">
+        <ul class="mod_p_sortnav_list">
+            <li class="item" th:each="category,s1:${categoryList}" th:if="${9>=s1.count}">
+                <h3 class="hd"><a href="javascript:void(0)" onclick="changeClass(this.id)" th:id="${category.id}" class="cur" th:text="${category.name}"></a></h3>
+                <div class="bd">
+                    <a href="javascript:void(0)" th:each="child,s:${category.child}" onclick="changeClass(this.id)" th:id="${child.id}" th:if="${3>=s.count}" th:text="${child.name}">无影灯</a>
+                </div>
+            </li>
+        </ul>
+        <div class="mod_p_sort_more"><a href="/product/searchProduct.html">查看所有分类<i class="gt">&gt;&gt;</i></a></div>
+    </div>
+</div>
+
+<div class="mod_p_main">
+    <form action="/product/searchProduct.html" id="searchForm">
+        <input type="hidden" name="filter[category]" id="category" th:value="${page.filter['category']}"/>
+        <input type="hidden" name="filter[minPrice]" id="minPrice" th:value="${page.filter['minPrice']}"/>
+        <input type="hidden" name="filter[brand]" id="brand" th:value="${page.filter['brand']}"/>
+        <input type="hidden" name="filter[maxPrice]" id="maxPrice" th:value="${page.filter['maxPrice']}"/>
+        <input type="hidden"  name="page" th:value="${page.page}" />
+        <input type="hidden"  name="totalPage" th:value="${page.totalPage}" />
+    <div class="mod_p_filter">
+        <h2 class="hd">产品筛选</h2>
+        <div class="bd">
+            <ul class="mod_p_filter_list">
+                <li class="item item_brands">
+                    <h3 class="item_hd">品牌：</h3>
+                    <div class="item_bd"><a href="javascript:void(0)" onclick="changeBrand(this.text)" th:each="brand,s:${brand}" th:text="${brand}" th:if="${5>=s.count}">鱼跃</a><a href="javascript:void(0)" th:each="brand,s:${brandList}" hidden="hidden" class="only" onclick="changeBrand(this.text)" th:text="${brand}" th:if="${s.count>5}">鱼跃</a></div>
+                    <div class="item_ft"><a href="javascript:void(0)" onclick="moreBrand(this)">+更多</a></div>
+                </li>
+                <li class="item item_price">
+                    <h3 class="item_hd">价格：</h3>
+                    <div class="item_bd"><a href="javascript:void(0)" onclick="priceChange(this.text)">0-99</a><a href="javascript:void(0)" onclick="priceChange(this.text)">100-999</a><a href="javascript:void(0)" onclick="priceChange(this.text)">1000-1999</a><a href="javascript:void(0)" onclick="priceChange(this.text)">2000-3000</a><a href="javascript:void(0)" onclick="priceChange(this.text)">3000以上</a>
+                        <span class="p_filter"><input type="text" id="minInp" class="inpt" /><span class="split">-
+                        </span><input type="text" id="maxInp" class="inpt" /><input type="button" onclick="priceChange($('#minInp').val()+'-'+$('#maxInp').val())" class="inpt inpt2" value="确 定" /></span></div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    </form>
+    <div class="mod_sort_filter">
+        <ul class="clearfix">
+            <li class="filter_item all"><a href="javascript:void(0)">综合</a></li>
+            <li class="filter_item compare"><button type="button" onclick="compare()" class="filter_inpt">产品参数对比</button></li>
+        </ul>
+    </div>
+    <div class="mod_filter_pro">
+        <ul class="mod_filter_pro_list">
+            <li class="item" th:each="product:${page.result}">
+                <div class="pic" onclick="gotoDetail(this.nextSibling.nextSibling.firstChild.id)"><img th:src="'http://114.215.80.184:80'+${product.imagePath}" alt=""/></div>
+                <h3><a href="javascript:void(0)" onclick="gotoDetail(this.id)" th:id="${product.id}" th:text="${product.name}">专业生产和销售LED手术室无影整体反射医用手术灯 病床 吊塔</a></h3>
+                <p class="other"><i class="rmb">&yen;</i><span th:text="${product.money}"></span></p>
+                <p class="company"><i class="icon"></i><span class="c_name"><span th:text="${product.companyName}"></span></span></p>
+                <input type="checkbox" name="checkGroup" onclick="countNum(this)" th:id="${product.id}" class="checkbox" />
+                <input type="hidden" th:id="${product.id}+'categoryId'" th:value="${product.categoryId}"/>
+            </li>
+        </ul>
+    </div>
+    <div class="pagination">
+        <div id="page"></div>
+    </div>
+</div>
+</div>
+
+
+</div>
+</div>
+</div>
+</body>
+</html>

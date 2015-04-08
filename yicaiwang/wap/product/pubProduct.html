@@ -1,0 +1,506 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org" xmlns:c="http://www.w3.org/1999/html">
+<head>
+<meta charset="utf-8" />
+<title>产品发布</title>
+<link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+<link href="../../../static/css/global.css" rel="stylesheet" type="text/css" />
+<link href="../../../static/css/account.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../../../static/js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="../../../static/js/js.js"></script>
+<script type="text/javascript" src="../../../js/product.js?t=123"></script>
+<script type="text/javascript" src="../../../js/previewimg.js"></script>
+<script src="../../../kindeditor/kindeditor.js"></script>
+<script src="../../../kindeditor/lang/zh_CN.js"></script>
+<script src="../../../js/jquery.validate.min.js"></script>
+<script src="../../../js/jquery.form.js"></script>
+<style>
+    .div1{
+        float: left;
+        position:relative;
+    }
+    .div2{
+        text-align:center;
+        padding-top:12px;
+        font-size:15px;
+        font-weight:800
+    }
+    .inputstyle{
+        cursor: pointer;
+        font-size: 30px;
+        outline: medium none;
+        position: absolute;
+        filter:alpha(opacity=0);
+        -moz-opacity:0;
+        opacity:0;
+        left:0px;
+        top: 0px;
+    }
+    .div1 input{
+        width: 100px;
+        height: 100px;
+    }
+
+    ul li { list-style: none; }
+    .controls li{float:left;height:100px;}
+
+    .con span{
+        color: red;
+    }
+
+</style>
+<script>
+    var editor;
+    KindEditor.ready(function(K) {
+        editor = K.create('textarea[name="detail"]', {
+            allowFileManager : true,
+            uploadJson : '/advertPosition/uploadImage.json',
+            afterBlur: function(){this.sync();}
+        });
+    });
+
+    var editor1;
+    KindEditor.ready(function(K) {
+        editor1 = K.create('textarea[name="deal"]', {
+            allowFileManager : true,
+            afterBlur: function(){this.sync();}
+        });
+    });
+    var editor2;
+    KindEditor.ready(function(K) {
+        editor2 = K.create('textarea[name="sale"]', {
+            allowFileManager : true,
+            afterBlur: function(){this.sync();}
+        });
+    });
+
+    $(function(){
+        $("#max-form").validate({
+            checkStart : true,
+            errorElement: 'span',
+            errorClass: 'help-inline',
+            focusInvalid: false,
+            rules:{
+                name:{
+                    required : true
+                },
+                brand:{
+                    required:true
+                },
+                version:{
+                    required:true
+                },
+                norms:{
+                    required:true
+                },
+                approve:{
+                    required:true
+                },
+                registerNo:{
+                    required:true
+                },
+                country:{
+                    required:true
+                },
+                area:{
+                    required:true
+                },
+                money:{
+                    required:true
+                },
+                intro:{
+                    required:true
+                },
+                detail:{
+                    required:true
+                },
+                deal:{
+                    required:true
+                },
+                sale:{
+                    required:true
+                }
+            },
+            messages:{
+                name:{
+                    required : "必须填写",
+                    mobile : '手机格式不正确'
+                },
+                brand:{
+                    required:"必须填写"
+                },
+                version:{
+                    required:"必须填写"
+                },
+                norms:{
+                    required:"必须填写"
+                },
+                approve:{
+                    required:"必须填写"
+                },
+                registerNo:{
+                    required:"必须填写"
+                },
+                country:{
+                    required:"必须填写"
+                },
+                area:{
+                    required:"必须填写"
+                },
+                money:{
+                    required:"必须填写"
+                },
+                intro:{
+                    required:"必须填写"
+                },
+                detail:{
+                    required:"必须填写"
+                },
+                deal:{
+                    required:"必须填写"
+                },
+                sale:{
+                    required:"必须填写"
+                }
+            },
+            submitHandler : function(form) {
+                if($("#hidden-type").val()!=3){
+                    alert("请选择第四层产品分类!");
+                    return;
+                }
+                var s='';
+                $('input[name="officeId"]:checked').each(function(){
+                    s+=$(this).val()+',';
+                });
+                if(s==''){
+                    alert("请选择科室");
+                    return;
+                }
+                $("#max-form").ajaxSubmit(function(obj){
+                    if(obj.success){
+                        alert("保存成功!");
+                    }else{
+                        alert("添加失败!");
+                    }
+                });
+            }
+        });
+    })
+</script>
+
+</head>
+<body class="account_container">
+<div class="member_bar">
+	<div class="wrap">
+		<div class="welName">您好，<span class="blue">yicai</span> </div>
+		<ul class="top_menu">
+			<li class="item"><a href="javascript:void(0)" class="blue">医采网首页</a> </li>
+			<li class="item"><a href="javascript:void(0)">会员中心</a> </li>
+			<li class="item"><a href="javascript:void(0)"><i class="icon i_cart"></i>我的购物车<span class="num">25</span><i class="icon i_arrow"></i></a> </li>
+			<li class="item"><a href="javascript:void(0)">我的关注</a> </li>
+			<li class="item"><a href="javascript:void(0)">我是供应商</a> </li>
+			<li class="item service"><a href="javascript:void(0)"><i class="icon i_ser"></i>在线客服咨询</a> </li>
+		</ul>
+	</div>
+</div>
+<div class="header">
+	<div class="wrap">
+		<div class="logo_member"><a href="javascript:void(0)"><img src="../../../static/imgs/logo_member.png" /></a> </div>
+		<ul class="nav">
+			<li class="on"><a href="javascript:void(0)"><i></i>首页</a> </li>
+			<li><a href="javascript:void(0)"><i></i>我要卖</a> </li>
+		</ul>
+		<div class="head_search">
+			<div class="ui-select">
+				<div class="selectMod"><span class="select-input">产品</span><span class="select-drop"><s class="arrow arrow-tthin"></s></span></div>
+				<ul class="select-list">
+					<li class="hover">供应商</li>
+					<li>采购商</li>
+					<li>产品行情</li>
+					<li>价格指数</li>
+				</ul>
+			</div>
+			<div class="head_search_con">
+				<form>
+					<input type="text" class="keyword" placeholder="请输入关键词"/>
+					<input type="button" title="搜索" value="搜索" class="search_btn" />
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<form id="down-excel" action="/product/export.html">
+    <input type="hidden" name="categoryId" id="category-hidden"/>
+</form>
+<div class="container">
+
+    <form class="form-horizontal"  action="/product/addedProduct.json" method="post" id="max-form"   enctype="multipart/form-data">
+        <input type="hidden" name="companyId" th:value="${companyId}" />
+	<div class="wrap">
+		<div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">发票管理</span></div>
+		<div class="mod_box launch_pro">
+			<div class="hd">
+				<h3 class="title">产品基本信息</h3>
+			</div>
+			<div class="bd">
+				<ul class="launch_pro_ul">
+					<li>
+						<label class="name">产品类目：</label>
+						<div class="con">
+                            <input type="text" placeholder="" class="text" id="hidden-name"/>
+                            <input type="hidden" name="categoryId" id="hidden-id"/>
+                            <input type="hidden" name="type" id="hidden-type" />
+							<a href="javascript:void(0)" class="btn js_btn">选择类目</a>
+						</div>
+					</li>
+					<li>
+						<label class="name">产品参数：</label>
+						<div class="con">
+							<button  class="btn export-button">下载产品参数模板</button><a href="javascript:void(0)" class="btn">阅读使用说明</a>
+						</div>
+					</li>
+                    <li>
+                        <label class="name">上传产品参数：</label>
+                        <div class="con">
+                            <input type="file" id="upload-file" name="excelFile" />
+                        </div>
+                    </li>
+					<li>
+						<label class="name">产品名称：</label>
+						<div class="con">
+							<input type="text" class="text text2" name="name"/>产品品牌：<input type="text" class="text text2" name="brand"/>
+						</div>
+					</li>
+					<li>
+						<label class="name">产品型号：</label>
+						<div class="con">
+							<input type="text" class="text text2" name="version"/>产品规格：<input type="text" class="text text2" name="norms"/>
+						</div>
+					</li>
+					<li>
+						<label class="name">产品认证：</label>
+						<div class="con">
+							<input type="text" class="text text2" name="approve"/>注册证号：<input type="text" class="text text2" name="registerNo"/>
+						</div>
+					</li>
+					<li>
+						<label class="name">注册证号图：</label>
+						<div class="con">
+                            <div id="part-preview-0" class="upload_pro div1">
+                                <img alt="" style="width: 120px; height: 120px;" id="part-head-0" />
+                                <input type="file" class="inputstyle icon-cloud-upload" name="registerFile" onchange="partImg(this,'part-head-0','part-preview-0');"/>
+                            </div>
+                            <div style="margin-left: 20px;" class="">选择图片
+
+                            </div>
+						</div>
+					</li>
+					<li>
+						<label class="name">原产国：</label>
+						<div class="con">
+							<input type="text" class="text" name="country"/>
+						</div>
+					</li>
+					<li>
+						<label class="name">原产地：</label>
+						<div class="con">
+							<input type="text" class="text" name="area"/>
+						</div>
+					</li>
+					<li>
+						<label class="name">相关科室：</label>
+						<div class="con">
+                            <select class="span3" name="twoLevel" id="two-level">
+                                <option value="0">
+                                    选择科室大类
+                                </option>
+                                <option th:each="office:${officeList}" th:value="${office.id}"><span th:text="${office.name}">test</span></option>
+                            </select>
+						</div>
+                        <div style="" class="control-group">
+                            <div class="controls">
+                                <ul style="float: left;margin-top: 20px;margin-bottom: -20px;" class="ace-thumbnails" id="office-id">
+                                    <!--<li>-->
+                                    <!--<label>-->
+                                    <!--<input type="checkbox" class="ace" name="form-field-checkbox" />-->
+                                    <!--<span class="lbl" style="color: #000000"> 整形外科</span>-->
+                                    <!--</label>-->
+                                    <!--</li>-->
+                                </ul>
+                            </div>
+                        </div>
+					</li>
+					<li>
+						<label class="name">参考价：</label>
+						<div class="con">
+							<input type="text" class="text text_price" name="money"/>元
+						</div>
+					</li>
+					<li>
+						<label class="name">简要说明：</label>
+						<div class="con text_area">
+							<textarea class="textarea" name="intro"></textarea>
+							<span class="hint">还能输入<i>100</i>字</span>
+						</div>
+					</li>
+					<li>
+						<label class="name">详细说明：</label>
+						<div class="con">
+                            <textarea  id="edit-content-1"  style="width:90%;height:300px;" name="detail"></textarea>
+                            <span class="help-inline" id="error-content" style="display: none;" generated="true" for="edit-content">请填写内容</span>
+						</div>
+					</li>
+					<li>
+						<label class="name">成交说明：</label>
+						<div class="con text_area">
+                            <textarea   id="edit-content-2" style="width:90%;height:300px;" name="deal"></textarea>
+                            <span class="help-inline"  style="display: none;" generated="true" for="edit-content">请填写内容</span>
+						</div>
+					</li>
+					<li>
+						<label class="name">售后服务：</label>
+						<div class="con text_area">
+                            <textarea id="edit-content-3" style="width:90%;height:300px;" name="sale"></textarea>
+                            <span class="help-inline"  style="display: none;" generated="true" for="edit-content">请填写内容</span>
+						</div>
+					</li>
+					<li>
+						<label class="name">产品图片：</label>
+						<div class="con controls">
+							<!--<div class="pro_pic"><img src="../../../static/thumb/68x68.jpg" /></div>-->
+                            <!--<a href="javascript:void(0)" class="add_pro">+</a>-->
+                            <ul>
+                                <li id="first-li">
+                                    <div class="div1" id="more-pic">
+                                        <div class="btn btn-app btn-purple" style="width: 100px;height: 60px;padding-top: 30px;">上传图片</div>
+                                        <input type="file" class="inputstyle icon-cloud-upload" name="imgFile" onchange="PreviewImage(this,'head-1','preview-1');" id="img-file-1"/>
+                                    </div>
+                                </li>
+                            </ul>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="mod_box accessory_detail">
+			<div class="hd">
+				<h3 class="title">配件信息</h3>
+				<a href="javascript:addPart()" class="more">+增加配件</a>
+			</div>
+			<!--<div class="bd" id="part-row-fluid-1">-->
+				<!--<ul class="accessory_pic">-->
+					<!--<li>-->
+                        <!--<div id="part-preview-2" style="width:120px;height:120px;margin-bottom:5px;margin-left: 20px;">-->
+                            <!--<img style="border: 0px;padding-left: -50px;" id="part-head-2" />-->
+                        <!--</div>-->
+					<!--</li>-->
+					<!--<li>-->
+                        <!--<div class="div1">-->
+                            <!--<input type="file" style="margin:5px;" class="inputstyle icon-cloud-upload" name="partFile" onchange="partImg(this,'part-head-2','part-preview-2');"/>-->
+                            <!--<div style="margin-left: 20px;" class="btn">上传配件图片</div>-->
+                        <!--</div>-->
+                    <!--</li>-->
+				<!--</ul>-->
+				<!--<ul class="launch_pro_ul">-->
+					<!--<li>-->
+						<!--<label class="name">配件名称：</label>-->
+						<!--<div class="con">-->
+							<!--<input type="text" class="text" name="partName"/>-->
+						<!--</div>-->
+					<!--</li>-->
+					<!--<li>-->
+						<!--<label class="name">配件型号：</label>-->
+						<!--<div class="con">-->
+							<!--<input type="text" class="text" name="partVersion"/>-->
+						<!--</div>-->
+					<!--</li>-->
+					<!--<li>-->
+						<!--<label class="name">配件说明：</label>-->
+						<!--<div class="con text_area">-->
+							<!--<textarea class="textarea" name="partIntro"></textarea>-->
+						<!--</div>-->
+					<!--</li>-->
+					<!--<li>-->
+						<!--<label class="name">参考价：</label>-->
+						<!--<div class="con">-->
+							<!--<input type="text" class="text" name="partMoney"/>-->
+						<!--</div>-->
+					<!--</li>-->
+					<!--<li>-->
+
+					<!--</li>-->
+				<!--</ul>-->
+			<!--</div>-->
+            <div id="part-a">
+            <ul class="launch_pro_ul" >
+                <li>
+                    <label class="name"> </label>
+                    <div class="con">
+                        <input type="submit"  class="btn update_btn" id="submit-button" value="发布产品" />
+                        <!--<a href="javascript:void(0)" class="btn update_btn">发布产品</a>-->
+                        <a href="javascript:void(0)" class="btn">发布并上架商品</a>
+                        <a href="javascript:void(0)" class="btn">取  消</a>
+                    </div>
+                </li>
+            </ul>
+            </div>
+		</div>
+	</div>
+        </form>
+</div>
+<div class="foot">
+	<div class="wrap">
+		<dl class="ft_right">
+			<dt><i class="ico ft_tel_ico"></i>服务热线：</dt>
+			<dd>
+				<p>021－8888888</p>
+				<p>021－8888888</p>
+			</dd>
+		</dl>
+		<div class="ft_nav">
+			<a href="javascript:void(0)">首页</a><a href="javascript:void(0)">关于我们</a><a href="javascript:void(0)">会员服务</a><a href="javascript:void(0)">广告服务</a><a href="javascript:void(0)">在线客服咨询</a><a href="javascript:void(0)">专家库</a><a href="javascript:void(0)">招标采购平台</a><a href="javascript:void(0)">网站地图</a><a href="javascript:void(0)">友情链接</a>
+		</div>
+		<p class="ft_copy"> 版权所有 &copy; 中国医疗器械采购公共服务平台  www.cyicai.com <br /> Copyright zhongguo yiliaoqixie International Financial Asset E</p>
+	</div>
+</div>
+
+<div class="dialog_filter" style="display:none;"></div>
+<div class="dialog_box" style="display:none;">
+    <a href="javascript:void(0)" class="close"></a>
+    <div class="hd">
+        <h3 class="title">选择属性类型</h3>
+    </div>
+    <div class="bd">
+        <div class="classify_mod">
+            <ul class="classify_ul" style="margin-left: 100px;">
+                <li class="item">
+                    <div class="s_input"><i></i><input type="text" placeholder="输入名称快速搜索" class="keyword" id="search-2"/></div>
+                    <ul class="s_menu" id="form-field-select-2">
+                        <li th:each="nature:${list}" th:id="${nature.id}" th:name="${nature.name}"><a href="javascript:void(0)"><i>&gt;</i><span th:text="${nature.name}"></span></a></li>
+                    </ul>
+                </li>
+                <li class="item" id="widget-box-2" style="display: none">
+                    <div class="s_input"><i></i><input type="text" placeholder="输入名称快速搜索" class="keyword" id="search-3"/>
+                        <input type="hidden" id="hidden-search-pid" />
+                    </div>
+                    <ul class="s_menu" id="form-field-select-3">
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类一</a></li>
+                    </ul>
+                </li>
+                <li class="item" id="widget-box-3" style="display: none">
+                    <div class="s_input"><i></i><input type="text" placeholder="输入名称快速搜索" class="keyword" id="search-4"/>
+                        <input type="hidden" id="search-4-pid" />
+                    </div>
+                    <ul class="s_menu" id="form-field-select-4">
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类三</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

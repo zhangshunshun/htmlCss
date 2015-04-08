@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>会员中心</title>
+    <script type="text/javascript" src="../../../static/js/highcharts/highcharts.js"></script>
+    <script type="text/javascript" src="../../../static/js/highcharts/highcharts-more.js"></script>
+    <script type="text/javascript" src="../../../static/js/highcharts/themes/grid.js"></script>
+    <style>
+        .userinfo .baseinfo .info .btn.disabled{
+            color:#999;background:#F9F9F9;
+        }
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#count1").dayuwscroll({
+                parent_ele:'#wrapBox1',
+                // list_btn:'#tabT04',
+                pre_btn:'#left1',
+                next_btn:'#right1',
+                path: 'left',
+                auto:true,
+                time:3000,
+                num:4,
+                gd_num:4,
+                waite_time:1000
+            });
+            startPurchaseIndex();
+        });
+        function startPurchaseIndex (){
+            $.ajax({
+                url: "/memberCenter/purchaseByDate.json",
+                data : {productId:$("#productId").val()},
+                success : function(data) {
+                    if(data.reportMap.series==''){
+                        var str = '<h2><span style="color: red"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;暂无数据!</span></h2>'
+                        $("#container").html(str);
+
+                    }else {
+                        chart = new Highcharts.Chart({
+                            chart: {
+                                renderTo: 'container',
+                                type: 'line'
+                            },
+                            credits: {
+                                enabled: false
+                            },
+                            title: {
+                                text: '产品价格指数图'
+                            },
+                            xAxis: {
+                                categories: data.reportMap.categories,
+                                tickInterval: data.reportMap.step
+                            },
+                            yAxis: [{
+//							minorTickInterval: 'auto',
+                                lineColor: '#000',
+                                lineWidth: 1,
+                                tickWidth: 1,
+                                tickColor: '#000',
+                                title: {
+                                    text: data.reportMap.ytitle,
+                                    style: {
+                                        color: '#333',
+                                        fontWeight: 'bold',
+                                        fontSize: '12px',
+                                        fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+                                    }
+                                },
+                                labels: {
+                                    style: {
+                                        color: '#000',
+                                        font: '11px Trebuchet MS, Verdana, sans-serif'
+                                    }
+                                },
+                                min: 0
+                            }],
+                            plotOptions: {
+                                line: {
+                                    dataLabels: {
+                                        enabled: true
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                formatter: function () {
+                                    return '<b>' + this.series.name + '</b><br/>'
+                                            + this.x + ': ' + formatNumber(this.y);
+                                }
+                            },
+                            series: data.reportMap.series
+                        });
+                    }
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="crumbs">当前位置: <a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">会员中心</span></div>
+    <div class="member_right">
+        <div class="userinfo">
+            <div class="baseinfo">
+                <div class="avatar"><a href="javascript:void(0)"><img th:src="@{/static/thumb/thumb_103x103.jpg}" /></a><a href="/memberCenter/accountInfo.html" class="set">账户信息设置</a></div>
+                <div class="info">
+                    <h3 class="title"><span th:if="${companyName!=null}" th:text="${companyName.title}"></span></h3>
+                    <p th:if="${companyName!=null}">认证信息：
+                        <span th:if="${!isCredit and !isGold}">普通供应商</span>
+                        <span th:if="${isCredit}"><i></i>诚信供应商</span>
+                        <span th:if="${isGold}"><i class="icon2"></i>金牌供应商</span>
+                    </p>
+                    <p th:if="${companyName!=null}">
+                        <a class="btn" href="/company/apply.html?t=1" th:if="${!isCredit}">申请诚信认证</a>
+                        <a class="btn disabled" href="javascript:void(0)" th:if="${isCredit}">申请诚信认证</a>
+                        <a class="btn" href="/company/apply.html?t=2" th:if="${!isGold}">申请金牌认证</a>
+                        <a class="btn disabled" href="javascript:void(0)" th:if="${isGold}">申请金牌认证</a>
+                    </p>
+                </div>
+            </div>
+            <div class="assets">
+                <h2 class="tit">现金余额</h2>
+                <div class="amount"><span class="num" th:text="${balance}"></span>元</div>
+                <div class="btnMod">
+                    <a href="/account/toCashRecharge.html" class="btn">充 值</a>
+                    <a href="/account/toCashExtract.html" class="btn">提 现</a>
+                    <a href="/account/cashRechargeList.html" class="link">【明细】</a></div>
+            </div>
+            <div class="assets">
+                <h2 class="tit">医采币</h2>
+                <div class="amount"><span class="num" th:text="${yiCaiBalance}"></span>枚 <br /> <span class="f12">1医采币=1RMB</span></div>
+                <div class="btnMod">
+                    <a href="/transaction/toYiCaiRecharge.html" class="btn">充 值</a>
+                    <a href="/transaction/list.html" class="link">【发票】</a>
+                    <a href="/transaction/yicaiRechargeList.html" class="link">【明细】</a>
+                </div>
+            </div>
+        </div>
+        <div class="mod_box products_mod" th:if="${type==1}">
+            <div class="hd">
+                <h3 class="title">我的产品</h3>
+                <a class="more" href="/product/myProduct.html">更多&gt;&gt;</a>
+            </div>
+            <div class="bd">
+                <div class="pro_list">
+                    <a id="right1" class="arrow_icon prev" href="javascript:void(0)"></a>
+                    <a id="left1" class="arrow_icon next" href="javascript:void(0)"></a>
+                    <div id="wrapBox1">
+                        <ul id="count1" th:each="good:${product.result}">
+                            <li>
+                                <a class="pic" th:href="@{/product/productStandard.html(productId=${good.productId})}"><img th:src="${good.imagePath}" /></a>
+                                <h3 class="name"><a th:href="@{/product/productStandard.html(productId=${good.id})}"><span th:text="${good.productName}">专业生产和销售LED手术室无影灯 整体反射医用手术灯 病床 吊塔</span></a></h3>
+                                价格：<div class="price" th:text="${good.salesPrices+' 元'}">¥1.4万</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mod_box_con" th:if="${type==1}">
+            <div class="mod_box m_service">
+                <div class="hd">
+                    <h3 class="title">我申请的金融服务</h3>
+                    <a class="more" href="/memberCenter/myFinacinalService.html">更多&gt;&gt;</a>
+                </div>
+                <div class="bd">
+                    <table class="apply_for">
+                        <colgroup>
+                            <col width="40%"/>
+                            <col width="35%"/>
+                            <col width="25%"/>
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <td>申请名称</td>
+                            <td>申请时间</td>
+                            <td>申请进度</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="financial:${financiaPage.result}">
+                            <td class="name">
+                                <a  th:href="@{/financialProduct/detail.html(id=${financial.productId})}"  th:id="${financial.productId}" th:text="${financial.productName}"></a>
+                            </td>
+                            <td><span class="time" th:text="${#dates.format(financial.createDate,'yyyy-MM-dd HH:mm:ss')}"></span></td>
+                            <td>
+                                <span th:if="${financial.progress == 1}">未处理</span>
+                                <span th:if="${financial.progress == 2}">通过</span>
+                                <span th:if="${financial.progress == 3}">不通过</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="mod_box m_quality" th:if="${type==1}">
+                <div class="hd">
+                    <h3 class="title">我申请的质量评估</h3>
+                    <a class="more" href="/memberCenter/qualityAssessment.html">更多&gt;&gt;</a>
+                </div>
+                <div class="bd">
+                    <table class="apply_for">
+                        <colgroup>
+                            <col width="40%"/>
+                            <col width="35%"/>
+                            <col width="25%"/>
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <td>申请名称</td>
+                            <td>申请时间</td>
+                            <td>申请进度</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr th:each="quality:${qualityPage.result}">
+                            <td class="name" th:text="${quality.qualityEvalTitle}">PET/CT、回旋加速器、SPECT评估标准公示</td>
+                            <td><span class="time" th:text="${#dates.format(quality.createDate,'yyy-MM-dd HH:mm:ss')}">2013-05-08 17:25:20</span></td>
+                            <td>
+                                <span class="status_normal" th:if="${quality.progress==1}">未处理</span>
+                                <span class="status_normal" th:if="${quality.progress==2}">已通过</span>
+                                <span class="status_normal" th:if="${quality.progress==3}">不通过</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="mod_box_con">
+            <div class="mod_box my_expert">
+                <div class="hd">
+                    <h3 class="title">我关注的专家</h3>
+                    <a class="more" href="/memberCenter/findMyAttentionExperts.html">更多&gt;&gt;</a>
+                </div>
+                <div class="bd">
+                    <div class="expertBd">
+                        <a class="arrow_icon prev" href="javascript:void(0)"></a>
+                        <a class="arrow_icon next" href="javascript:void(0)"></a>
+                        <ul th:each="exper:${expertPage.result}">
+                            <li>
+                                <a href="javascript:void(0)" class="pic"><img th:src="${exper.expimage}"/></a>
+                                <h3 class="name"><span th:text="${exper.expname}">王丽丽</span><!--<span class="icon">主任</span>--></h3>
+                                <p th:text="${exper.claname}">科学研究院</p>
+                                <p>科室：<span th:text="${exper.department}">设备科</span></p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="mod_box my_focus_pro">
+                <div class="hd">
+                    <h3 class="title">我关注的产品</h3>
+                    <a class="more" href="/memberCenter/findMyAttentionProduct.html">更多&gt;&gt;</a>
+                </div>
+                <div class="bd">
+                    <div class="pro_list">
+                        <a class="arrow_icon prev" href="javascript:void(0)"></a>
+                        <a class="arrow_icon next" href="javascript:void(0)"></a>
+                        <ul th:each="product:${productPage.result}">
+                            <li>
+                                <a class="pic" th:href="@{/product/productStandard.html(productId=${product.id})}" ><img th:src="${product.imagePath}" /></a>
+                                <h3 class="name"><a href="javascript:void(0)" th:text="${product.name}">专业生产和销售LED手术室无影灯 整体反射医用手术灯 病床 吊塔</a></h3>
+                                <div class="price" th:text="${product.money}+'万'">¥1.4万</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mod_box_con">
+
+
+
+            <div class="mod_box m_service">
+                <input type="hidden" th:value="${productId}" id="productId" />
+                <div class="hd">
+                    <h3 class="title">我关注的价格指数</h3>
+                    <a class="more" href="/memberCenter/findMyAttentionPurchase.html">更多&gt;&gt;</a>
+                </div>
+                <div class="bd">
+                    <div class="chart" id="container" style="height: 285px;">
+                        <!--<img th:src="@{/static/thumb/chart.jpg}" />-->
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="mod_box my_focus_pro m_enterprise">
+                <div class="hd">
+                    <h3 class="title">我关注的企业</h3>
+                    <a class="more" href="/memberCenter/findMyAttentionCompany.html">更多&gt;&gt;</a>
+                </div>
+                <div class="bd">
+                    <div class="pro_list">
+                        <a class="arrow_icon prev" href="javascript:void(0)"></a>
+                        <a class="arrow_icon next" href="javascript:void(0)"></a>
+                        <ul th:each="company:${companyPage.result}">
+                            <li>
+                                <a class="pic" href="javascript:void(0)"><img th:src="${company.logo}" /></a>
+                                <h3 class="name"><a href="javascript:void(0)" th:text="${company.title}">专业生产和销售LED手术室无影灯 整体反射医用手术灯 病床 吊塔</a></h3>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="member_left">
+        <ul class=" member_menu">
+            <li><h3 class="menu_hd"><a href="/memberCenter/index.html">会员中心</a></h3></li>
+            <li>
+                <h3 class="menu_hd"><i class="minus_ico"></i><a href="javascript:void(0)">常用功能</a></h3>
+                <div class="sub_menu">
+                    <a href="/memberCenter/myBuy.html">我要买</a>
+                    <a href="/memberCenter/mySell.html">我要卖</a>
+                    <a href="">发布新产品</a>
+                    <a href="/product/myProduct.html ">我发布的产品</a>
+                    <a href="/supply/findSupplyByCompanyId.html ">我发布的供应信息</a>
+                    <a href="/supply/findPurchaseByCompanyId.html ">我发布的求购信息</a>
+                    <a href="/memberCenter/excellentProductApplication.html">优秀产品认证</a>
+                    <a href="/memberCenter/excellent3DProductApplication.html">3D产品认证</a>
+                    <a href="javascript:void(0)">企业诚信认证</a>
+                    <a href="/evaluate/evaluateList.html">我做的评价</a>
+                </div>
+            </li>
+            <li>
+                <h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">特色服务</a></h3>
+                <div class="sub_menu" style="display: none;">
+                    <a href="/qualityEval/list.html">产品质量评估</a>
+                    <a href="/expertService/list.html">专家库</a>
+                    <a href="/financialProduct/list.html">金融服务</a>
+                </div>
+            </li>
+            <li>
+                <h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">我的关注</a></h3>
+                <div class="sub_menu" style="display: none;">
+                    <a href="/memberCenter/findMyAttentionProduct.html">我关注的产品</a>
+                    <a href="/memberCenter/findMyAttentionCompany.html">我关注的企业</a>
+                    <a href="/memberCenter/findMyAttentionPurchase.html">我关注的价格指数</a>
+                </div>
+            </li>
+            <li>
+                <h3 class="menu_hd"><i class="plus_ico"></i><a href="">站内信</a></h3>
+                <div class="sub_menu" style="display: none;">
+                    <a href="/memberCenter/receiverEmail.html">我的收件箱</a>
+                    <a href="/memberCenter/sendEmail.html">我的发件箱</a>
+                    <a href="/memberCenter/writerEmail.html">发送消息</a>
+                </div>
+            </li>
+            <li>
+                <h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">客户服务</a></h3>
+                <div class="sub_menu" style="display: none;">
+                    <a href="javascript:void(0)">投诉&amp;举报</a>
+                    <a href="/userNoteType/list.html">医采币发票申请</a>
+                    <a href="javascript:void(0)">联系客服</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

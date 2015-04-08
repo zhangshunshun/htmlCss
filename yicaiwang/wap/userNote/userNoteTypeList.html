@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>发票管理-发票列表</title>
+    <style>
+        input[readonly] {
+            color: #939192;
+            background: #f5f5f5 !important;
+            cursor: default;
+        }
+    </style>
+    <script>
+        $(function(){
+            var options = {
+                currentPage: $("[name=page]").val(),
+                totalPages: $("[name=totalPage]").val(),
+                onPageClicked:function(e,type,page){
+                    $("[name=page]").val(page);
+                    $("#searchForm").submit();
+                }
+            };
+            $('#page').bootstrapPaginator(options);
+
+
+            //取消发票操作
+            $(".light").click(function(e){
+                $.confirm('确定取消该发票吗？',function(){
+                    $.ajax({
+                        url:'/userNoteType/update.json?id='+ e.currentTarget.id,
+                        type:'POST',
+                        dataType:"json",
+                        success:function(data) {
+                            if(data.suc){
+                                $(".close").click();
+                                alert("取消成功！");
+                                window.location.href = "/userNoteType/list.html";
+                            }else{
+                                alert("取消失败！");
+                                window.location.href = "/userNoteType/list.html";
+                            }
+                        }
+                    });
+                });
+
+            });
+
+        })
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+
+    <div class="wrap">
+        <div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">发票管理</span></div>
+        <div class="main_right">
+            <div class="cur_title"><h2>发票管理</h2></div>
+            <div class="manage_mod">
+                <div class="hd hd_tab">
+                    <a href="javascript:void(0)" class="current">发票列表</a>
+                    <a href="/usernote/list.html">发票信息管理</a>
+                    <a href="/commonsite/list.html">寄送地址管理</a>
+                </div>
+                <div class="bd">
+                    <a class="btn_key add_invoice" href="/transaction/list.html">索取发票</a>
+                    <form id="searchForm" method="post" action="/userNoteType/list.html">
+                        <input type="hidden" name="page" th:value="${page.page}" />
+                        <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+                    <div class="hd_select">
+                        <div class="select_box"><strong class="keyName">发票申请时间 :</strong><input type="text" name="startTime" th:value="${page.filter['startTime']}" readonly="readonly" class="input_txt input_date" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})"/></div><div class="select_box selectBt_box">
+                        <input type="submit" class="btn_weak" value="查询"/></div>
+                    </div>
+                    </form>
+                    <table class="table_row invoice_table">
+                        <thead>
+                        <tr>
+                            <th>发票金额</th>
+                            <th>发生时间</th>
+                            <th>发票抬头</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="a:${page.result}">
+                            <td th:text="${a.feePrice+'元'}"></td>
+                            <td th:text="${#dates.format(a.tranDate,'yyyy年MM月dd日')}"></td>
+                            <td th:text="${a.usenotTitle}"></td>
+                            <td th:if="${a.status==0}">待邮寄</td>
+                            <td th:if="${a.status==1}">已发送</td>
+                            <td th:if="${a.status==2}">已签收</td>
+                            <td th:if="${a.status==3}">取消</td>
+                            <td th:if="${a.status==0}"><a href="javascript:void(0)" class="light" th:id="${a.id}">取消</a></td>
+                            <td th:if="${a.status==1 || a.status==2 ||  a.status==3}" >不可操作</td>
+
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="container">
+                        <div id="page" class="pagination"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="asid_left">
+            <div class="account_menu">
+                <ul class="aside_menu">
+                    <li>
+                        <h3 class="menu_hd"><a href="javascript:void(0)">会员中心</a><i class="minus_ico"></i></h3>
+                        <div class="sub_menu" style="display: none">
+                            <a href="javascript:void(0)">心外科</a>
+                            <a href="javascript:void(0)" >肿瘤科</a>
+                            <a href="javascript:void(0)">妇科</a>
+                            <a href="javascript:void(0)">口腔科</a>
+                        </div>
+                    </li>
+                    <li>
+                        <h3 class="menu_hd"><a href="javascript:void(0)">账户信息设置 </a><i class="plus_ico"></i></h3>
+                        <div class="sub_menu" >
+                            <a href="/memberCenter/accountInfo.html">个人信息</a>
+                            <a href="/memberCenter/companyInfo.html">公司信息</a>
+                            <a href="/user/toUpdatePassword.htm">密码修改</a>
+                            <a href="/company/toLinkMan.htm">联系人管理</a>
+                            <a href="/userNoteType/list.html" class="acitve">发票信息</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

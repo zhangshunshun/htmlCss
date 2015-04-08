@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>寄送地址管理</title>
+    <link href="../../../static/css/ace.min.css" th:href="@{/static/css/ace.min.css}" rel="stylesheet" type="text/css" />
+    <script>
+        $(function(){
+            initProvinceSelect();
+            // 提交验证
+            $("#seachFrom").validate({
+                checkStart: true,
+                errorElement: 'span',
+                errorClass: 'help-inline',
+                focusInvalid: false,
+                rules: {
+                    commsitMessrs: {required: true, maxlength: 20},
+                    commsitProvinceId: {required: true},
+                    commsitCityId: {required: true},
+                    commsitStreet: {required: true, maxlength: 100},
+                    commsitPhone: {required: true, maxlength: 11, isMobile: true},
+                    commsitPostcode: {required: true,isZipCode:true}
+                },
+                messages: {
+                    commsitMessrs: {required: "必填", maxlength: "最多输入20个字符"},
+                    commsitProvinceId: {required: "必填"},
+                    commsitCityId: {required: "必填"},
+                    commsitStreet: {required: "必须填写", maxlength: "最多输入100个字符"},
+                    commsitPhone: {required: "必须填写", maxlength: "最多输入11个字符", isMobile: "手机号码格式有误"},
+                    commsitPostcode: {required: "必须填写",isZipCode:"请填写正确的邮编号码"}
+                },
+                highlight: function (e) {
+                    $(e).closest('.control-group').removeClass('info').addClass('error');
+                },
+                unhighlight: function (e) {
+                    $(e).closest('.control-group').removeClass('error');
+                }
+            });
+
+            $(".btn_key").click(function(){
+                if ($("#seachFrom").valid()) {
+                    $("#loadingDiv").show();
+                    $('#seachFrom').ajaxSubmit({
+                        url: '/commonsite/addorUpdate.json',
+                        type: 'POST',
+                        dataType: "json",
+                        success:function (data) {
+                            if (data.suc){
+                                alert("操作成功了!");
+                                window.location.href="/commonsite/list.html";
+                                $("#loadingDiv").hide();
+                            } else if(data.suc== false) {
+                                alert("保存失败了!");
+                                window.location.href="/commonsite/list.html";
+                                $("#loadingDiv").hide();
+                            }
+                        },
+                        error: function (XmlHttpRequest, textStatus, errorThrown) {
+                            alert("error");
+                        }
+                    });
+                }
+
+            });
+
+        })
+
+        // 地区相关
+        function initProvinceSelect(){
+            var province = $("#provinceSelect").val();
+            $.ajax({
+                url: '/area/findProvinceAll.html',
+                type:'POST',
+                dataType:"json",
+                success: function (data) {
+                    var str = [];    str.push('<option value="">------请选择-----</option>');
+                    if(data!=null){
+                        jQuery.each(data,function(i,item){
+                            if(province==item.provinceid){
+                                str.push("<option value="+item.provinceid+" selected="+true+">"+item.province+"</option>");
+                            }else{
+                                str.push("<option value="+item.provinceid+">"+item.province+"</option>");
+                            }
+                        });
+                        $("#province").html(str.join(""));
+                        if(province!=""){
+//                    $("#province").val(""+province+"");
+                            initCity();
+                        }else{
+                            $("#city").attr("disabled", true);
+                            $("#area").attr("disabled", true);
+                        }
+                    }
+                }});
+        }
+        function initCity(){
+            var city =$("#citySelect").val();
+            var proVar = $("#province").val();
+            if(proVar!=''){
+                $("#city").attr("disabled", false);
+                $.ajax({
+                    url: '/area/findCityByProvinceId.html',
+                    data:{provinceId : proVar},
+                    type:'POST',
+                    dataType:"json",
+                    success: function (data) {
+                        if(data!=null){
+                            var str = [];    str.push('<option value="">------请选择-----</option>');
+                            jQuery.each(data,function(i,item){
+                                if(city==item.cityid){
+                                    str.push("<option value="+item.cityid+" selected="+true+">"+item.city+"</option>");
+                                }else{
+                                    str.push("<option value="+item.cityid+">"+item.city+"</option>");
+                                }
+                            });
+                            $("#city").html(str.join(""));
+                            if(city!=''){
+//                        $("#city").val(""+city+"");
+                                initArea();
+                                $("#area").attr("disabled", false);
+                            }else{
+                                var strArea = [] ;  str.push('<option value="">------请选择-----</option>');
+                                $("#area").html(strArea.join(""));
+                                $("#area").attr("disabled", true);
+                            }
+                        }
+                    }});
+            }else{
+                var strCity = [] ;  strCity.push('<option value="">------请选择-----</option>');
+                $("#city").attr("disabled", true);
+                $("#city").html(strCity.join(""));
+                var strArea = [] ;  strArea.push('<option value="">------请选择-----</option>');
+                $("#area").attr("disabled", true);
+                $("#area").html(strArea.join(""));
+            }
+        }
+
+        function initArea(){
+            var area =$("#areaSelect").val();
+            var cityVar = $("#city").val();
+            if(cityVar!=''){
+                $("#area").attr("disabled", false);
+                $.ajax({
+                    url: '/area/findAreaByCityId.html',
+                    data:{cityId : cityVar},
+                    type:'POST',
+                    dataType:"json",
+                    success: function (data) {
+                        if(data!=null){
+                            var str = [];    str.push('<option value="">------请选择-----</option>');
+                            jQuery.each(data,function(i,item){
+                                if(area==item.areaid){
+                                    str.push("<option value="+item.areaid+" selected="+true+">"+item.area+"</option>");
+                                }else{
+                                    str.push("<option value="+item.areaid+">"+item.area+"</option>");
+                                }
+                            });
+                            $("#area").html(str.join(""));
+                        }
+                    }});
+            }else{
+                var strArea = [] ;  strArea.push('<option value="">------请选择-----</option>');
+                $("#area").attr("disabled", true);
+                $("#area").html(strArea.join(""));
+            }
+
+        }
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="wrap">
+        <div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">发票管理</span></div>
+        <div class="main_right">
+            <div class="cur_title"><h2>发票管理</h2></div>
+            <div class="manage_mod">
+                <div class="hd hd_tab">
+                    <a href="/userNoteType/list.html">发票列表</a>
+                    <a href="/usernote/list.html">发票信息管理</a>
+                    <a href="javascript:void(0)" class="current">寄送地址管理</a>
+                </div>
+                <form id="seachFrom" action="/commonsite/addorUpdate.html"  method="post">
+               <input type="hidden" name="id" th:value="${commonsite.id}"/>
+                <div class="bd">
+                    <ul class="filed_info invoice_filed">
+                        <li>
+                            <label class="keyName"><em class="star">*</em>收件人姓名：</label>
+                            <div class="filed_con control-group"><input type="text" class="input-xxlarge" name="commsitMessrs" th:value="${commonsite.commsitMessrs}"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>所在区域：</label>
+                            <div class="filed_con control-group">
+                                <input type="hidden"  id="provinceSelect"  th:value="${commonsite.commsitProvinceId}"/>
+                                <select name="commsitProvinceId" id="province" style="width:180px;" onchange="initCity();">
+                                    <option th:each="province:${provinceList}" th:value="${province.id}" th:text="${province.province}" th:selected="${company.provinceId==province.id}"></option>
+                                </select>
+                                <input type="hidden"  id="citySelect"  th:value="${commonsite.commsitCityId}"/>
+                                <select name="commsitCityId" id="city" style="width: 180px;" onchange="initArea();"></select>
+                                <input type="hidden"  id="areaSelect"  th:value="${commonsite.commsitAreaId}"/>
+                                <select name="commsitAreaId" id="area" style="width: 180px;"></select>
+                            </div>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>街道地址：</label>
+                            <div class="filed_con control-group">
+                                <textarea name="commsitStreet" th:text="${commonsite.commsitStreet}" style="width: 610px; height:200px"></textarea>
+                            </div>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>邮编号码：</label>
+                            <div class="filed_con control-group">
+                                <input type="text" name="commsitPostcode" th:value="${commonsite.commsitPostcode}"/>
+                            </div>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>手机号码：</label>
+                            <div class="filed_con control-group">
+                                <input type="text" name="commsitPhone" th:value="${commonsite.commsitPhone}"/>
+                            </div>
+                        </li>
+                        <li class="filed_action"><a class="btn_key">提交</a></li>
+                    </ul>
+                </div>
+                </form>
+            </div>
+        </div>
+        <div class="asid_left">
+            <div class="account_menu">
+                <ul class="aside_menu">
+                    <li>
+                        <h3 class="menu_hd"><a href="javascript:void(0)">会员中心</a><i class="minus_ico"></i></h3>
+                        <div class="sub_menu" style="display: none">
+                            <a href="javascript:void(0)">心外科</a>
+                            <a href="javascript:void(0)" >肿瘤科</a>
+                            <a href="javascript:void(0)">妇科</a>
+                            <a href="javascript:void(0)">口腔科</a>
+                        </div>
+                    </li>
+                    <li>
+                        <h3 class="menu_hd"><a href="javascript:void(0)">账户信息设置 </a><i class="plus_ico"></i></h3>
+                        <div class="sub_menu" >
+                            <a href="javascript:void(0)">个人信息</a>
+                            <a href="javascript:void(0)">公司信息</a>
+                            <a href="javascript:void(0)">密码修改</a>
+                            <a href="javascript:void(0)">联系人管理</a>
+                            <a href="/userNoteType/list.html" class="acitve" >发票信息</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

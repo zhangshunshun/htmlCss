@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      >
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>采购订单页面</title>
+    <link href="../../../static/css/global.css" th:href="@{/static/css/global.css}" rel="stylesheet" type="text/css" />
+    <!--<link href="../../../static/css/common.css" th:href="@{/static/css/common.css}" rel="stylesheet" type="text/css" />-->
+    <link href="../../../static/css/account.css" th:href="@{/static/css/account.css}" rel="stylesheet" type="text/css" />
+    <link href="../../../static/css/ace.min.css" th:href="@{/static/css/ace.min.css}" rel="stylesheet" type="text/css" />
+    <link href="../../../static/css/ui-dialog.css" th:href="@{/static/css/ui-dialog.css}" rel="stylesheet" type="text/css" />
+    <!--<link href="../../../static/css/popup.css" th:href="@{/static/css/popup.css}" rel="stylesheet" type="text/css" />-->
+    <link href="../../../static/css/product.css" th:href="@{/static/css/product.css}" rel="stylesheet" type="text/css" />
+    <link href="../../../static/css/fix.css" th:href="@{/static/css/fix.css}" rel="stylesheet" type="text/css" />
+    <link href="../../../static/css/common.css" th:href="@{/static/css/common.css}" rel="stylesheet" type="text/css" />
+    <style>
+        tr{
+            line-height:4em;
+        }
+        th{
+            padding-left:4em;
+        }
+        body {margin:0px;}
+        .divbig{margin:0px auto;
+            width:840px;
+            height:auto;
+        }
+        .c_goods .decs {
+            float: left;
+            width:76px;
+            padding-top: 0px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<div id="content"  style="width:840px;">
+    <div class="wrap divbig">
+        <div class="mod_item mod_address">
+            <h2 class="mod_item_hd"></h2>
+            <div class="mod_item_bd">
+                <table class="tbl_product">
+                    <tr>
+                        <th style="width:15%;">单号：</th><td style="width:35%;text-align: left;" th:text="${productorders.proordNumber}"></td>
+                        <th style="width:15%;">单据状态：</th><td style="width:35%;text-align: left;" th:text="${productorders.proordState==1 ? '已付款':'未付款'}"></td>
+                    </tr>
+                    <tr>
+                        <th>时间：</th><td th:text="${#dates.format(productorders.createDate,'yyyy-MM-dd HH:ss:dd')}"></td>
+                        <th>发票信息：</th><td th:text="${productorders.proordIsbill==1 ? '需要发票':'不需要发票'}"></td>
+                    </tr>
+                    <tr>
+                        <th>买家名称：</th><td th:text="${productorders.username}"></td>
+                        <th>总额：</th><td style="color: red;font-weight:bold ;" th:text="${productorders.proordRental+'元'}"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;物流地址：<span th:text="${productorders.provincename}"></span><span th:text="${productorders.cityname}"></span><span th:text="${productorders.areaname}"></span><span th:text="${productorders.proordStreet}"></span>
+                            <span th:text="${productorders.proordMessrs}"></span>收&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;联系电话：<span th:text="${productorders.proordPhone!=null?productorders.proordPhone:productorders.proordTel}"></span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="mod_item mod_invoice">
+        </div>
+        <div class="mod_item mod_confim" style="width: 840px;">
+            <h2 class="mod_item_hd">产品信息</h2>
+            <div class="mod_item_bd" >
+                <div class="cart_main">
+                    <div class="cart_thead">
+                        <div class="column c_goods" style="width: 210px">货品</div>
+                        <div class="column c_price" style="width: 100px">单价（元）</div>
+                        <div class="column c_quantity" style="width: 120px">数量</div>
+                        <div class="column c_sum" style="width: 140px">金额（元）</div>
+                        <div class="column c_price" style="margin-left: 10px;">运费（元）</div>
+                    </div>
+                    <div class="cart_list">
+                        <div class="cart_item">
+                            <div class="cart_tbody" th:each="producersMain:${producersMainList}">
+                                <div class="cart_tbody_hd">
+                                    卖家：<a href="javascript:void(0)" th:text="${producersMain.comname}"></a>
+                                </div>
+                                    <div class="cart_tbody_bd clearfix sumPrice">
+                                        <div class="column c_goods" style="width: 218px;">
+                                            <div class="pic" style="width: 100px"><a href="javascript:void(0)"><img style="with:100px;"  th:src="${'htttp://114.215.80.184:10080'+producersMain.path}" /></a></div>
+                                            <div class="decs" >
+                                                <h3 class="p_name"><a href="javascript:void(0)" class="weblink" th:text="${producersMain.productname}"></a></h3>
+                                            </div>
+                                        </div>
+                                        <div class="column c_price ordersPrice" style="width: 120px; float: left" ><span class="numb price"  th:text="${producersMain.promainActualprice}"></span></div>
+                                        <div class="column c_quantity" style="float: left;with:100px;" >
+                                            <div class="quantity_form" th:text="${producersMain.promainAmount}" >
+                                            </div>
+                                        </div>
+                                        <div class="column c_sum" style="width: 140px;"><span class="numb jine" th:text="${producersMain.jine}"></span></div>
+                                        <div class="column c_post  control-group" style="margin-top: 10px;width: 150px;" th:if="${producersMain.promainFreight!=0}" >
+                                          <span class="numb price" th:text="${producersMain.promainFreight+'元'}"></span>
+                                        </div>
+                                        <div style="margin-top: 10px;width: 80px;" class="column c_post " th:if="${producersMain.promainFreight==0}">
+                                           <span >卖方承担</span>
+                                        </div>
+                                    </div>
+
+
+                                <div class="cart_tbody_bd clearfix sumPrice" th:each="accProduct:${producersMain.productoracc}">
+                                    <div class="column c_goods">
+                                        <div class="pic">配件：<a href="javascript:void(0)"><img th:src="${'htttp://114.215.80.184:10080'+accProduct.accorderspath}"/></a></div>
+                                        <div class="decs">
+                                            <h3 class="p_name"><a href="javascript:void(0)" class="weblink" th:text="${accProduct.accordersname}"></a></h3>
+                                        </div>
+                                    </div>
+                                    <div class="column c_price ordersPrice" ><span class="numb price"  th:text="${accProduct.accordActualprice}"></span></div>
+                                    <div class="column c_quantity">
+                                        <div class="quantity_form" th:value="${accProduct.accordAmount}">
+                                        </div>
+                                    </div>
+                                    <div class="column c_sum"><span class="numb jine" th:text="${accProduct.accordersjie}"></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  <!--  <div class="cart_expand clearfix">
+                        <div class="message">
+                            <label for="inpt_message" class="label">给卖家留言：</label>
+                            <input type="text" class="inpt"  name="message" id="inpt_message" data-tips="用户输入内容后添加类名：inpt_focus" />
+                        </div>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

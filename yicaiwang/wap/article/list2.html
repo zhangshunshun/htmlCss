@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>重要资讯</title>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="crumbs"><a href="/">首页</a><span class="gt">&gt;</span><span class="current_page">重要资讯</span></div>
+    <div class="mod_box notice_mod">
+        <div class="hd">
+            <h2 class="title" th:text="${latestType.name}">最新公告</h2><a href="/article/list.html?t=latest" class="more">更多&gt;&gt;</a>
+        </div>
+        <div class="bd">
+            <ul class="info_list">
+                <li th:each="a:${latestList}"><i class="drop"></i><a th:href="@{/article/detail.html(id=${a.id})}" th:text="${a.title}">一起仿制药专利纠纷引发的故事</a><span class="time" th:text="${#dates.format(a.createDate,'yyyy-MM-dd HH:mm:ss')}">2013-05-08 17:25:20</span></li>
+            </ul>
+        </div>
+    </div>
+    <div class="mod_box notice_mod">
+        <div class="hd">
+            <h2 class="title" th:text="${hotType.name}">热点</h2><a href="/article/list.html?t=hot" class="more">更多&gt;&gt;</a>
+        </div>
+        <div class="bd">
+            <ul class="info_list">
+                <li th:each="a:${hotList}"><i class="drop"></i><a th:href="@{/article/detail.html(id=${a.id})}" th:text="${a.title}">一起仿制药专利纠纷引发的故事</a><span class="time" th:text="${#dates.format(a.createDate,'yyyy-MM-dd HH:mm:ss')}">2013-05-08 17:25:20</span></li>
+            </ul>
+        </div>
+    </div>
+    <div class="mod_box notice_mod">
+        <div class="hd">
+            <h2 class="title" th:text="${govType.name}">政府政要</h2><a href="/article/list.html?t=gov" class="more">更多&gt;&gt;</a>
+        </div>
+        <div class="bd">
+            <ul class="info_list">
+                <li th:each="a:${govList}"><i class="drop"></i><a th:href="@{/article/detail.html(id=${a.id})}" th:text="${a.title}">一起仿制药专利纠纷引发的故事</a><span class="time" th:text="${#dates.format(a.createDate,'yyyy-MM-dd HH:mm:ss')}">2013-05-08 17:25:20</span></li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>test</title>
+    <script>
+        $(function(){
+            $('#btn1').click(function(){
+				dialog({
+					title:'友情提醒',
+					content:'您购买的商品有配套的配件，是否需要在购买商品的同时选购配件？',
+					ok:function(){
+                        $.alert('你选择了是');
+					},
+					okValue:'是，要选购配件',
+					cancel:function(){
+					},
+					cancelValue:'不，直接购买'
+				}).showModal();
+
+            });
+            $("#btn2").click(function(){
+                dialog({
+					content:'<p class="font"><i class="icon icon_ok"></i>商品已成功加入购物车</p>',
+					ok:function(){
+                        $.alert('你选择了立即结算');
+					},
+					okValue:'立即结算',
+					cancel:function(){
+					},
+					cancelValue:'再逛逛>>'
+				}).showModal();
+            });
+
+            $("#btn4").click(function(){
+                $.alert('操作成功！');
+            });
+            $("#btn5").click(function(){
+                $.confirm('确定要删除吗？',function(){
+                    $.alert('删除成功！');
+                });
+            });
+        });
+
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <p style="margin-bottom: 20px;">
+        <button class="btn_key" id="btn4">alert</button>
+        <button class="btn_key" id="btn5">confirm</button>
+    </p>
+    <p>
+        <button class="btn_key" id="btn1">友情提醒</button>
+        <button class="btn_key" id="btn2">提示</button>
+    </p>
+
+
+</div>
+</body>
+</html>

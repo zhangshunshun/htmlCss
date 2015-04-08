@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+    <script>
+        $(function(){
+            var options = {
+                currentPage: $("[name=page]").val(),
+                totalPages: $("[name=totalPage]").val(),
+                onPageClicked:function(e,type,page){
+                    $("[name=page]").val(page);
+                    $("#searchForm").submit();
+                }
+            };
+            $('#page').bootstrapPaginator(options);
+        });
+
+    </script>
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>我的金融服务</title>
+</head>
+<body>
+
+<div id="content" layout:fragment="content">
+
+        <div class="crumbs">当前位置: <a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">我的金融服务</span></div>
+
+    <div class="member_right">
+        <form id="searchForm" method="post" action="/memberCenter/myFinacinalService.html">
+            <input type="hidden" name="page" th:value="${page.page}" />
+            <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+            <div class="mod_box finance_mode">
+                <div class="hd">
+                    <h3 class="title">我的金融服务</h3><a href="/financialProduct/list.html" class="btn_key">申请融资</a>
+                </div>
+                <div class="bd">
+                    <table class="member_table evaluate_table">
+                        <thead>
+                        <tr class="name">
+                            <th class="name">产品名称</th>
+                            <th>申请时间</th>
+                            <th>申请进度</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="financial:${page.result}">
+                            <td class="name">
+                                <a  th:href="@{/financialProduct/detail.html(id=${financial.productId})}"  th:id="${financial.productId}" th:text="${financial.productName}"></a>
+                            </td>
+                            <td><span class="time" th:text="${#dates.format(financial.createDate,'yyyy-MM-dd HH:mm:ss')}"></span></td>
+                            <td>
+                                <span th:if="${financial.progress == 1}">未处理</span>
+                                <span th:if="${financial.progress == 2}">通过</span>
+                                <span th:if="${financial.progress == 3}">不通过</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="pagination">
+                        <div id="page"></div>
+                    </div>
+                </div>
+            </div>
+            </form>
+        </div>
+
+        <div class="member_left">
+            <ul class=" member_menu">
+                <li><h3 class="menu_hd"><a href="javascript:void(0)">会员中心</a></h3></li>
+                <li>
+                    <h3 class="menu_hd"><i class="minus_ico"></i><a href="javascript:void(0)">常用功能</a></h3>
+                    <div class="sub_menu">
+                        <a href="/memberCenter/myBuy.html">我要买</a>
+                        <a href="/memberCenter/mySell.html">我要卖</a>
+                        <a href="javascript:void(0)">发布新产品</a>
+                        <a href="/product/myProduct.html">我发布的产品</a>
+                        <a href="/company/apply.html?t=2">优秀产品认证</a>
+                        <a href="/company/apply.html?t=1">企业诚信认证</a>
+                    </div>
+                </li>
+                <li>
+                    <h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">特色服务</a></h3>
+                    <div class="sub_menu" style="display: none;">
+                        <a href="/qualityEval/list.html">产品质量评估</a>
+                        <a href="/expertService/list.html">专家库</a>
+                        <a href="/financialProduct/list.html">金融服务</a>
+                    </div>
+                </li>
+                <li>
+                    <h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">我的关注</a></h3>
+                    <div class="sub_menu" style="display: none;">
+                        <a href="/memberCenter/findMyAttentionProduct.html">我关注的产品</a>
+                        <a href="/memberCenter/findMyAttentionCompany.html">我关注的企业</a>
+                        <a href="javascript:void(0)">我关注的价格指数</a>
+                    </div>
+                </li>
+                <li>
+                    <h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">客户服务</a></h3>
+                    <div class="sub_menu" style="display: none;">
+                        <a href="javascript:void(0)">投诉&;举报</a>
+                        <a href="/userNoteType/list.html">医采币发票申请</a>
+                        <a href="javascript:void(0)">联系客服</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+</div>
+</body>
+</html>

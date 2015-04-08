@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>test</title>
+    <script>
+        $(function(){
+            var options = {
+                currentPage: $("[name=page]").val(),
+                totalPages: $("[name=totalPage]").val(),
+                onPageClicked:function(e,type,page){
+                    $("[name=page]").val(page);
+                    $("#searchForm").submit();
+                }
+            }
+            $('#page').bootstrapPaginator(options);
+        });
+
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <input type="hidden" name="page" value="1"/>
+    <input type="hidden" name="totalPage" value="12"/>
+    <div id="page"></div>
+</div>
+</body>
+</html>

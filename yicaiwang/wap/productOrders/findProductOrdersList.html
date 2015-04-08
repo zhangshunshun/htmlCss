@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-brief">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>采购订单页面</title>
+
+    <style>
+        tr{
+            line-height:4em;
+        }
+        th{
+            padding-left:4em;
+        }
+    </style>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="wrap">
+        <div class="crumbs">当前位置:<a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><a href="javascript:void(0)">我买到的产品</a><span class="gt">&gt;</span><span class="current_page">支付</span></div>
+        <div class="mod_item mod_address">
+            <h2 class="mod_item_hd"></h2>
+            <div class="mod_item_bd">
+                <table class="tbl_product">
+                    <tr>
+                        <th style="width:15%;">单号：</th><td style="width:35%;text-align: left;" th:text="${productorders.proordNumber}"></td>
+                        <th style="width:15%;">单据状态：</th><td style="width:35%;text-align: left;" th:text="${productorders.proordState==1 ? '已付款':'未付款'}"></td>
+                    </tr>
+                    <tr>
+                        <th>时间：</th><td th:text="${#dates.format(productorders.createDate,'yyyy-MM-dd HH:ss:dd')}"></td>
+                        <th>发票信息：</th><td th:text="${productorders.proordIsbill==1 ? '需要发票':'不需要发票'}"></td>
+                    </tr>
+                    <tr>
+                        <th>买家名称：</th><td th:text="${productorders.username}"></td>
+                        <th>总额：</th><td style="color: red;font-weight:bold ;" th:text="${productorders.proordRental+'元'}"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;物流地址：<span th:text="${productorders.provincename}"></span><span th:text="${productorders.cityname}"></span><span th:text="${productorders.areaname}"></span><span th:text="${productorders.proordStreet}"></span>
+                            <span th:text="${productorders.proordMessrs}"></span>收&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;联系电话：<span th:text="${productorders.proordPhone!=null?productorders.proordPhone:productorders.proordTel}"></span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="mod_item mod_invoice">
+        </div>
+        <div class="mod_item mod_confim">
+            <h2 class="mod_item_hd">产品信息</h2>
+            <div class="mod_item_bd">
+                <div class="cart_main">
+                    <div class="cart_thead">
+                        <div class="column c_goods">货品</div>
+                        <div class="column c_price">单价（元）</div>
+                        <div class="column c_quantity">数量</div>
+                        <div class="column c_sum">金额（元）</div>
+                        <div class="column c_price" style="margin-left: 80px;">运费（元）</div>
+                    </div>
+                    <div class="cart_list">
+                        <div class="cart_item">
+                            <div class="cart_tbody" th:each="producersMain:${producersMainList}">
+                                <div class="cart_tbody_hd"  >
+                                    卖家：<a href="javascript:void(0)" th:text="${producersMain.comname}"></a>
+                                </div>
+                                    <div class="cart_tbody_bd clearfix sumPrice">
+                                        <div class="column c_goods">
+                                            <div class="pic"><a href="javascript:void(0)"><img th:src="${'htttp://114.215.80.184:10080'+producersMain.path}" /></a></div>
+                                            <div class="decs">
+                                                <h3 class="p_name"><a href="javascript:void(0)" class="weblink" th:text="${producersMain.productname}"></a></h3>
+                                            </div>
+                                        </div>
+                                        <div class="column c_price ordersPrice" ><span class="numb price"  th:text="${producersMain.promainActualprice}"></span></div>
+                                        <div class="column c_quantity">
+                                            <div class="quantity_form" th:text="${producersMain.promainAmount}">
+                                            </div>
+                                        </div>
+                                        <div class="column c_sum"><span class="numb jine" th:text="${producersMain.jine}"></span></div>
+                                        <div class="column c_post  control-group" th:if="${producersMain.promainFreight!=0}" >
+                                          <span class="numb price" th:text="${producersMain.promainFreight+'元'}"></span>
+                                        </div>
+                                        <div class="column c_post " th:if="${producersMain.promainFreight==0}">
+                                           <span >卖方承担</span>
+                                        </div>
+                                    </div>
+
+
+                                <div class="cart_tbody_bd clearfix sumPrice" th:each="accProduct:${producersMain.productoracc}">
+                                    <div class="column c_goods">
+                                        <div class="pic">配件：<a href="javascript:void(0)"><img th:src="${'htttp://114.215.80.184:10080'+accProduct.accorderspath}"/></a></div>
+                                        <div class="decs">
+                                            <h3 class="p_name"><a href="javascript:void(0)" class="weblink" th:text="${accProduct.accordersname}"></a></h3>
+                                        </div>
+                                    </div>
+                                    <div class="column c_price ordersPrice" ><span class="numb price"  th:text="${accProduct.accordActualprice}"></span></div>
+                                    <div class="column c_quantity">
+                                        <div class="quantity_form" th:value="${accProduct.accordAmount}">
+                                        </div>
+                                    </div>
+                                    <div class="column c_sum"><span class="numb jine" th:text="${accProduct.accordersjie}"></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  <!--  <div class="cart_expand clearfix">
+                        <div class="message">
+                            <label for="inpt_message" class="label">给卖家留言：</label>
+                            <input type="text" class="inpt"  name="message" id="inpt_message" data-tips="用户输入内容后添加类名：inpt_focus" />
+                        </div>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

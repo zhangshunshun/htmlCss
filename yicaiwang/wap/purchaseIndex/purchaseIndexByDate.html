@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	  xmlns:th="http://www.thymeleaf.org"
+	  layout:decorator="foreground/layout">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=8" />
+	<title>采购指数详情</title>
+	<script type="text/javascript" src="../../../static/js/highcharts/highcharts.js"></script>
+	<script type="text/javascript" src="../../../static/js/highcharts/highcharts-more.js"></script>
+	<script type="text/javascript" src="../../../static/js/highcharts/themes/grid.js"></script>
+
+	<script>
+		function getMonthNumber(date1, date2) {
+			//默认格式为"20030303",根据自己需要改格式和方法
+			var year1 = date1.substr(0, 4);
+			var year2 = date2.substr(0, 4);
+			var month1 = date1.substr(5, 2);
+			var month2 = date2.substr(5, 2);
+			var len = (year2 - year1) * 12 + (month2 - month1);
+			return len;
+		}
+
+		$(function(){
+			if($("#userId").val()==''){
+				$("#removeAttention").hide();
+				$("#care").hide();
+			}
+
+			var paddNum = function(num){
+				num += "";
+				return num.replace(/^(\d)$/,"0$1");
+			}
+			var myDate=new Date();
+			myDate.setMonth(myDate.getMonth()-11);
+			var myDate = myDate.getFullYear() + "-" + (paddNum(myDate.getMonth()+1));
+			$("#beginTime").val(myDate);
+
+			var newDate=new Date();
+			var newDate = newDate.getFullYear() + "-" + (paddNum(newDate.getMonth()+1));
+			$("#endTime").val(newDate);
+			startPurchaseIndex();
+		});
+
+		function startPurchaseIndex (){
+			var index = "banlance";
+			var beginTime = $("#beginTime").val();
+			var endTime = $("#endTime").val();
+			if(beginTime == '' || endTime == '' ){
+				$.alert('查询时间不能为空，请核查！');
+				return ;
+			}
+			if(beginTime>endTime){
+				$.alert('起始时间不能大于结束时间！');
+				return ;
+			}
+			if(getMonthNumber(beginTime,endTime)>11){
+				$.alert('查询时间范围不能超过一年！');
+				return ;
+			}
+
+			$.ajax({
+				url: "/purchaseIndex/purchaseByDate.json?index="+index,
+				data : {beginTime:beginTime,endTime:endTime,productId:$("#productId").val()},
+				success : function(data) {
+					if(data.reportMap.series==''){
+						var str = '<h2><span style="color: red"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;查询无数据!</span></h2>'
+						$("#container").html(str);
+
+					}else {
+						chart = new Highcharts.Chart({
+							chart: {
+								renderTo: 'container',
+								type: 'line'
+							},
+							credits: {
+								enabled: false
+							},
+							title: {
+								text: '产品价格趋势图'
+							},
+							xAxis: {
+								categories: data.reportMap.categories,
+								tickInterval: data.reportMap.step
+							},
+							yAxis: [{
+//							minorTickInterval: 'auto',
+								lineColor: '#000',
+								lineWidth: 1,
+								tickWidth: 1,
+								tickColor: '#000',
+								title: {
+									text: data.reportMap.ytitle,
+									style: {
+										color: '#333',
+										fontWeight: 'bold',
+										fontSize: '12px',
+										fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+									}
+								},
+								labels: {
+									style: {
+										color: '#000',
+										font: '11px Trebuchet MS, Verdana, sans-serif'
+									}
+								},
+								min: 0
+							}],
+							plotOptions: {
+								line: {
+									dataLabels: {
+										enabled: true
+									}
+								}
+							},
+							tooltip: {
+								formatter: function () {
+									return '<b>' + this.series.name + '</b><br/>'
+											+ this.x + ': ' + formatNumber(this.y);
+								}
+							},
+							series: data.reportMap.series
+						});
+					}
+				}
+			});
+		}
+
+		//关注产品的ajax
+		function care(type,id){
+			$("#loadingDiv").show();
+			$.ajax({
+				url:"/attention/add.json",
+				type:"POST",
+				data: {
+					attType:type,
+					attGenre:id
+				},
+				dataType:"json",
+				success:function(data){
+					if(data.flag){
+						$.alert("关注成功");
+						$('#care').hide();
+						$('#removeAttention').show();
+						$("#loadingDiv").hide();
+					}else{
+						$.alert("操作失败了，"+data.msg);
+						$("#loadingDiv").hide();
+					}
+				},
+				error:function(a,b,c){
+					$.alert("数据连接异常");
+					$("#loadingDiv").hide();
+				}
+			})
+		}
+
+		//取消关注
+		function removeAttention(type,productId){
+			$("#loadingDiv").show();
+			$.ajax({
+				url:"/purchaseIndex/removeAttention.json",
+				type:"POST",
+				data:{
+					type:type,
+					productId:productId
+				},
+				dataType:"json",
+				success:function(data){
+					if(data.flag){
+						$.alert("取消成功");
+						$('#removeAttention').hide();
+						$('#care').show();
+						$("#loadingDiv").hide();
+					}else{
+						$.alert("操作失败了，"+data.msg);
+						$("#loadingDiv").hide();
+					}
+				},
+				error:function(a,b,c){
+					$.alert("数据连接异常");
+					$("#loadingDiv").hide();
+				}
+			})
+		}
+	</script>
+	<style>
+		.quotaData_row .bd {
+			border: 0px solid #e3e3e3;
+		}
+		.btns{border:1px solid #d4d4d4; display:inline-block;width:100px; height:24px; line-height:25px;vertical-align:top; text-align:center; white-space:nowrap;word-wrap:normal;margin-left:10px;border-radius:2px;}
+
+	</style>
+
+</head>
+<body>
+<div id="content" layout:fragment="content">
+<input type="hidden" id="productId" th:value="${productId}" />
+
+<div class="crumbs"><a href="/">首页</a>
+	<span class="gt">&gt;</span><a href="/purchaseIndex/toPurchaseIndex.html">采购指数</a>
+	<span class="gt">&gt;</span><span class="current_page">采购指数详情</span>
+</div>
+<div class="quotaData_row">
+	<div class="hd">
+		<h2 class="title">采购指数</h2>
+	</div>
+	<div class="hd_tab data_tab">
+		<a href="javascript:void(0)" class="current">按时间看</a>
+		<a th:href="@{/purchaseIndex/toPurchaseByArea.htm(productId=${productId},productName=${productName})}">按地域看</a>
+	</div>
+	<div class="bd">
+		<h1 class="page_title">产品价格趋势图</h1>
+
+		<div class="info_box">
+			<span class="col"><strong class="keyName">产品名称：</strong>  <span th:text="${productName}"></span>
+			</span>
+
+			<span class="col"><strong class="keyName">价格单位：</strong>元/台
+				<input type="hidden" id="userId" th:value="${userId}" />
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span id="care" th:class="${flag == true?'hidden':''}"><a href="javascript:void(0)"
+								th:onclick="'care(3,'+${productId}+')'" class="btns" style="color:#333; ">+关注该指数</a></span>
+				<span id="removeAttention" th:class="${flag == true?'':'hidden'}"><a href="javascript:void(0)"
+								th:onclick="'removeAttention(3,'+${productId}+')'" class="btns" style="color:#333; ">-取消关注</a></span>
+
+			</span>
+			<span class="date_col col"><strong class="keyName">时&nbsp;&nbsp;&nbsp;&nbsp;间：</strong>
+				<input type="text" class="input_txt input_date" name="beginTime" id="beginTime" th:value="${beginTime}"  onfocus="WdatePicker({dateFmt:'yyyy-MM'})" />
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span>至</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<input type="text" class="input_txt input_date" name="endTime" id="endTime" th:value="${endTime}"  onfocus="WdatePicker({dateFmt:'yyyy-MM'})" />
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<a href="javascript:startPurchaseIndex();" class="btn_key">查询</a></span>
+		</div>
+
+	</div>
+	<br/><br/><br/><br/>
+	<div class="bd">
+        <div id="container"></div>
+
+	</div>
+
+</div>
+
+
+</div>
+</body>
+</html>

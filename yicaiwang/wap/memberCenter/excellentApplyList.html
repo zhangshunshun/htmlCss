@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>优秀产品申请记录</title>
+
+    <script>
+        $(function(){
+            var options = {
+                currentPage: $("[name=page]").val(),
+                totalPages: $("[name=totalPage]").val(),
+                onPageClicked:function(e,type,page){
+                    $("[name=page]").val(page);
+                    $("#searchForm").submit();
+                }
+            };
+            $('#page').bootstrapPaginator(options);
+
+
+        });
+    </script>
+</head>
+<body>
+
+<div id="content" layout:fragment="content">
+    <div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">优秀产品申请记录</span></div>
+    <div class="mod_box notice_mod">
+        <form id="searchForm" th:action="@{/memberCenter/excellentApplyList.html}" method="post">
+            <input type="hidden" name="page" th:value="${page.page}" />
+            <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+            <div class="hd">
+                <h2 class="title">优秀产品申请记录</h2>
+            </div>
+            <div class="bd">
+                    <ul class="info_list">
+                        <li>
+                            <span style="display:inline-block;width:70%;padding-left: 8%;font-weight:bold;">产品名称</span>
+                            <span style="display:inline-block;width:14%;font-weight:bold;">申请时间</span>
+                            <span style="display:inline-block;font-weight:bold;">进度</span>
+                        </li>
+                        <li th:each="a:${page.result}">
+                            <i class="drop"></i>
+                            <a th:href="@{/memberCenter/excellentProductApplication.html(id=${a.id})}" th:text="${a.productname}">一起仿制药专利纠纷引发的故事</a>
+                            <span class="time" style="right:150px;" th:text="${#dates.format(a.exceCreatedate,'yyyy-MM-dd HH:mm:ss')}">2013-05-08 17:25:20</span>
+                            <span style="width:100px;position: absolute;top:0px;right:-10px;padding:0px;" th:if="${a.exceState==0}" >未处理</span>
+                            <span style="width:100px;position: absolute;top:0px;right:-10px;padding:0px;" th:if="${a.exceState==1}" >通过</span>
+                            <span style="width:100px;position: absolute;top:0px;right:-10px;padding:0px;" th:if="${a.exceState==2}" >未通过</span>
+                        </li>
+                    </ul>
+                <div id="page"></div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

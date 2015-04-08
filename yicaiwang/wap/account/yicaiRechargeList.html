@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	  xmlns:th="http://www.thymeleaf.org"
+	  layout:decorator="foreground/layout-simple">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=8" />
+	<title>现金交易明细</title>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			var options = {
+				currentPage: $("[name=page]").val(),
+				totalPages: $("[name=totalPage]").val(),
+				onPageClicked:function(e,type,page){
+					$("[name=page]").val(page);
+					$("#searchForm").submit();
+				}
+			};
+			$('#page').bootstrapPaginator(options);
+		});
+		function formatDate(date,format){
+			var paddNum = function(num){
+				num += "";
+				return num.replace(/^(\d)$/,"0$1");
+			}
+			//指定格式字符
+			var cfg = {
+				yyyy : date.getFullYear() //年 : 4位
+				,yy : date.getFullYear().toString().substring(2)//年 : 2位
+				,M  : date.getMonth() + 1  //月 : 如果1位的时候不补0
+				,MM : paddNum(date.getMonth() + 1) //月 : 如果1位的时候补0
+				,d  : date.getDate()   //日 : 如果1位的时候不补0
+				,dd : paddNum(date.getDate())//日 : 如果1位的时候补0
+				,h : date.getHours()  //时
+				,hh : paddNum(date.getHours())  //时
+				,m : date.getMinutes() //分
+				,mm : paddNum(date.getMinutes()) //分
+				,s  : date.getSeconds()   //秒 : 如果1位的时候不补0
+				,ss : paddNum(date.getSeconds())//秒 : 如果1位的时候补0
+			}
+			format || (format = "yyyy-MM-dd hh:mm:ss");
+			return format.replace(/([a-z])(\1)*/ig,function(m){return cfg[m];});
+		}
+		function getTime(type){
+			var now=new Date();
+			if(type==1){
+				now.setDate(now.getDate());
+				now.setHours(0);
+				now.setMinutes(0);
+				now.setSeconds(0);
+				$("#begin").val(formatDate(now));
+			}else if(type==2){
+				now.setDate(now.getDate()-7);
+				now.setHours(0);
+				now.setMinutes(0);
+				now.setSeconds(0);
+				$("#begin").val(formatDate(now));
+			}else if(type==3){
+				var myDate=new Date();
+				myDate.setMonth(myDate.getMonth()-1);
+				var newDate = myDate.getFullYear() + "-" + (myDate.getMonth()+1) + "-" + myDate.getDate()+" "+myDate.getHours()+":"+ myDate.getMinutes()+":"+myDate.getSeconds();
+				$("#begin").val(newDate);
+			}else if(type==4){
+				var myDate=new Date();
+				myDate.setMonth(myDate.getMonth()-3);
+				var newDate = myDate.getFullYear() + "-" + (myDate.getMonth()+1) + "-" + myDate.getDate()+" "+myDate.getHours()+":"+ myDate.getMinutes()+":"+myDate.getSeconds();
+				$("#begin").val(newDate);
+			}
+			var nowEnd=new Date();
+			nowEnd.setDate(nowEnd.getDate());
+			nowEnd.setHours(nowEnd.getDate());
+			nowEnd.setMinutes(nowEnd.getMinutes());
+			nowEnd.setSeconds(nowEnd.getSeconds());
+			$("#end").val(formatDate(nowEnd));
+		}
+	</script>
+	<style>
+		.userinfo .baseinfo .info .btn.disabled{
+			color:#999;background:#F9F9F9;
+		}
+	</style>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+<div class="crumbs">当前位置: <a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">我的金融服务</span></div>
+<div class="member_right">
+	<div class="userinfo">
+		<div class="baseinfo">
+			<div class="avatar"><a href="javascript:void(0)"><img src="../../../static/thumb/thumb_103x103.jpg" /></a>
+				<a href="/memberCenter/accountInfo.html" class="set">账户信息设置</a></div>
+			<div class="info">
+				<h3 class="title"><span th:text="${companyName.title}"></span></h3>
+				<p>认证信息：
+					<span th:if="${!isCredit and !isGold}">普通供应商</span>
+					<span th:if="${isCredit}"><i></i>诚信供应商</span>
+					<span th:if="${isGold}"><i class="icon2"></i>金牌供应商</span>
+				</p>
+				<p>
+					<a class="btn" href="/company/apply.html?t=1" th:if="${!isCredit}">申请诚信认证</a>
+					<a class="btn disabled" href="javascript:void(0)" th:if="${isCredit}">申请诚信认证</a>
+					<a class="btn" href="/company/apply.html?t=2" th:if="${!isGold}">申请金牌认证</a>
+					<a class="btn disabled" href="javascript:void(0)" th:if="${isGold}">申请金牌认证</a>
+				</p>
+			</div>
+		</div>
+		<div class="assets">
+			<h2 class="tit">现金余额</h2>
+			<div class="amount"><span class="num"><i><span th:text="${account.balance}"></span></i></span>元</div>
+			<div class="btnMod">
+				<a href="/account/toCashRecharge.htm" class="btn">充 值</a>
+				<a href="/account/toCashExtract.htm" class="btn">提 现</a>
+				<a href="/account/cashRechargeList.htm" class="link">【明细】</a>
+			</div>
+		</div>
+		<div class="assets">
+			<h2 class="tit">医采币</h2>
+			<div class="amount"><span class="num"><i><span th:text="${account.yicaiBalance}"></span></i></span>枚 <br /> <span class="f12">1医采币=1RMB</span></div>
+			<div class="btnMod">
+				<a href="/transaction/toYiCaiRecharge.htm" class="btn">充 值</a>
+				<a href="/transaction/list.htm" class="link">【发票】</a>
+				<a href="/transaction/yicaiRechargeList.htm" class="link">【明细】</a>
+			</div>
+		</div>
+	</div>
+	<div class="mod_box bill_mode">
+		<div class="hd">
+			<h3 class="title">医采币交易明细</h3>
+		</div>
+		<div class="bd">
+			<form id="searchForm" th:action="@{/transaction/yicaiRechargeList.htm}" method="post">
+				<input type="hidden" name="page" th:value="${page.page}" />
+				<input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+				<div class="hd_select">
+					<div class="select_box selectLb_box"><strong class="keyName">资金流向 :</strong>
+						<label class="sel_box"><input type="radio" name="type" value="4"/>收入</label>
+						<label class="sel_box"><input type="radio" name="type" value="5"/>支出</label></div>
+				</div>
+				<div class="hd_select">
+					<div class="select_box"><strong class="keyName">交易时间 :</strong>
+						<input type="text" id="begin" class="input_txt" name="startTime"
+							   th:value="${startTime}" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"/> 到
+						<input type="text" id="end" class="input_txt"  name="endTime"
+							   th:value="${endTime}" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"/>
+					</div>
+					<div class="select_box selectLb_box">
+						[&nbsp;
+						<a href="javascript:getTime(1);" class="sel_box">今天</a>
+						&nbsp;&nbsp;
+						<a href="javascript:getTime(2);" class="sel_box">最近一星期</a>
+						&nbsp;&nbsp;
+						<a href="javascript:getTime(3);" class="sel_box">最近一个月</a>
+						&nbsp;&nbsp;
+						<a href="javascript:getTime(4);" class="sel_box">最近三个月</a>
+						&nbsp;]
+					</div>
+					<div class="select_box selectBt_box">
+						<input type="submit" class="btn_weak" style="cursor: pointer" value="查询" />
+					</div>
+				</div>
+			</form>
+
+			<table class="table_row bill_table">
+				<thead>
+					<tr>
+						<th>流水号</th>
+						<th>创建日期</th>
+						<th>交易类型</th>
+						<th>收入/支出</th>
+						<th>备注</th>
+						<th>交易是否成功</th>
+					</tr>
+				</thead>
+				<tbody>
+				<tr th:each="a:${page.result}">
+					<td th:text="${a.payOrderCode}"></td>
+					<td th:text="*{#dates.format(a.createDate,'yyyy-MM-dd HH:mm:ss')}" ></td>
+					<td th:if="${a.transactionType==4}">现金充值</td>
+					<td th:if="${a.transactionType==4}"><span class="status_subtract" th:text="'+'+${a.fee}"></span></td>
+
+					<td th:if="${a.transactionType==5}">现金提取</td>
+					<td th:if="${a.transactionType==5}"><span class="status_add" th:text="'-'+${a.fee}"></span></td>
+
+
+					<td><span class="state_disble" th:text="${a.note}"></span></td>
+					<td th:if="${a.isPayment==1}"><span class="state_disble" >已成功</span></td>
+					<td th:if="${a.isPayment==0}"><span class="state_disble">未成功</span></td>
+				</tr>
+				</tbody>
+			</table>
+
+			<div id="page"></div>
+		</div>
+	</div>
+</div>
+<div class="member_left">
+	<ul class=" member_menu">
+		<li><h3 class="menu_hd"><a href="/memberCenter/index.html">会员中心</a></h3></li>
+		<li>
+			<h3 class="menu_hd"><i class="minus_ico"></i><a href="javascript:void(0)">常用功能</a></h3>
+			<div class="sub_menu">
+				<a href="/memberCenter/myBuy.html">我要买</a>
+				<a href="/memberCenter/mySell.html">我要卖</a>
+				<a href="">发布新产品</a>
+				<a href="/product/myProduct.html ">我发布的产品</a>
+				<a href="/supply/findSupplyByCompanyId.html ">我发布的供应信息</a>
+				<a href="/supply/findPurchaseByCompanyId.html ">我发布的求购信息</a>
+				<a href="/memberCenter/excellentProductApplication.html">优秀产品认证</a>
+				<a href="/memberCenter/excellent3DProductApplication.html">3D产品认证</a>
+				<a href="javascript:void(0)">企业诚信认证</a>
+				<a href="/evaluate/evaluateList.html">我做的评价</a>
+			</div>
+		</li>
+		<li>
+			<h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">特色服务</a></h3>
+			<div class="sub_menu" style="display: none;">
+				<a href="javascript:void(0)">产品质量评估</a>
+				<a href="/expertService/list.html">专家库</a>
+				<a href="/financialProduct/list.html">金融服务</a>
+			</div>
+		</li>
+		<li>
+			<h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">我的关注</a></h3>
+			<div class="sub_menu" style="display: none;">
+				<a href="/memberCenter/findMyAttentionProduct.html">我关注的产品</a>
+				<a href="/memberCenter/findMyAttentionCompany.html">我关注的企业</a>
+				<a href="/memberCenter/findMyAttentionPurchase.html">我关注的价格指数</a>
+			</div>
+		</li>
+		<li>
+			<h3 class="menu_hd"><i class="plus_ico"></i><a href="">站内信</a></h3>
+			<div class="sub_menu" style="display: none;">
+				<a href="/memberCenter/receiverEmail.html">我的收件箱</a>
+				<a href="/memberCenter/sendEmail.html">我的发件箱</a>
+				<a href="/memberCenter/writerEmail.html">发送消息</a>
+			</div>
+		</li>
+		<li>
+			<h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">客户服务</a></h3>
+			<div class="sub_menu" style="display: none;">
+				<a href="javascript:void(0)">投诉&amp;举报</a>
+				<a href="/userNoteType/list.html">医采币发票申请</a>
+				<a href="javascript:void(0)">联系客服</a>
+			</div>
+		</li>
+	</ul>
+</div>
+</div>
+</body>
+</html>

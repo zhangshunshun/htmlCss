@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>专家详细</title>
+    <script>
+        $(function(){
+            $('.expert_cancel').click(function(){
+                $.confirm('确定要取消关注吗？',function(){
+                    $.ajax({
+                        url:'/expertService/cancel.json',
+                        data:{expertId:$('#hidden-id').val()},
+                        dataType:'json',
+                        success:function(res){
+                            if(res.suc){
+                                $('.expert_cancel').hide();
+                                $('.expert_follow').show();
+                            }else{
+                                $.alert('系统异常，请稍后再试！');
+                            }
+                        }
+                    });
+                });
+            });
+            $('.expert_follow').click(function(){
+                $.ajax({
+                    url:'/expertService/follow.json',
+                    data:{expertId:$('#hidden-id').val()},
+                    dataType:'json',
+                    success:function(res){
+                        if(res.suc){
+                            $.alert('你成功关注了该专家！',function(){
+                                $('.expert_cancel').show();
+                                $('.expert_follow').hide();
+                            });
+                        }else{
+                            $.alert('系统异常，请稍后再试！');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="crumbs"><a href="/">首页</a><span class="gt">&gt;</span><a href="/expertService/list.html">专家库</a><span class="gt">&gt;</span><span class="current_page">专家详细</span></div>
+    <div class="mod_box expert_mod" th:object="${expert}">
+        <input id="hidden-id" type="hidden" th:value="*{id}"/>
+        <div class="hd">
+            <h2 class="title">优秀专家</h2>
+        </div>
+        <div class="bd clearfix">
+            <div class="expert_mod_left">
+                <div class="expert_photo_detail">
+                    <div class="expert_photo">
+                        <img class="img_photo" th:if="*{#strings.isEmpty(expimage)}" th:src="@{/static/thumb/thumb_120x120.jpg}" alt=""/>
+                        <img class="img_photo" th:if="*{not #strings.isEmpty(expimage)}" th:src="*{expimage2}" alt=""/>
+                    </div>
+                    <div class="expert_detail">
+                        <p>姓名：<span th:text="*{expname}">张XX</span></p>
+                        <p>邮箱：<span th:text="*{expemail}">zhang@163.com</span></p>
+                        <p>手机号：<span th:text="*{expphone}">12121212124</span></p>
+                    </div>
+                    <a class="btn_key btn_weak expert_cancel" th:style="${isFollow?'display:block;':'display: none;'}" href="javascript:void(0)">取消关注</a>
+                    <a class="btn_key expert_follow" th:style="${isFollow?'display:none;':'display: block;'}" href="javascript:void(0)">+关注</a>
+                </div>
+            </div>
+            <div class="expert_mod_right">
+                <h2 class="expert_title">个人信息</h2>
+                <div class="clearfix">
+                    <div class="introduction_left">所属机构：</div>
+                    <div class="introduction_right" th:text="${expertClassify.claname}">医院</div>
+                </div>
+                <div class="clearfix">
+                    <div class="introduction_left">工作地：</div>
+                    <div class="introduction_right" th:text="*{expinfirmary}">北京第一人民医院</div>
+                </div>
+                <div class="clearfix">
+                    <div class="introduction_left">所属科室：</div>
+                    <div class="introduction_right" th:text="*{expsection}">心外科</div>
+                </div>
+                <h2 class="expert_title">专长</h2>
+                <div class="clearfix">
+                    <div class="introduction_left">擅  长：</div>
+                    <div class="introduction_right" th:text="*{expspeciality}">反复呼吸道感染，慢性鼻炎</div>
+                </div>
+                <h2 class="expert_title">个人简介</h2>
+                <div class="clearfix">
+                    <div class="introduction_left">介  绍：</div>
+                    <div class="introduction_right" th:text="*{expsynopsis}">1977年毕业于上海XX大学医疗系专业。从事外科临床科研工作三十余年，有丰富的经验1977年毕业于上海XX大学医疗系专业。从事外科临床科研工作三十余年，有丰富的经验。1977年毕业于上海XX大学医疗系专业。从事外科临床科研工作三十余年，有丰富的经验。1977年毕业于上海XX大学医疗系专业。从事外科临床科研工作三十余年，有丰富的经验。1977年毕业于上海XX大学医疗系专业。从事外科临床科研工作三十余年，有丰富的经验</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

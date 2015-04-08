@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="../../../static/newcss/common.css" th:href="@{/static/newcss/common.css}" rel="stylesheet" type="text/css" />
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>供应详情</title>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+<div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">我要买</span></div>
+    <div class="head_content_1200">
+
+        <div class="gc_right">
+            <div class="gc_right_top">供应详细信息</div>
+
+            <ul class="gc_ul">
+                <li class="hover">
+                    <label class="keyName" >企业名称&nbsp;: </label>
+                    <a href="" class="gc_btna">联络供应商</a>
+                    <div class="filed_con">
+                        <span th:text="${supply.companyName}"></span>
+                    </div>
+                </li>
+                <li>
+                    <label class="keyName" >标题&nbsp;: </label>
+
+                    <div class="filed_con" >
+                        <span th:text="${supply.title}"></span>
+                    </div>
+                </li>
+                <li  class="hover">
+                    <label class="keyName" >产品名称&nbsp;:</label>
+
+                    <div class="filed_con">
+                        <span th:text="${supply.productName}"></span>
+                    </div>
+                </li>
+                <li>
+                    <label class="keyName" >供货数量&nbsp;: </label>
+
+                    <div class="filed_con">
+                        <span th:text="${supply.total}"></span>
+                    </div>
+                </li>
+                <li  class="hover">
+                    <label class="keyName" >计量/单位&nbsp;: </label>
+
+                    <div class="filed_con">
+                        <span th:text="${supply.units}"></span>
+                    </div>
+                </li>
+                <li>
+                    <label class="keyName" >目标价格&nbsp;: </label>
+
+                    <div class="filed_con">
+                        <span th:text="${supply.price}"></span>
+                    </div>
+                </li>
+                <li  class="hover">
+                    <label class="keyName" >补充说明&nbsp;:</label>
+
+                    <div class="filed_con">
+                        <span th:utext="${supply.desc}"></span>
+                    </div>
+                </li>
+                <li>
+
+                </li>
+
+                <li  class="hover">
+                    <label class="keyName" >联系人&nbsp;: </label>
+
+                    <div class="filed_con">
+                        <span th:text="${supply.contacts}"></span>
+                    </div>
+                </li>
+                <li>
+                    <label class="keyName" >联系电话&nbsp;: </label>
+
+                    <div class="filed_con">
+                        <span th:text="${supply.telephone}"></span>
+                    </div>
+                </li>
+                <li  class="hover">
+                    <label class="keyName" >发货期&nbsp;:</label>
+
+                    <div class="filed_con">
+                        <span th:text="${supply.shipDate}"></span>
+                    </div>
+                </li>
+                <li>
+                    <label class="keyName" >起订量&nbsp;: </label>
+
+                    <div class="filed_con">
+                        <span th:text="${supply.num}"></span>
+                    </div>
+                </li>
+                <li  class="hover">
+                    <label class="keyName" >供货有效期&nbsp;:</label>
+
+                    <div class="filed_con">
+                        <span th:text="${supply.effectiveDate}"></span>
+                    </div>
+                </li>
+                <li>
+
+                </li>
+            </ul>
+
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

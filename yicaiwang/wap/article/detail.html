@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title th:text="${type.name}+'详细'">培训咨询详细</title>
+    <script>
+        $(function(){
+        });
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="crumbs"><a href="/">首页</a><span class="gt">&gt;</span><span class="current_page" th:text="${type.name}">培训咨询</span></div>
+    <div class="detail_main">
+        <div class="notice_detail">
+            <div class="hd">
+                <h1 class="page_title" th:text="${article.title}">关于商请开展“公立医院改革发展基金”试点工作的函（政府）</h1>
+                <div class="title_info"><span class="time" th:text="${#dates.format(article.createDate,'yyyy-MM-dd HH:mm:ss')}">2014-06-16 17:09:16</span></div>
+            </div>
+            <div class="bd">
+                <p id="article-content" class="fix" th:utext="${article.content}">最近，国务院常务会议要求重点推进六大领域消费，养老服务占了一席之地。在去年，国务院印发了《关于加快发展养老服务业最近，国务院常务会议要求重点推进六大领域消费，养老服务占了一席之地。在去年，国务院印发了《关于加快发展养老服务业</p>
+            </div>
+        </div>
+    </div>
+    <div class="detail_aside">
+        <div class="advert_box"><a href="javascript:void(0)" class="thumb"><img th:src="@{/static/thumb/400x350.jpg}" alt=""/></a></div>
+        <div class="advert_box"><a href="javascript:void(0)" class="thumb"><img th:src="@{/static/thumb/400x350.jpg}" alt=""/></a></div>
+        <div class="advert_box"><a href="javascript:void(0)" class="thumb"><img th:src="@{/static/thumb/400x350.jpg}" alt=""/></a></div>
+    </div>
+</div>
+</body>
+</html>

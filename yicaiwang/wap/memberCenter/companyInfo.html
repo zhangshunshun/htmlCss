@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>我的公司信息</title>
+    <link href="../../../static/css/ace.min.css" th:href="@{/static/css/ace.min.css}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+
+        //图片上传
+        //js本地图片预览，兼容ie[6-9]、火狐、Chrome17+、Opera11+、Maxthon3
+        function PreviewImage(fileObj, imgPreviewId, divPreviewId) {
+            var allowExtention = ".jpg,.bmp,.gif,.png"; //允许上传文件的后缀名document.getElementById("hfAllowPicSuffix").value;
+            var extention = fileObj.value.substring(fileObj.value.lastIndexOf(".") + 1).toLowerCase();
+            var browserVersion = window.navigator.userAgent.toUpperCase();
+            if (allowExtention.indexOf(extention) > -1) {
+                if (fileObj.files) {//HTML5实现预览，兼容chrome、火狐7+等
+                    if (window.FileReader) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            document.getElementById(imgPreviewId).setAttribute("src", e.target.result);
+                        }
+                        reader.readAsDataURL(fileObj.files[0]);
+                    } else if (browserVersion.indexOf("SAFARI") > -1) {
+                        alert("不支持Safari6.0以下浏览器的图片预览!");
+                    }
+                } else if (browserVersion.indexOf("MSIE") > -1) {
+                    if (browserVersion.indexOf("MSIE 6") > -1) {//ie6
+                        document.getElementById(imgPreviewId).setAttribute("src", fileObj.value);
+                    } else {//ie[7-9]
+                        fileObj.select();
+                        if (browserVersion.indexOf("MSIE 9") > -1)
+                            fileObj.blur(); //不加上document.selection.createRange().text在ie9会拒绝访问
+                        var newPreview = document.getElementById(divPreviewId + "New");
+                        if (newPreview == null) {
+                            newPreview = document.createElement("div");
+                            newPreview.setAttribute("id", divPreviewId + "New");
+                            newPreview.style.width = document.getElementById(imgPreviewId).width + "px";
+                            newPreview.style.height = document.getElementById(imgPreviewId).height + "px";
+                            newPreview.style.border = "solid 1px #d2e2e2";
+                        }
+                        newPreview.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='scale',src='" + document.selection.createRange().text + "')";
+                        var tempDivPreview = document.getElementById(divPreviewId);
+                        tempDivPreview.parentNode.insertBefore(newPreview, tempDivPreview);
+                        tempDivPreview.style.display = "none";
+                    }
+                } else if (browserVersion.indexOf("FIREFOX") > -1) {//firefox
+                    var firefoxVersion = parseFloat(browserVersion.toLowerCase().match(/firefox\/([\d.]+)/)[1]);
+                    if (firefoxVersion >= 7) {//firefox7.0+
+                        document.getElementById(imgPreviewId).setAttribute("src", window.URL.createObjectURL(fileObj.files[0]));
+                    } else {//firefox7以下版本
+                        document.getElementById(imgPreviewId).setAttribute("src", fileObj.files[0].getAsDataURL());
+                    }
+                } else {
+                    document.getElementById(imgPreviewId).setAttribute("src", fileObj.value);
+                }
+            } else {
+                alert("仅支持" + allowExtention + "为后缀名的文件!");
+                fileObj.value = ""; //清空选中文件
+                if (browserVersion.indexOf("MSIE") > -1) {
+                    fileObj.select();
+                    document.selection.clear();
+                }
+                fileObj.outerHTML = fileObj.outerHTML;
+            }
+            return fileObj.value;    //返回路径
+        }
+
+
+        $(function(){
+
+            var imgUrl=$("#hidden-headPath").val();
+            if(imgUrl==""){
+                imgUrl="没有文件 ...";
+            }
+            $('#edit-headPath').ace_file_input({
+                no_file: imgUrl,
+                btn_choose: 'Choose',
+                btn_change: 'Change',
+                droppable: false,
+                onchange: null,
+                thumbnail: false//| true | large
+//                whitelist:'xls|xlsx'
+                //blacklist:'exe|php'
+                //onchange:''
+            });
+
+            var imgUrl=$("#hidden-headPath2").val();
+            if(imgUrl==""){
+                imgUrl="没有文件 ...";
+            }
+            $('#edit-headPath2').ace_file_input({
+                no_file: imgUrl,
+                btn_choose: 'Choose',
+                btn_change: 'Change',
+                droppable: false,
+                onchange: null,
+                thumbnail: false//| true | large
+//                whitelist:'xls|xlsx'
+                //blacklist:'exe|php'
+                //onchange:''
+            });
+
+            var imgUrl=$("#hidden-headPath3").val();
+            if(imgUrl==""){
+                imgUrl="没有文件 ...";
+            }
+            $('#edit-headPath3').ace_file_input({
+                no_file: imgUrl,
+                btn_choose: 'Choose',
+                btn_change: 'Change',
+                droppable: false,
+                onchange: null,
+                thumbnail: false//| true | large
+//                whitelist:'xls|xlsx'
+                //blacklist:'exe|php'
+                //onchange:''
+            });
+
+
+
+
+            initProvinceSelect();
+            //货币种类设置值
+            var hidden_capital =$("#hidden_capital").val();
+            $("#select-list").val(hidden_capital);
+            //公司类型设置值
+            var hidden_capital_type =$("#hidden_capital_type").val();
+            $("#company_type").val(hidden_capital_type);
+
+            var imgUrl=$("#hidden-picUrl").val();
+            if(imgUrl==""){
+                imgUrl="没有文件 ...";
+            }else{
+                $("#imgHeadPhoto").attr("src",imgUrl);
+            }
+            $("#btn_key").click(function(){
+                if($("#editcontent").valid()){
+                    $("#editcontent").ajaxSubmit({
+                        type: 'post', // 提交方式 get/post
+                        url: '/memberCenter/updateCompanyInfo.json', // 需要提交的 url
+                        success: function(data) {
+                            $.alert('提交成功！');
+                        }
+                    })
+                }
+            });
+
+            //验证
+
+            $("#editcontent").validate( {
+                checkStart : true,
+                errorElement: 'span',
+                errorClass: 'help-inline',
+                focusInvalid: false,
+                rules : {
+                    legalPhone : {
+                        required: true,
+                        maxlength:11
+                    },
+                    name:{
+                        required: true
+
+                    },
+                    jobTitle:{
+                        required: true
+                    },
+                    address:{
+                        required: true
+                    },
+                    zipCode:{
+                        required: true
+                    },
+                    legalName:{
+                        required: true
+                    },
+                    legalCardno:{
+                        required: true
+                    },
+                    legalMobile:{
+                        required: true
+                    },
+                    legalPhone:{
+                        required: true
+                    },
+                    businessNo:{
+                        required: true
+                    },
+                    businessEffectiveEnd:{
+                        required: true
+                    },
+                    businessAccount:{
+                        required: true
+                    }
+                },
+                messages : {
+                    legalPhone : {
+                        required : "必须填写",
+                        maxlength : "最多输入11个字符"
+                    },
+                    name : {
+                        required : "必须填写"
+                    },
+                    jobTitle : {
+                        required : "必须填写"
+                    },
+                    address : {
+                        required : "必须填写"
+                    },
+                    zipCode:{
+                        required : "必须填写"
+                    },
+                    legalName:{
+                        required: "必须填写"
+                    },
+                    legalCardno:{
+                        required: "必须填写"
+                    },
+                    legalMobile:{
+                        required: "必须填写"
+                    },
+                    legalPhone:{
+                        required: "必须填写",
+                        maxlength:"最多只能11个字符"
+                    },
+                    businessNo:{
+                        required: "必须填写"
+                    },
+                    businessEffectiveEnd:{
+                        required: "必须填写"
+                    },
+                    businessAccount:{
+                        required: "必须填写"
+                    }
+                },
+                highlight: function (e) {
+                    $(e).closest('.filed_con').removeClass('info').addClass('error');
+                }
+            });
+
+
+        });
+
+        // 地区相关
+        function initProvinceSelect(){
+            var province = $("#provinceSelect").val();
+            $.ajax({
+                url: '/area/findProvinceAll.html',
+                type:'POST',
+                dataType:"json",
+                success: function (data) {
+                    var str = [];    str.push('<option value="">------请选择-----</option>');
+                    if(data!=null){
+                        jQuery.each(data,function(i,item){
+                            if(province==item.provinceid){
+                                str.push("<option value="+item.provinceid+" selected="+true+">"+item.province+"</option>");
+                            }else{
+                                str.push("<option value="+item.provinceid+">"+item.province+"</option>");
+                            }
+                        });
+                        $("#province").html(str.join(""));
+                        if(province!=""){
+//                    $("#province").val(""+province+"");
+                            initCity();
+                        }else{
+                            $("#city").attr("disabled", true);
+                            $("#area").attr("disabled", true);
+                        }
+                    }
+                }});
+        }
+        function initCity(){
+            var city =$("#citySelect").val();
+            var proVar = $("#province").val();
+            if(proVar!=''){
+                $("#city").attr("disabled", false);
+                $.ajax({
+                    url: '/area/findCityByProvinceId.html',
+                    data:{provinceId : proVar},
+                    type:'POST',
+                    dataType:"json",
+                    success: function (data) {
+                        if(data!=null){
+                            var str = [];    str.push('<option value="">------请选择-----</option>');
+                            jQuery.each(data,function(i,item){
+                                if(city==item.cityid){
+                                    str.push("<option value="+item.cityid+" selected="+true+">"+item.city+"</option>");
+                                }else{
+                                    str.push("<option value="+item.cityid+">"+item.city+"</option>");
+                                }
+                            });
+                            $("#city").html(str.join(""));
+                            if(city!=''){
+//                        $("#city").val(""+city+"");
+                                initArea();
+                                $("#area").attr("disabled", false);
+                            }else{
+                                var strArea = [] ;  str.push('<option value="">------请选择-----</option>');
+                                $("#area").html(strArea.join(""));
+                                $("#area").attr("disabled", true);
+                            }
+                        }
+                    }});
+            }else{
+                var strCity = [] ;  strCity.push('<option value="">------请选择-----</option>');
+                $("#city").attr("disabled", true);
+                $("#city").html(strCity.join(""));
+                var strArea = [] ;  strArea.push('<option value="">------请选择-----</option>');
+                $("#area").attr("disabled", true);
+                $("#area").html(strArea.join(""));
+            }
+        }
+
+        function initArea(){
+            var area =$("#areaSelect").val();
+            var cityVar = $("#city").val();
+            if(cityVar!=''){
+                $("#area").attr("disabled", false);
+                $.ajax({
+                    url: '/area/findAreaByCityId.html',
+                    data:{cityId : cityVar},
+                    type:'POST',
+                    dataType:"json",
+                    success: function (data) {
+                        if(data!=null){
+                            var str = [];    str.push('<option value="">------请选择-----</option>');
+                            jQuery.each(data,function(i,item){
+                                if(area==item.areaid){
+                                    str.push("<option value="+item.areaid+" selected="+true+">"+item.area+"</option>");
+                                }else{
+                                    str.push("<option value="+item.areaid+">"+item.area+"</option>");
+                                }
+                            });
+                            $("#area").html(str.join(""));
+                        }
+                    }});
+            }else{
+                var strArea = [] ;  strArea.push('<option value="">------请选择-----</option>');
+                $("#area").attr("disabled", true);
+                $("#area").html(strArea.join(""));
+            }
+
+        }
+
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <form id="editcontent"  method="post" enctype="multipart/form-data">
+        <div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">我的公司信息</span></div>
+        <div class="main_right">
+            <div class="cur_title"><h2>我的公司信息</h2></div>
+            <div class="companyInfo_mod">
+                <div class="bd">
+                    <h3 class="item_title">1.公司基本信息</h3>
+                    <!-- 公司id-->
+                    <input type="hidden" th:value="${company.id}" name="companyId"/>
+                    <ul class="filed_info cp_filed">
+                        <li>
+                            <label class="keyName">公司名称：</label>
+                            <div class="filed_con"><strong class="name" th:text="${company.title}">广州市中尼医疗器械实业有限公司</strong></div>
+                        </li>
+                        <li>
+                            <label class="keyName">公司简称：</label>
+                            <div class="filed_con"><strong class="name" th:text="${company.cohr}">中尼医疗</strong></div>
+                        </li>
+                        <li class="fl column_first">
+                            <label class="keyName">组织结构代码：</label>
+                            <div class="filed_con"><input type="text"  class="input_txt" name="companyCode" th:value="${company.companyCode}"/></div>
+                        </li>
+                        <li class="fl column_last">
+                            <label class="keyName">组织结构代码有效期： </label>
+                            <div class="filed_con"><input type="text"  class="input_txt" name="companyEffectiveDate" th:value="${#dates.format(company.companyEffectiveDate,'yyyy-MM-dd HH:mm:ss')}" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"/></div>
+                        </li>
+                        <li class="fl column_first">
+                            <label class="keyName">注册地址：</label>
+                            <div class="filed_con"><input type="text"  class="input_txt" name="companyAddress" th:value="${company.companyAddress}"/></div>
+                        </li>
+                        <li class="fl column_last">
+                            <label class="keyName">注册资本：</label>
+                            <div class="filed_con"><input type="text" th:value="${company.capital}" name="capital" class="input_txt w_s"/><strong class="keyName">币种</strong>
+                                <input type="hidden" th:value="${company.capitalType}" id="hidden_capital"/>
+                                <select class="select-list"  id="select-list" name="capitalType">
+                                    <option class="hover">请选择</option>
+                                    <option value="0">人民币</option>
+                                    <option value="1">美金</option>
+                                    <option value="2">港币</option>
+                                </select>
+                                <!-- &lt;!&ndash;   </div>-->
+                            </div>
+                        </li>
+                        <li class="fl column_first">
+                            <label class="keyName">上年度销售额：</label>
+                            <div class="filed_con"><input type="text" th:value="${company.lastyearSales}" name="lastyearSales" class="input_txt"/><em class="unit">万元</em></div>
+                        </li>
+                        <li class="fl column_last">
+                            <label class="keyName">上年度纳税额：</label>
+                            <div class="filed_con"><input type="text" th:value="${company.lastyearRatal}" name="lastyearRatal" class="input_txt"/><em class="unit">万元</em></div>
+                        </li>
+                        <li class="clear address">
+                            <label class="keyName"><em class="star">*</em>公司所在地址：</label>
+                            <div class="filed_con">
+                                <!-- <label class="keyName">公司所在地址：</label>-->
+                                <div class="controls">
+                                    <input type="hidden"  id="provinceSelect"  th:value="${company.provinceId}"/>
+                                    <select name="provinceId" id="province" style="width:167px;" onchange="initCity();">
+                                    </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <input type="hidden"  id="citySelect"  th:value="${company.cityId}"/>
+                                    <select name="cityId" id="city" style="width: 167px;" onchange="initArea();"></select>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                                    <input type="hidden"  id="areaSelect"  th:value="${company.areaId}"/>
+                                    <select name="areaId" id="area" style="width: 167px;"></select>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="clear">
+                            <label class="keyName">公司类型：</label>
+                            <div class="filed_con">
+                                <input type="hidden" th:value="${company.capitalType}" id="hidden_capital_type"/>
+                                <select class="select-list"  id="company_type" name="companyType">
+                                    <option class="hover">请选择</option>
+                                    <option value="1">医疗机构</option>
+                                    <option value="2">经销商</option>
+                                    <option value="3">生产商</option>
+                                    <option value="4">集采中心</option>
+                                </select></div>
+                        </li>
+                        <li>
+                            <label class="keyName">公司简介：</label>
+                            <div class="filed_con"><textarea  class="textarea" th:text="${company.introduction}" name="introduction"></textarea>
+                                <p class="tip_text">（0～500字）</p>
+                            </div>
+                        </li>
+                        <li class="filed_logo">
+                            <label class="keyName">公司logo：</label>
+                            <div class="controls">
+                                <div class="widget-main" style="padding:0px;width:220px;">
+                                    <div style="border: solid 1px #d2e2e2;width:227px;height:227px;margin-bottom:5px;" id="divPreview">
+                                        <img id="imgHeadPhoto" style="width: 225px; height: 225px; " alt=""  th:src="${company.logoUrl}"/>
+                                    </div>
+                                    <input type="file" id="edit-headPath3" name="file"  onchange="PreviewImage(this,'imgHeadPhoto','divPreview');" />
+                                    <input type="hidden" id="hidden-headPath3" />
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <h3 class="item_title">2.联系信息</h3>
+                    <ul class="filed_info cp_filed">
+                        <li class="fl column_first">
+                            <!--联系人的Id -->
+                            <input th:value="${linkmanDefault.id}" name="id" type="hidden"/>
+                            <label class="keyName"><em class="star">*</em>公司电话： </label>
+                            <div class="filed_con control-group"><input type="text"  class="input_txt" name="legalPhone" th:value="${company.legalPhone}"/></div>
+                        </li>
+                        <li class="fl column_first">
+                            <label class="keyName"><em class="star">*</em>联系人：</label>
+                            <div class="filed_con control-group"><input type="text"  name="name" class="input_txt" th:value="${linkmanDefault.name}"/></div>
+                        </li>
+                        <li class="fl column_last">
+                            <label class="keyName"><em class="star">*</em>职位：</label>
+                            <div class="filed_con control-group"><input type="text" th:value="${linkmanDefault.jobTitle}" name="jobTitle" class="input_txt w_s"/></div>
+                        </li>
+                        <li class="clear address"></li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>街道地址：</label>
+                            <div class="filed_con control-group"><input type="text" th:value="${linkmanDefault.address}" name="address"  class="input_txt"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>邮编：</label>
+                            <div class="filed_con control-group"><input type="text" th:value="${linkmanDefault.zipCode}" name="zipCode" class="input_txt w_s"/></div>
+                        </li>
+                    </ul>
+
+
+
+
+                    <h3 class="item_title">3.法定代表人信息</h3>
+                    <ul class="filed_info cp_filed">
+                        <li>
+                            <label class="keyName"><em class="star">*</em>法定代表人姓名：</label>
+                            <div class="filed_con control-group"><input type="text" th:value="${company.legalName}" name="legalName" class="input_txt"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>法定代表人身份证(护照)号：</label>
+                            <div class="filed_con control-group"><input type="text" th:value="${company.legalCardno}" name="legalCardno" class="input_txt"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>法定代表人手机：</label>
+                            <div class="filed_con control-group"><input type="text"  th:value="${company.legalMobile}" name="legalMobile" class="input_txt"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>法定代表人固定电话：</label>
+                            <div class="filed_con control-group"><input type="text" th:value="${company.legalPhone}" name="legalPhone" class="input_txt"/></div>
+                        </li>
+                    </ul>
+                    <h3 class="item_title">4.资质信息</h3>
+                    <ul class="filed_info cp_filed">
+                        <li>
+                            <label class="keyName"><em class="star">*</em>营业执照注册号：</label>
+                            <div class="filed_con control-group"><input type="text" th:value="${company.businessNo}" name="businessNo" class="input_txt"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>营业执照有效期：</label>
+                            <div class="filed_con control-group"><input type="text" class="input_txt" name="businessEffectiveEnd" th:value="${#dates.format(company.businessEffectiveEnd,'yyyy-MM-dd HH:mm:ss')}"  onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"/></div>
+                        </li>
+                        <li class="filed_logo">
+                            <label class="keyName"><em class="star">*</em>营业执照扫描件：</label>
+                            <div class="filed_con">
+                                <label class="control-label">上传营业执照：</label>
+                                <div class="controls">
+
+                                    <div class="widget-main" style="padding:0px;width:220px;">
+                                        <div style="border: solid 1px #d2e2e2;width:227px;height:227px;margin-bottom:5px;" id="divPreview2">
+                                            <img id="imgHeadPhoto2" style="width: 225px; height: 225px; " alt=""   th:src="${company.businessPathUrl}"/>
+                                        </div>
+                                        <input type="file" id="edit-headPath2" name="file2"  onchange="PreviewImage(this,'imgHeadPhoto2','divPreview2');" />
+                                        <input type="hidden" id="hidden-headPath2" />
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>税务登记证号：</label>
+                            <div class="filed_con control-group"><input type="text" th:value="${company.businessAccount}" name="businessAccount" class="input_txt"/></div>
+                        </li>
+                        <li class="filed_logo">
+                            <label class="keyName"><em class="star">*</em>医疗设备生产资质：</label>
+                            <div class="filed_con">
+                                <label class="control-label">上传资质扫描件：</label>
+                                <div class="controls">
+
+                                    <div class="widget-main" style="padding:0px;width:220px;">
+                                        <div style="border: solid 1px #d2e2e2;width:227px;height:227px;margin-bottom:5px;" id="divPreview3">
+                                            <img id="imgHeadPhoto3" style="width: 225px; height: 225px; " alt=""  th:src="${company.equipmentImgUrl}"/>
+                                        </div>
+                                        <input type="file" id="edit-headPath" name="file3"  onchange="PreviewImage(this,'imgHeadPhoto3','divPreview3');" />
+                                        <input type="hidden" id="hidden-headPath" />
+                                    </div>
+
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="filed_info cp_filed">
+                        <li class="filed_action"><a href="javascript:void(0)" class="btn_key" id="btn_key">提交</a>
+                            <p class="tip_text arrow_tip">*提交修改后，经审核通过后才生效</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="asid_left">
+            <div class="account_menu">
+                <ul class="aside_menu">
+                    <li>
+                        <h3 class="menu_hd"><a href="javascript:void(0)">会员中心</a><i class="plus_ico"></i></h3>
+                        <div class="sub_menu" style="display: none;">
+                            <a href="javascript:void(0)">心外科</a>
+                            <a href="javascript:void(0)" class="acitve">肿瘤科</a>
+                            <a href="javascript:void(0)">妇科</a>
+                            <a href="javascript:void(0)">口腔科</a>
+                        </div>
+                    </li>
+                    <li>
+                        <h3 class="menu_hd"><a href="javascript:void(0)">账户信息设置 </a><i class="minus_ico"></i></h3>
+                        <div class="sub_menu">
+                            <a href="/memberCenter/accountInfo.html">个人信息</a>
+                            <a href="/memberCenter/companyInfo.html"  class="acitve">公司信息</a>
+                            <a href="/user/toUpdatePassword.html">密码修改</a>
+                            <a href="/company/toLinkMan.html">联系人管理</a>
+                            <a href="/userNoteType/list.html">发票信息</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+    <script>
+        $(function(){
+            var options = {
+                currentPage: $("[name=page]").val(),
+                totalPages: $("[name=totalPage]").val(),
+                onPageClicked:function(e,type,page){
+                    $("[name=page]").val(page);
+                    $("#searchForm").submit();
+                }
+            };
+            $('#page').bootstrapPaginator(options);
+
+            //删除供应信息
+            $(".delete").click(function(){
+                var id = $(this).parent().prev().val();
+                $.ajax({
+                    url:"/supply/deleteSupplyById.json",
+                    type:'POST',
+                    dataType:'JSON',
+                    data:{"id":id},
+                    success:function(data){
+                        if (data.flag) {
+                            alert("删除成功")
+                            window.location.reload();
+                        } else {
+                            alert("删除失败");
+                            window.location.reload();
+                        }
+                    }
+                })
+            });
+        });
+        function editInfo(id){
+            window.location.href="/supply/info.html?id="+id;
+        }
+    </script>
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>我的供应信息</title>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="wrap">
+        <div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><a href="javascript:void(0)">会员中心</a><span class="gt">&gt;</span><span class="current_page">我发布的供应信息</span></div>
+        <div class="main_right">
+            <div class="cur_title"><h2>我的供应信息</h2></div>
+            <div class="manage_mod">
+                <div class="bd">
+                    <div class="hd_input">
+                        <form action="/supply/findSupplyByCompanyId.html" method="post" id="searchForm">
+                        <input type="hidden" name="page" th:value="${page.page}" />
+                        <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+                        <div>标题：<input type="text" class="text text2" name="filter['title']" th:value="${page.filter['title']}"/> 产品名称：<input type="text" class="text text2" name="filter['productName']" th:value="${page.filter['productName']}"/></div>
+                        <div>时间：<input type="text" class="text" name="filter['startTime']" th:value="${page.filter['startTime']}" id="startTime" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" style="margin-right: 10px;"/>到<input type="text" class="text" name="filter['endTime']" th:value="${page.filter['endTime']}" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"  style="margin-right: 10px;"/>
+                            <label class="name">有效期：</label>
+                            <div class="con">
+                                    <select name="filter['effectiveDate']" style="width: 140px; height: 28px;" th:value="${page.filter['effectiveDate']}">
+                                        <option value="">全部</option>
+                                        <option value="1">1个月</option>
+                                        <option value="3">3个月</option>
+                                        <option value="6">6个月</option>
+                                        <option value="12">1年</option>
+                                        </select>
+                            </div>
+                           <a href="/supply/info.html"><input type="button" class="btn_key" value="发布供应需求"/></a> <input type="submit" class="btn_weak" value="搜 索"/></div>
+                        </form>
+                    </div>
+                    <table class="table_row sale_pro">
+                        <thead>
+                        <tr>
+                            <th>标题</th>
+                            <th>产品名称</th>
+                            <th>数量</th>
+                            <th>价格</th>
+                            <th>有效期</th>
+                            <th>时间</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="supply:${page.result}">
+                            <td><a href="javascript:void(0)" class="name supply_name" th:text="${supply.title}"></a></td>
+                            <td th:text="${supply.productName}">无影灯</td>
+                            <td><span class="number" th:text="${supply.price}">5000</span></td>
+                            <td><span class="number" th:text="${supply.total}"></span></td>
+                            <td th:text="${supply.effectiveDate+'个月'}"></td>
+                            <td th:text="${supply.createDate}"></td>
+                            <input type="hidden" th:value="${supply.id}" class="id"/>
+                            <td><a href="javascript:void(0)" class="wait operate" onclick="editInfo(this.id)" th:id="${supply.id}">编辑</a><a href="javascript:void(0)" class="wait operate delete" >删除</a><a th:href="@{/supply/supplyDetails.htm(id=${supply.id})}" class="wait operate"  th:id="${supply.id}">查看详情</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="pagination">
+                        <div id="page"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="asid_left">
+            <div class="account_menu">
+                <ul class="aside_menu prodouct_bar">
+                    <li><h3 class="menu_hd">常用功能</h3></li>
+                    <li class="active"><a href="/supply/findSupplyByCompanyId.html">我发布的供应</a><i class="minus_ico"></i></li>
+                    <li><a href="javascript:void(0)">我的购物车</a><i class="minus_ico"></i></li>
+                    <li><a href="/memberCenter/myBuy.html">我买到的产品</a><i class="minus_ico"></i></li>
+                    <li><a href="javascript:void(0)">我做的评价</a><i class="minus_ico"></i></li>
+                    <li><a href="/supply/findSupplyByCompanyId.html">我发布的求购</a><i class="minus_ico"></i></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

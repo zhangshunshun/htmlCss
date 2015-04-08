@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-brief">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>采购订单页面</title>
+    <script type="text/javascript" src="../../../static/js/cart.js" th:src="@{/static/js/cart.js}"></script>
+    <style>
+        .label {
+            border-radius: 0;
+            text-shadow: none;
+            font-size: 11px;
+            font-weight: normal;
+            padding: 1px 5px 3px;
+            background-color:rgba(251, 254, 255, 0) !important;
+        }
+        .lay1{ width:200px; height:120px; border:1px solid #e3e3e3; float:left ;margin-left:80px}
+    </style>
+    <script type="text/javascript">
+        jQuery(function(){
+            $(".selectAll").click(function(){
+               if($(this).prop("checked")==true){
+                    $("input[type=checkbox]").each(function(){
+                        $(this).prop("checked",true);
+                    })
+               }else{
+                   $("input[type=checkbox]").each(function(){
+                       $(this).attr("checked",false);
+                   })
+               }
+            });
+        })
+        function changeAll(item){
+            if($(item).prop("checked")==false){
+                $(".selectAll").attr("checked",false);
+                return;
+            }
+            $("input[type=checkbox][class=item]").each(function(){
+                if($(this).prop("checked")==false){
+                    $(".selectAll").attr("checked",false);
+                    return;
+                }
+            })
+            $(".selectAll").prop("checked",true);
+        }
+        function deleteSelected(){
+            var ids="";
+            $("input[type=checkbox][class=item]").each(function(){
+                if($(this).prop("checked")==true){
+                    ids+=$(this).attr("id")+",";
+                };
+            })
+            deleteFromCart(ids.substr(0,ids.length-1));
+        }
+        function deleteThis(id){
+            deleteFromCart(id);
+        }
+        function deleteFromCart(ids){
+            $.ajax({
+                url:"/product/deleteFromCart.json?ids="+ids,
+                type:"POST",
+                dataType:"JSON",
+                success:function(data){
+                    if(data.flag){
+                        window.location.reload();
+                    }else{
+                        $.alert(data.msg)
+                    }
+                }
+            })
+        };
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="wrap">
+        <div class="crumbs">当前位置:<a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><a href="javascript:void(0)">产品中心</a><span class="gt">&gt;</span><span class="current_page">购物车</span></div>
+        <div class="mod_item mod_confim">
+            <div class="mod_item_bd">
+                <div class="cart_main">
+                    <div class="mod_shopping_trolley clearfix">
+                        <div class="checkbox select_all"><input type="checkbox" class="selectAll" id="selectAll"/><label for="selectAll">全选</label></div>
+                        <div class="product">产品</div>
+                        <div class="unit_price">单价（元）</div>
+                        <div class="number">数量</div>
+                        <div class="subtotal">小计（元）</div>
+                        <div class="operate">操作</div>
+                    </div>
+                    <div class="mod_shopping_trolley_list">
+                        <div class="cart_main">
+                            <div th:each="productList:${ordersList}">
+                                <div class="list_supplier">
+                                    <div class="checkbox">供应商：<a href="javascript:void(0)" th:text="${productList.comTitle}"></a></div>
+                                </div>
+                                <div class="cart_list list_detail">
+                                    <div class="cart_item">
+                                        <div class="cart_tbody">
+                                            <input type="hidden" class="productRepertory" id="productRepertory" th:value="${productList.productRepertory}"/> <!--主产品的剩余库存量-->
+                                            <div class="cart_tbody_bd clearfix sumPrice">
+                                                <div class="checkbox"><input th:id="${productList.id}" type="checkbox" onclick="changeAll(this)" class="item"/></div>
+                                                <div class="column c_goods">
+                                                    <div class="pic"><a href="javascript:void(0)"><img th:src="${'htttp://114.215.80.184/img'+productList.path}" alt=""/></a></div>
+                                                    <div class="decs">
+                                                        <h3 class="p_name"><a href="javascript:void(0)" class="weblink" th:text="${productList.productName}">山东欣雨辰生产电动手术床.</a></h3>
+                                                        <p class="p_extend" th:text="${'规格：'+productList.productNorms}">规格：2100*1000*500*750</p>
+                                                    </div>
+                                                </div>
+                                                <div class="column c_price"><span class="numb price"  th:text="${productList.salesPrices}"></span></div>
+                                                <div class="column c_quantity">
+                                                    <div class="quantity_form">
+                                                        <a href="javascript:void(0);" class="decrement disabled min" >-</a>
+                                                        <input autocomplete="off" type="text" class="itxt num" th:value="${productList.num}" name="productNum" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'1')}else{this.value=this.value.replace(/\D/g,'1')}" onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'1')}else{this.value=this.value.replace(/\D/g,'1')}"/>
+                                                        <a href="javascript:void(0);" class="increment add" >+</a>
+                                                    </div>
+                                                </div>
+                                                <div class="column c_sum"><span class="numb jine" th:text="${productList.productPrice}"></span></div>
+                                                <div class="column c_post" style="padding-left: 0px; width: 90px;text-align: center"><a href="javascript:void(0)" th:id="${productList.id}" onclick="deleteThis(this.id)">删除</a></div>
+                                            </div>
+                                            <div class="cart_tbody_bd clearfix sumPrice" th:each="patrsList:${productList.childList}">
+                                                <input type="hidden" th:value="${patrsList.referenceId}" name="partsReferenceId"/><!--配件表的购物车id-->
+                                                <!-- <input type="hidden" th:value="${patrsList.mpsId}" name=""/>-->
+                                                <div class="column c_goods">
+                                                    <div class="pic">配件：<a href="javascript:void(0)"><img th:src="${'htttp://114.215.80.184/img'+patrsList.medPath}" alt=""/></a></div>
+                                                    <div class="decs">
+                                                        <h3 class="p_name"><a href="javascript:void(0)" class="weblink" th:text="${patrsList.mpsName}"></a></h3>
+                                                    </div>
+                                                </div>
+                                                <div class="column c_price ordersPrice" ><span class="numb price"  th:text="${patrsList.mppuSalesPrices}"></span></div>
+                                                <div class="column c_quantity">
+                                                    <div class="quantity_form" >
+                                                        <a href="javascript:void(0);" class="decrement disabled min" >-</a>
+                                                        <input autocomplete="off" type="text" class="itxt num" name="partsNum" th:value="${patrsList.mcNum}" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'1')}else{this.value=this.value.replace(/\D/g,'1')}" onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'1')}else{this.value=this.value.replace(/\D/g,'1')}"/>
+                                                        <a href="javascript:void(0);" class="increment add" >+</a>
+                                                    </div>
+                                                </div>
+                                                <div class="column c_sum"><span class="numb jine" th:text="${patrsList.partsPrice}"></span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mod_shopping_trolley_expend clearfix">
+                                <div class="checkbox select_all"><input type="checkbox" class="selectAll" id="selectAll2"/><label for="selectAll2">全选</label></div>
+                                <div class="delete_all"><a href="javascript:void(0)" onclick="deleteSelected()">删除所选</a></div>
+                                <div class="sum_price">总金额（不含运费）：<span class="price kinds"></span></div>
+                            </div>
+                            <div class="mod_shopping_trolley_btn cart_toolbar">
+                                <div class="btn_box"><button type="button" onclick="javaScript:window.location.href='/product/center.html'" class="btn_key btn_link btn_weak">继续购物</button><button type="button" onclick="window.location.href='/productorders/list.html'" class="btn_key btn_link">立即购买</button></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+                </div>
+            </div>
+</body>
+</html>

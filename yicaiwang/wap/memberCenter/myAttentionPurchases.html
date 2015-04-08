@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	  xmlns:th="http://www.thymeleaf.org"
+	  layout:decorator="foreground/layout-simple">
+<head>
+	<script>
+		$(function(){
+			var options = {
+				currentPage: $("[name=page]").val(),
+				totalPages: $("[name=totalPage]").val(),
+				onPageClicked:function(e,type,page){
+					$("[name=page]").val(page);
+					$("#searchForm").submit();
+				}
+			};
+			$('#page').bootstrapPaginator(options);
+
+
+			$("#quxiao").click(function(){
+				var attentionId =$(this).prev().val();
+				$.ajax({
+					url: "/memberCenter/deleteAttention.html",
+					type: 'POST',
+					data: {"id":attentionId},
+					dataType: "json",
+					success: function (date) {
+						if(date.suc){
+							$.alert("取消关注成功",function(){
+								window.location.href="/memberCenter/findMyAttentionProduct.html";
+							});
+						}else{
+							$.alert("取消关注失败",function(){
+								window.location.href="/memberCenter/findMyAttentionProduct.html";
+							});
+						}
+					}
+				});
+			});
+		});
+
+		//取消关注
+		function removeAttention(type,productId){
+			$("#loadingDiv").show();
+			$.ajax({
+				url:"/purchaseIndex/removeAttention.json",
+				type:"POST",
+				data:{
+					type:type,
+					productId:productId
+				},
+				dataType:"json",
+				success:function(data){
+					if(data.flag){
+						$("#loadingDiv").hide();
+						$.alert("取消成功!",function(){
+							window.location.href="/memberCenter/findMyAttentionPurchase.html";
+						});
+					}else{
+						$.alert("操作失败了，"+data.msg);
+						$("#loadingDiv").hide();
+					}
+				},
+				error:function(a,b,c){
+					$.alert("数据连接异常");
+					$("#loadingDiv").hide();
+				}
+			})
+		}
+	</script>
+	<meta http-equiv="X-UA-Compatible" content="IE=8" />
+	<title>我关注的价格指数</title>
+	<style>
+		.intro1{font-size: 20px;}
+		.intro{font-size: 15px;}
+	</style>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+
+<div class="container">
+	<div class="wrap">
+		<div class="crumbs">当前位置: <a href="/">首页</a><span class="gt">&gt;</span><span class="current_page">我关注的价格指数</span></div>
+		<form id="searchForm" th:action="@{/memberCenter/findMyAttentionPurchase.htm}" method="post">
+			<input type="hidden" name="page" th:value="${page.page}" />
+			<input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+		</form>
+
+		<div class="member_right">
+			<div class="mod_box follow_mode">
+				<div class="hd">
+					<h3 class="title">我关注的价格指数</h3><a href="/purchaseIndex/toPurchaseIndex.html" class="btn_key">添加关注</a>
+				</div>
+				<div class="bd">
+					<ul class="followChart_list">
+
+						<li th:each="a,s:${page.result}">
+							<a th:href="@{/purchaseIndex/toPurchaseByDate.htm(productId=${a.productId},productName=${a.productName})}" title="点击查看详情">
+								<p class="intro1"><span style="color: red;" th:text="${a.productName}"></span>价格指数
+									<img src="../../../static/imgs/data_ico.jpg" alt=""/></p>
+								<p class="intro">
+									今日综合产品价格指数为<span th:text="${a.thisMonthBalance}"></span>。前一日综合产品价格指 数为
+									<span th:text="${a.lastMonthBalance}"></span>。该产品综合平均价格为<span th:text="${a.banlance}"></span>
+								</p>
+							</a>
+							<a href="#" th:onclick="'removeAttention(3,'+${a.productId}+')'" class="btn_weak">取消关注</a>
+						</li>
+
+						<!--<li>-->
+							<!--<a href="javascript:void(0)" class="title">心电图机</a>-->
+							<!--<div class="cart_box"><img src="thumb/chart_s.png" alt=""/></div>-->
+							<!--<a href="javascript:void(0)" class="btn_weak">取消关注</a>-->
+						<!--</li>-->
+
+					</ul>
+					<div id="page"></div>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="member_left">
+			<ul class=" member_menu">
+				<li><h3 class="menu_hd"><a href="/memberCenter/index.html">会员中心</a></h3></li>
+				<li>
+					<h3 class="menu_hd"><i class="minus_ico"></i><a href="javascript:void(0)">常用功能</a></h3>
+					<div class="sub_menu">
+						<a href="/memberCenter/myBuy.html">我要买</a>
+						<a href="/memberCenter/mySell.html">我要卖</a>
+						<a href="">发布新产品</a>
+						<a href="/product/myProduct.html ">我发布的产品</a>
+						<a href="/supply/findSupplyByCompanyId.html ">我发布的供应信息</a>
+						<a href="/supply/findPurchaseByCompanyId.html ">我发布的求购信息</a>
+						<a href="/memberCenter/excellentProductApplication.html">优秀产品认证</a>
+						<a href="/memberCenter/excellent3DProductApplication.html">3D产品认证</a>
+						<a href="javascript:void(0)">企业诚信认证</a>
+						<a href="/evaluate/evaluateList.html">我做的评价</a>
+					</div>
+				</li>
+				<li>
+					<h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">特色服务</a></h3>
+					<div class="sub_menu" style="display: none;">
+						<a href="/qualityEval/list.html">产品质量评估</a>
+						<a href="/expertService/list.html">专家库</a>
+						<a href="/financialProduct/list.html">金融服务</a>
+					</div>
+				</li>
+				<li>
+					<h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">我的关注</a></h3>
+					<div class="sub_menu" style="display: none;">
+						<a href="/memberCenter/findMyAttentionProduct.html">我关注的产品</a>
+						<a href="/memberCenter/findMyAttentionCompany.html">我关注的企业</a>
+						<a href="/memberCenter/findMyAttentionPurchase.html">我关注的价格指数</a>
+					</div>
+				</li>
+				<li>
+					<h3 class="menu_hd"><i class="plus_ico"></i><a href="">站内信</a></h3>
+					<div class="sub_menu" style="display: none;">
+						<a href="/memberCenter/receiverEmail.html">我的收件箱</a>
+						<a href="/memberCenter/sendEmail.html">我的发件箱</a>
+						<a href="/memberCenter/writerEmail.html">发送消息</a>
+					</div>
+				</li>
+				<li>
+					<h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">客户服务</a></h3>
+					<div class="sub_menu" style="display: none;">
+						<a href="javascript:void(0)">投诉&amp;举报</a>
+						<a href="/userNoteType/list.html">医采币发票申请</a>
+						<a href="javascript:void(0)">联系客服</a>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>
+</div>
+</body>
+</html>

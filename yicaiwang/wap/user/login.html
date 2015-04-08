@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	  xmlns:th="http://www.thymeleaf.org"
+	  layout:decorator="foreground/layout-user">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=8" />
+	<title>登陆</title>
+	<script type="text/javascript">
+		jQuery(function() {
+			$("#nameError").hide();$("#nameUnique").hide();$("#passUnique").hide();
+			if($("#nameErrorInput").val()=='yes'){
+				$("#nameError").show();
+			}
+			if($("#nameUniqueInput").val()=='yes'){
+				$("#nameUnique").show();
+			}
+			if($("#passUniqueInput").val()=='yes'){
+				$("#passUnique").show();
+			}
+
+		});
+	</script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+	<input type="hidden" id="nameErrorInput" th:value="${nameError}" />
+	<input type="hidden" id="nameUniqueInput" th:value="${nameUnique}" />
+	<input type="hidden" id="passUniqueInput" th:value="${passUnique}" />
+
+	<div class="signin_wrap">
+		<div class="signin_mod">
+			<div class="hd">
+				<h2 class="title">欢迎登录</h2>
+			</div>
+			<form action="/login/doLogin.htm" id="submitForm" method="post">
+				<input type="hidden" id="backUrl" name="backUrl" th:value="${backUrl}" />
+				<div class="bd">
+					<ul class="filed_info login_info">
+						<li>
+							<div class="filed_con">
+								<i class="ico user_ico"></i>
+								<input type="text" id="loginName" name="loginName" th:value="${loginName}" class="input_txt" placeholder="账号"/></div>
+							<p class="login_tips tips_l" id="nameError"><i class="ico errow_ico_s"></i>用户名或密码错误</p>
+							<p class="login_tips tips_l" id="nameUnique"><i class="ico errow_ico_s"></i>请填写用户名</p>
+							<!--<p class="forget_tips tips_r"><a href="javascript:void(0)">忘记登录名？</a></p>-->
+						</li>
+						<li>
+							<div class="filed_con"><i class="ico password_ico"></i>
+								<input type="password" th:value="${password}" id="password" name="password" class="input_txt" placeholder="密码"/></div>
+							<p class="login_tips tips_l" id="passUnique"><i class="ico errow_ico_s"></i>请填写密码</p>
+						</li>
+						<li class="filed_action">
+							<!--<a href="javascript:void(0)" class="btn_key">登&nbsp;&nbsp;&nbsp;&nbsp;陆</a>-->
+							<input type="submit" style="cursor: pointer;" class="btn_key" value="登&nbsp;&nbsp;&nbsp;&nbsp;陆" id="btn-sub"/>
+							<!--<p class=" tips_l"><a href="javascript:void(0)" class="">忘记密码？</a></p>-->
+							<!--<p class=" tips_r"><a href="javascript:void(0)" class="light">忘记登录名？</a></p>-->
+						</li>
+					</ul>
+				</div>
+			</form>
+		</div>
+	</div>
+
+</div>
+</body>
+</html>

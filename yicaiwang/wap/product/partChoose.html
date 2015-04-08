@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>配件选择</title>
+    <link href="../../../static/css/product.css" th:href="@{/static/css/product.css}" rel="stylesheet" type="text/css" />
+    <script>
+        calculate();
+        $(function(){
+            $('.index_focus').slides({
+                preload: true,
+                preloadImage: 'img/loading.gif',
+                play: 5000,
+                pause: 2500,
+                hoverPause: true
+            });
+            $(".plus").each(function(){
+                $(this).click(function(i){
+                    $(this).prev("input").val(parseFloat($(this).prev("input").val())+1).change();
+                })
+            });
+
+            $(".no_minus").each(function(){
+                $(this).click(function(){
+                    if(parseFloat($(this).next("input").val())==1){
+                        $.alert("购买数量不能小于1");
+                    }else{
+                        $(this).next("input").val(parseFloat($(this).next("input").val())-1).change();
+                        return;
+                    }
+                })
+            });
+        });
+        function gotoCart(){
+            $("form").ajaxSubmit({
+                url:"/product/gotoCart.json",
+                type: "POST",
+                dataType: "json",
+                success: function (data) {
+                    if (data.flag) {
+                        window.location.href="/product/getCart.html"
+                    } else {
+                        if(data.msg.indexOf("login")!=-1){
+                            window.location.href=data.msg;
+                        }else{
+                            if(data.msg.indexOf("exit")!=-1){
+                                dialog({
+                                    title:'友情提醒',
+                                    content:'该产品已经在购物车里面了',
+                                    ok:function(){
+                                        window.location.href="/product/getCart.html";
+                                    },
+                                    okValue:'去我的购物车',
+                                    cancel:function(){
+                                    },
+                                    cancelValue:'取消'
+                                }).showModal();
+                            }else{
+                                $.alert(data.msg);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        function changeNum(item){
+            var id=$(item).attr("id").split("-")
+            if(id[0]==1){
+               if(parseFloat($(item).val())>parseFloat($("#"+id[1]+"1-repertory").val())){
+                   $.alert("购买数量不能大于库存数量");
+                   $(item).val(parseFloat($("#"+id[1]+"1-repertory").val()));
+               }
+                $("#buyNum").val(parseFloat($(item).val()));
+            }
+            if(id[0]==2){
+                if(parseFloat($(item).val())>parseFloat($("#"+id[1]+"2-repertory").val())){
+                    $.alert("购买数量不能大于库存数量");
+                    $(item).val(parseFloat($("#"+id[1]+"2-repertory").val()));
+                }
+                $("#"+id[1]+"2-num").val($(item).val());
+            }
+            calculate();
+        }
+        function calculate(){
+            var sum=0;
+            var total=0;
+            $(".partNum").each(function(){
+                var thisNum=0;
+                var id=$(this).attr("id").split("-")
+                var thisSalePrice=0;
+                if(id[0]==1){
+                    thisSalePrice=parseFloat($("#"+id[1]+"1-money").val());
+                    thisNum=parseFloat($(this).val());
+                }
+                if(id[0]==2){
+                    if($("#"+id[1]+'-check').prop("checked")){
+                        thisSalePrice=parseFloat($("#"+id[1]+"2-money").val());
+                        thisNum=parseFloat($(this).val());
+                    }
+                }
+                sum+=thisNum;
+                total=total+thisNum*thisSalePrice;
+            })
+            $("#num").text(sum);
+            $("#total").text(total);
+        }
+        function isChecked(item){
+            $(item).val($(item).prop("checked"));
+            calculate();
+        }
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+<div class="container">
+    <div class="wrap">
+        <div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><a href="javascript:void(0)">产品中心</a><span class="gt">&gt;</span><a href="javascript:void(0)">临床医学</a><span class="gt">&gt;</span><a href="javascript:void(0)">心扉外科</a><span class="gt">&gt;</span><a href="javascript:void(0)">麻醉机</a><span class="gt">&gt;</span><a href="javascript:void(0)">手动麻醉机</a><span class="gt">&gt;</span><span class="current_page">供应商详情页</span></div>
+        <div class="mod_detail_item mod_mou_details">
+            <div class="mod_left_main">
+                <form method="post" action="/product/gotoCart.json">
+                    <input type="hidden" value="1" name="type"/>
+                    <input type="hidden" value="0" name="pid"/>
+                    <input type="hidden" th:value="${productUser.id}" name="referenceId"/>
+                    <input type="hidden" value="1" name="num" id="buyNum"/>
+                    <input type="hidden" th:value="${productUser.userId}" name="companyUserId"/>
+                <div class="propertyWrap clearfix">
+                    <div class="gallery">
+                        <div class="picView">
+                            <div class="view"><img th:src="'http://114.215.80.184:80'+${product.imagePath}" alt="" id="J_view_img"/></div>
+                            <a href="javascript:void(0)" class="btn_link js_btn"><i class="icoc_zoom"></i><span>查看全景图</span></a>
+                        </div>
+                        <div id="pics_wrap" class="picsWrap"> <a href="javascript:void(0)" class="scrollL" id="scrollL" hidefocus="true" title="上一张">上一张</a>
+                            <div id="picsList" class="picsList">
+                                <ul id="thumblist" style="width: 405px;">
+                                    <li class="cur" th:each="media,s:${mediaList}" th:if="${s.count==1}" > <a href="javascript:;" data-img="${media.path}" data-socurse="${media.path}"> <img title="" alt="" src="${media.path}"/> </a> </li>
+                                    <li class="" th:each="media,s:${mediaList}" th:if="${s.count!=1}" > <a href="javascript:;" data-img="${media.path}" data-socurse="${media.path}"> <img title="" alt="" src="${media.path}"/> </a> </li>
+                                </ul>
+                            </div>
+                            <a href="javascript:;" class="scrollR" id="scrollR" hidefocus="true" title="下一张">下一张</a> </div>
+                    </div>
+                    <div class="property">
+                        <div class="hd detail_price">
+                            <h2 th:text="${product.name}"></h2>
+                            <div class="p_logistics">
+                                <span class="price">单   价：<i class="rmb">¥</i><i class="rmb_num"><span th:text="${productUser.salesPrices}"></span></i></span>
+                                <span class="logistics">物流信息：<span class="freight" th:if="${productUser.logistics==1}">买方承担</span><span class="freight" th:if="${productUser.logistics==2}">卖方承担</span></span>
+                            </div>
+                        </div>
+                        <div class="p_property">
+                            <ul class="p_property_list">
+                                <li class="item">
+                                    <h3 class="item_hd">产品编号：</h3>
+                                    <div class="item_bd"><span th:text="${product.productNo}"></span></div>
+                                </li>
+                                <li class="item">
+                                    <h3 class="item_hd">产品型号：</h3>
+                                    <div class="item_bd"><span th:text="${product.version}"></span></div>
+                                </li>
+                                <li class="item">
+                                    <h3 class="item_hd">产品类别：</h3>
+                                    <div class="item_bd"><span th:text="${product.categoryName}"></span></div>
+                                </li>
+                                <li class="item">
+                                    <h3 class="item_hd">产品认证：</h3>
+                                    <div class="item_bd"><span th:text="${product.approve}"></span><i class="icon_identification"></i></div>
+                                </li>
+                                <li class="item">
+                                    <h3 class="item_hd">注册证号：</h3>
+                                    <div class="item_bd"><span th:text="${product.registerNo}"></span></div>
+                                </li>
+                                <li class="item">
+                                    <h3 class="item_hd">原产国：</h3>
+                                    <div class="item_bd"><span th:text="${product.country}"></span></div>
+                                </li>
+                                <li class="item">
+                                    <h3 class="item_hd">生产地：</h3>
+                                    <div class="item_bd"><span th:text="${product.area}"></span></div>
+                                </li>
+                                <li class="item">
+                                    <h3 class="item_hd">生产商：</h3>
+                                    <div class="item_bd"><span th:text="${product.companyName}"></span><a href="javascript:void(0)" class="btn_link_chat"><i class="icon_chat"></i><span>联络供应商</span></a></div>
+                                </li>
+                                <li class="item">
+                                    <h3 class="item_hd">相关科室：</h3>
+                                    <div class="item_bd"><span th:each="office,s:${product.officeList}" th:text="${s.last}?${office.name}:${office.name}+'、'"></span></div>
+                                </li>
+                                <li class="item">
+                                    <h3 class="item_hd">简要说明：</h3>
+                                    <div class="item_bd" th:utext="${product.intro}">
+
+                                    </div>
+                                </li>
+                                <li class="item li_amount">
+                                    <h3 class="item_hd">购买：</h3>
+                                    <div class="item_bd">
+                                        <span class="p_amount">
+                                            <a href="javascript:void(0)" class="p_reduce p_disable no_minus">-</a>
+                                            <input type="text" readonly="readonly" class="text partNum" onchange="changeNum(this)" th:id="'1-'+${productUser.id}" value="1"/>
+                                            <a href="javascript:void(0)" class="p_increase plus">+</a>
+                                            <input type="hidden" th:id="${productUser.id}+'1-money'" th:value="${productUser.salesPrices}"/>
+                                        </span>
+                                        <em>剩余库存<span th:text="${productUser.repertory}"></span></em>
+                                        <input type="hidden" th:value="${productUser.repertory}" th:id="${productUser.id}+'1-repertory'"/>
+                                        <span class="invoice">发票支持：<span th:if="${productUser.invoice==1}">普通发票</span><span th:if="${productUser.invoice==2}">增值发票</span></span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${!#lists.isEmpty(partsList)}" class="mod_detail_item mod_pro_desc mod_pro_list">
+                    <div class="mod_main">
+                        <div class="hd"><h2>配件列表</h2></div>
+                        <div class="bd">
+                            <ul class="parts_list">
+                                <li class="item"  th:each="parts,s:${partsList}">
+                                    <div class="checkbox"><input type="checkbox" th:id="${parts.id}+'-check'" th:name="'childList['+${s.count-1}+'].isSelected'" value="false" onclick="isChecked(this)"/> </div>
+                                    <div class="pic"><a href="javascript:void(0)"><img th:src="${parts.imgPath}" /></a></div>
+                                    <div class="con">
+                                        <h3 class="title" th:text="${parts.name}">专业生产和销售LED手术室无影灯 整体反射医用手术灯 病床 吊塔</h3>
+                                        <div class="info">
+                                            <h3 class="info_hd">配件型号：</h3>
+                                            <div class="info_bd" th:text="${parts.version}">04390711</div>
+                                        </div>
+                                        <div class="info">
+                                            <h3 class="info_hd">配件说明：</h3>
+                                            <div class="info_bd" th:utext="${parts.intro}">
+                                            </div>
+                                        </div>
+                                        <div class="info">
+                                            <h3 class="info_hd">配件售价：</h3>
+                                            <div class="info_bd"><span class="price"><i class="rmb">¥</i><i class="rmb_num"><span th:text="${parts.salesPrices}"></span></i></span></div>
+                                        </div>
+
+                                        <div class="info">
+                                            <h3 class="info_hd">数量：</h3>
+                                            <div class="info_bd">
+                                                <span class="p_amount">
+                                                    <a class="p_reduce p_disable no_minus" href="javascript:void(0)">-</a>
+                                                    <input type="text" readonly="readonly" onchange="changeNum(this)" th:id="'2-'+${parts.id}" value="1" class="text partNum"/>
+                                                    <a class="p_increase plus" href="javascript:void(0)">+</a>
+                                                    <input type="hidden" th:id="${parts.id}+'2-money'" th:value="${parts.salesPrices}"/>
+                                                </span>
+                                                <em>剩余库存<span th:text="${parts.repertory}"></span></em>
+                                                <input type="hidden" th:value="${parts.repertory}" th:id="${parts.id}+'2-repertory'"/>
+                                                <input type="hidden" value="2" th:name="'childList['+${s.count-1}+'].type'"/>
+                                                <input type="hidden" th:value="${product.id}" th:name="'childList['+${s.count-1}+'].pid'"/>
+                                                <input type="hidden" th:value="${parts.partsUserId}" th:name="'childList['+${s.count-1}+'].referenceId'"/>
+                                                <input type="hidden" value="1" th:name="'childList['+${s.count-1}+'].num'" th:id="${parts.id}+'2-num'"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                </form>
+            </div>
+            <div class="mod_aside">
+                <div class="mod_total_price">
+                    <div class="hd"><h3>总价</h3></div>
+                    <div class="bd">
+                        <p>总共选择了<span class="num" id="num">1</span>件商品</p>
+                        <p><span class="price"><i class="rmb">¥</i><i class="rmb_num"><span id="total" th:text="${productUser.salesPrices}"></span></i></span></p>
+                        <p><a class="btn" href="javascript:void(0)" onclick="gotoCart()"  style="width: 120px;">加入购物车</a></p>
+                    </div>
+                </div>
+                <div class="mod_supplier">
+                    <div class="hd">
+                        <h3>供应商信息</h3>
+                        <p class="name" th:text="${company.title}"></p>
+                    </div>
+                    <div class="bd">
+                        <p><label class="name">所在地区：</label><span th:text="${company.reginoal}"></span></p>
+                        <p><label class="name">经营模式：</label>
+                            <span th:if="${company.companyType==1}">医疗机构</span>
+                            <span th:if="${company.companyType==2}">经销商</span>
+                            <span th:if="${company.companyType==3}">生产商</span>
+                            <span th:if="${company.companyType==4}">集采中心</span>
+                            <span class="blue" th:text="${company.isExamine!=1}?'[未认证]':'[已认证]'"></span></p>
+                        <p><label class="name">主营产品：</label>手术灯，手术器材，医用镊子，医疗设备，手术灯，手术器材，医用镊子，医疗设
+                            备手术灯...</p>
+                        <p><label class="name">联系人：</label><span th:text="${linkman.name}"></span></p>
+                        <p><label class="name">联系电话：</label><span th:text="${linkman.companyPhone}"></span></p>
+                        <p><label class="name">固定电话：</label><span th:text="${company.companyPhone}"></span></p>
+                        <p class="btn_box"><a class="btn" href="javascript:void(0)">联络供应商</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 查看大图 start-->
+<div class="dialog_filter" style="display:none;"></div>
+<div class="dialog_box property_pop" style="display:none;">
+    <a class="close" href="javascript:void(0)"></a>
+    <div class="hd">
+        <h3 class="title">山东欣雨辰生产电动手术床</h3>
+    </div>
+    <div class="bd">
+        <div class="p_picView">
+            <a id="right1" class="btn btn_prev" href="javascript:void(0)"></a>
+            <a id="left1" class="btn btn_next" href="javascript:void(0)"></a>
+            <div class="view" id="wrapBox1">
+                <style>#count1 li{float:left;width: 600px;height: 500px;}</style>
+                <ul id="count1">
+                    <li><img alt="图片1" src="thumb/img800x800.jpg"/></li>
+                    <li><img alt="图片1" src="thumb/img800x800.jpg"/></li>
+                    <li><img alt="图片1" src="thumb/img800x800.jpg"/></li>
+                </ul>
+            </div>
+            <div class="scaling"><a href="javascript:void(0)" class="increase">+</a><a href="javascript:void(0)" class="reduce">-</a> </div>
+        </div>
+    </div>
+</div>
+<!-- 查看大图 end-->
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $("#count1").dayuwscroll({
+            parent_ele:'#wrapBox1',
+            pre_btn:'#left1',
+            next_btn:'#right1',
+            path: 'left',
+            auto:false,
+            time:3000,
+            num:1,
+            gd_num:1,
+            waite_time:1000
+        });
+        $("#picsList").picscroll({
+            btnNext: "#scrollR",
+            btnPrev: "#scrollL",
+            auto:false,
+            circular:false,
+            autospeed:5000,
+            visible:5,
+            scroll:1
+        });
+        $('#thumblist li a').click(function(e){
+            e.preventDefault();
+            $(this).parent().addClass('cur').siblings().removeClass('cur');
+            $('#J_view_img').attr('src',$(this).attr('data-img'));
+            /*$('#J_socurse_img').attr('href',$(this).attr('data-socurse'));*/
+        });
+    });
+</script>
+</div>
+</body>
+</html>

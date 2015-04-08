@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>test</title>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">医疗机构详细</span></div>
+    <div class="mod_box">
+        <div class="bd">
+            <div class="medical_institution_detail">
+                <h2 class="institution_name" th:text="${company.title}">广州市第一人民医院</h2>
+                <p class="institution_location"><span>公司所在地：</span><span th:text="${company.provName+company.citName}">广州</span></p>
+                <p class="introduction introduction_1" th:text="${company.introduction}" style="word-wrap:break-word;">广州市第一人民医院是广州市卫生局下属大型综合性医院，是广州地区医疗、教学、科研、干部保健的重要基地。始建于1899年（光绪25年），名为“城西方便所”，解放后于1954年更名为“广州市第一人民医院”。医院由院本部、鹤洞分院两个院区组成，并经营管理广州市南沙中心医院。1993年被卫生部评定为广东省首批三级甲等医院。</p>
+                <div class="introduction_picture"><img src="thumb/medical_institution.jpg" /></div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

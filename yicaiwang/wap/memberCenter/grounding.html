@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>会员中心</title>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#count1").dayuwscroll({
+                parent_ele:'#wrapBox1',
+                // list_btn:'#tabT04',
+                pre_btn:'#left1',
+                next_btn:'#right1',
+                path: 'left',
+                auto:true,
+                time:3000,
+                num:4,
+                gd_num:4,
+                waite_time:1000
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="crumbs">当前位置: <a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">会员中心</span></div>
+    <div class="main_right">
+        <div class="cur_title"><h2>上架新商品</h2></div>
+        <div class="mod_box">
+            <div class="hd">
+                <h3 class="title">产品基本信息</h3>
+            </div>
+            <div class="bd">
+                <div class="not_pro"><i></i>尚未选择上架产品</div>
+                <div class="add_pro_box">
+                    <a href="javascript:void(0)" class="add_pro js_btn">+</a>
+                    <a href="javascript:void(0)" class="add_btn">选择上架商品</a>
+                </div>
+            </div>
+        </div>
+        <div class="mod_box">
+            <div class="hd">
+                <h3 class="title">售价及库存信息</h3>
+            </div>
+            <div class="bd">
+                <div class="not_pro"><i></i>尚未选择上架产品</div>
+            </div>
+        </div>
+        <div class="mod_box">
+            <div class="hd">
+                <h3 class="title">其他信息</h3>
+            </div>
+            <div class="bd">
+                <ul class="other_info">
+                    <li><label class="name">物流费用：</label><span class="option"><input type="radio"/>卖方承担运费</span><span class="option"><input type="radio"/>买方承担运费</span></li>
+                    <li><label class="name">发票支持：</label><span class="option"><input type="radio"/>普通发票</span><span class="option"><input type="radio"/>增值税发票</span></li>
+                    <li><label class="name">备注：</label><textarea name="" class="textarea"></textarea></li>
+                    <li><label class="name"></label><input type="button" class="btn" value="上架发布"/><input type="button" class="btn btn_gray" value="取 消"/></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="member_left">
+        <ul class=" member_menu">
+            <li><h3 class="menu_hd"><a href="/memberCenter/index.html">会员中心</a></h3></li>
+            <li>
+                <h3 class="menu_hd"><i class="minus_ico"></i><a href="javascript:void(0)">常用功能</a></h3>
+                <div class="sub_menu">
+                    <a href="/memberCenter/myBuy.html">我要买</a>
+                    <a href="/memberCenter/mySell.html">我要卖</a>
+                    <a href="">发布新产品</a>
+                    <a href="/product/myProduct.html ">我发布的产品</a>
+                    <a href="/memberCenter/excellentProductApplication.html">优秀产品认证</a>
+                    <a href="javascript:void(0)">企业诚信认证</a>
+                </div>
+            </li>
+            <li>
+                <h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">特色服务</a></h3>
+                <div class="sub_menu" style="display: none;">
+                    <a href="/qualityEval/list.html">产品质量评估</a>
+                    <a href="/expertService/list.html">专家库</a>
+                    <a href="/financialProduct/list.html">金融服务</a>
+                </div>
+            </li>
+            <li>
+                <h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">我的关注</a></h3>
+                <div class="sub_menu" style="display: none;">
+                    <a href="/memberCenter/findMyAttentionProduct.html">我关注的产品</a>
+                    <a href="/memberCenter/findMyAttentionCompany.html">我关注的企业</a>
+                    <a href="javascript:void(0)">我关注的价格指数</a>
+                </div>
+            </li>
+            <li>
+                <h3 class="menu_hd"><i class="plus_ico"></i><a href="">站内信</a></h3>
+                <div class="sub_menu" style="display: none;">
+                    <a href="/memberCenter/receiverEmail.html">我的收件箱</a>
+                    <a href="/memberCenter/sendEmail.html">我的发件箱</a>
+                    <a href="/memberCenter/writerEmail.html">发送消息</a>
+                </div>
+            </li>
+            <li>
+                <h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">客户服务</a></h3>
+                <div class="sub_menu" style="display: none;">
+                    <a href="javascript:void(0)">投诉&;举报</a>
+                    <a href="/userNoteType/list.html">医采币发票申请</a>
+                    <a href="javascript:void(0)">联系客服</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="dialog_filter" style="display:none;"></div>
+<div class="dialog_box" style="display:none;">
+    <a href="javascript:void(0)" class="close"></a>
+    <div class="hd">
+        <h3 class="title">选择上架新商品</h3>
+    </div>
+    <div class="bd">
+        <div class="dialog_search">
+            <div class="search_tit">快速检索</div>
+            <div class="head_search">
+                <ul class="head_search_tabs">
+                    <li class="current"><a name="DB-1-1" title="产品" href="javascript:;">产品</a></li>
+                    <li><a name="DB-1-2" title="供应商" href="javascript:;">供应商</a></li>
+                </ul>
+                <div class="head_search_con">
+                    <form>
+                        <input type="text" placeholder="输入名字/拼音首字母" class="keyword"/>
+                        <input type="button" class="search_btn" value="搜索" title="搜 索"/>
+                    </form>
+                </div><input type="button" class="btn_weak" value="上架自家产品" title="上架自家产品"/>
+            </div>
+        </div>
+        <div class="classify_mod">
+            <div class="search_tit">按分类搜索</div>
+            <ul class="classify_ul">
+                <li class="item">
+                    <div class="s_input"><i></i><input type="text" placeholder="输入名称快速搜索" class="keyword"/></div>
+                    <ul class="s_menu">
+                        <li class="on"><a href="javascript:void(0)"><i>&gt;</i>分类一</a></li>
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类二</a></li>
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类三</a></li>
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类三</a></li>
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类三</a></li>
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类三</a></li>
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类三</a></li>
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类三</a></li>
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类三</a></li>
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类三</a></li>
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类三</a></li>
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类三</a></li>
+                    </ul>
+                </li>
+                <li class="item">
+                    <div class="s_input"><i></i><input type="text" placeholder="输入名称快速搜索" class="keyword"/></div>
+                    <ul class="s_menu">
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类一</a></li>
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类二</a></li>
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类三</a></li>
+                    </ul>
+                </li>
+                <li class="item">
+                    <div class="s_input"><i></i><input type="text" placeholder="输入名称快速搜索" class="keyword"/></div>
+                    <ul class="s_menu">
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类一</a></li>
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类二</a></li>
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类三</a></li>
+                    </ul>
+                </li>
+                <li class="item">
+                    <div class="s_input"><i></i><input type="text" placeholder="输入名称快速搜索" class="keyword"/></div>
+                    <ul class="s_menu">
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类一</a></li>
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类二</a></li>
+                        <li><a href="javascript:void(0)"><i>&gt;</i>分类三</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

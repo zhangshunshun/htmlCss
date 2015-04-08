@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	  xmlns:th="http://www.thymeleaf.org"
+	  layout:decorator="foreground/layout-simple">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=8" />
+	<title>医采币充值</title>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$("#accountI").hide();$("#accountSpan").hide();
+			$("#passI").hide();$("#passSpan").hide();
+			var passMsg = $("#passMsg").val();
+			if(passMsg=='yes'){
+				$("#passI").show();$("#passSpan").show();
+			}
+			var accountMsg = $("#accountMsg").val();
+			if(accountMsg=='yes'){
+				$("#accountI").show();$("#accountSpan").show();
+			}
+			if($("#msg").val()!=""){
+				$.alert($("#msg").val());
+			}
+
+			$("#count1").dayuwscroll({
+				parent_ele:'#wrapBox1', pre_btn:'#left1', next_btn:'#right1', path: 'left',
+				auto:true, time:3000, num:4, gd_num:4, waite_time:1000
+			});
+
+			$("#yiCaiRecharge").validate( {
+				checkStart : true,
+				errorElement: 'span',
+				errorClass: 'help-inline',
+				focusInvalid: false,
+				rules : {
+					fee : {required: true,number:true},
+					paymentPassword : {required: true}
+				},
+				messages : {
+					fee:{required: "必填",number:"必须为数字"},
+					paymentPassword:{required: "必填"}
+				},
+				submitHandler : function(form) {
+					$("#yiCaiRecharge").submit();
+				},
+				highlight: function (e) {
+					$(e).closest('.control-group').removeClass('info').addClass('error');
+				}
+			});
+		});
+	</script>
+	<style>
+		.input_txt1 {  border: 1px solid #ddd;  height: 34px;  line-height: 34px;  text-indent: 5px;  width: 300px;;  }
+		.control-group.error input, .control-group.error select, .control-group.error textarea {
+			border-color: #f09784;
+			color: #d68273;
+			-webkit-box-shadow: none;
+			-moz-box-shadow: none;
+			box-shadow: none
+		}
+		.control-group.error .control-label, .control-group.error .help-block, .control-group.error .help-inline {
+			color: #d16e6c
+		}
+		.userinfo .baseinfo .info .btn.disabled{
+			color:#999;background:#F9F9F9;
+		}
+	</style>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+<div class="crumbs">当前位置: <a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><a href="javascript:void(0)">会员中心</a><span class="gt">&gt;</span><span class="current_page">医采币充值</span></div>
+<div class="member_right">
+	<div class="userinfo">
+		<div class="baseinfo">
+			<div class="avatar"><a href="javascript:void(0)"><img src="../../../static/thumb/thumb_103x103.jpg" /></a>
+				<a href="/memberCenter/accountInfo.html" class="set">账户信息设置</a></div>
+			<div class="info">
+				<h3 class="title"><span th:text="${companyName.title}"></span></h3>
+				<p>认证信息：
+					<span th:if="${!isCredit and !isGold}">普通供应商</span>
+					<span th:if="${isCredit}"><i></i>诚信供应商</span>
+					<span th:if="${isGold}"><i class="icon2"></i>金牌供应商</span>
+				</p>
+				<p>
+					<a class="btn" href="/company/apply.html?t=1" th:if="${!isCredit}">申请诚信认证</a>
+					<a class="btn disabled" href="javascript:void(0)" th:if="${isCredit}">申请诚信认证</a>
+					<a class="btn" href="/company/apply.html?t=2" th:if="${!isGold}">申请金牌认证</a>
+					<a class="btn disabled" href="javascript:void(0)" th:if="${isGold}">申请金牌认证</a>
+				</p>
+			</div>
+		</div>
+		<div class="assets">
+			<h2 class="tit">现金余额</h2>
+			<div class="amount"><span class="num"><i><span th:text="${account.balance}"></span></i></span>元</div>
+			<div class="btnMod">
+				<a href="/account/toCashRecharge.htm" class="btn">充 值</a>
+				<a href="/account/toCashExtract.html" class="btn">提 现</a>
+				<a href="/account/cashRechargeList.htm" class="link">【明细】</a>
+			</div>
+		</div>
+		<div class="assets">
+			<h2 class="tit">医采币</h2>
+			<div class="amount"><span class="num"><i><span th:text="${account.yicaiBalance}"></span></i></span>枚 <br /> <span class="f12">1医采币=1RMB</span></div>
+			<div class="btnMod">
+				<a class="btn">充 值</a>
+				<a href="/transaction/list.htm" class="link">【发票】</a>
+				<a href="/transaction/yicaiRechargeList.htm" class="link">【明细】</a>
+			</div>
+		</div>
+	</div>
+	<div class="mod_box bill_mode">
+		<div class="hd">
+			<h3 class="title">医采币充值</h3>
+		</div>
+		<form class="form-horizontal" name="yiCaiRecharge" th:action="@{/transaction/doYiCaiRecharge.html}"  method="post" id="yiCaiRecharge">
+			<div class="bd">
+				<div class="hd_select">
+					<div class="select_box selectLb_box">
+						<input type="hidden" name="accountId" th:value="${account.id}" />
+						<input type="hidden" name="msg" id="msg" th:value="${msg}" />
+						<strong class="keyName">医采币 :</strong><span class="num_color" th:text="${account.yicaiBalance}"></span>枚</div>
+				</div>
+				<div class="hd_select">
+					<div class="select_box selectLb_box " >
+						<input type="hidden" id="balanceHidden" th:value="${account.balance}" />
+						<strong class="keyName">账户余额 :</strong><span class="num_color" th:text="${account.balance}"></span>元</div>
+				</div>
+				<div class="hd_select">
+					<div class="select_box selectLb_box control-group">
+						<strong class="keyName">充值医采币 :</strong><input name="fee" id="fee" type="text" placeholder="1医采币=1RMB" class="input_txt"/>
+						&nbsp;&nbsp;&nbsp;<i class="ico errow_ico_s" id="accountI"></i><span style="color: red" id="accountSpan">账户余额不足</span>
+						<input type="hidden" id="accountMsg" th:value="${accountMsg}"/>
+					</div>
+				</div>
+				<div class="hd_select">
+					<div class="select_box selectLb_box "><strong class="keyName">备注 :</strong><input type="text" name="note"  class="input_txt1" />  </div>
+				</div>
+
+				<div class="hd_select borer_1">
+					<div class="select_box control-group" ><strong class="keyName">支付密码 :</strong>
+						<input type="hidden" id="passMsg" th:value="${passMsg}"/>
+						<input name="paymentPassword" type="text" placeholder="" class="input_txt"/>
+						&nbsp;&nbsp;&nbsp;<i class="ico errow_ico_s" id="passI"></i><span style="color: red" id="passSpan">支付密码错误</span>
+						<!--<a href="javascript:void(0)"> 忘记密码？ </a> 31507 -->
+					</div>
+				</div>
+				<div class="btn_box">
+					<input type="submit" style="cursor: pointer" class="btn_key" value="支付" />
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="member_left">
+	<ul class=" member_menu">
+		<li><h3 class="menu_hd"><a href="/memberCenter/index.html">会员中心</a></h3></li>
+		<li>
+			<h3 class="menu_hd"><i class="minus_ico"></i><a href="javascript:void(0)">常用功能</a></h3>
+			<div class="sub_menu">
+				<a href="/memberCenter/myBuy.html">我要买</a>
+				<a href="/memberCenter/mySell.html">我要卖</a>
+				<a href="">发布新产品</a>
+				<a href="/product/myProduct.html ">我发布的产品</a>
+				<a href="/supply/findSupplyByCompanyId.html ">我发布的供应信息</a>
+				<a href="/supply/findPurchaseByCompanyId.html ">我发布的求购信息</a>
+				<a href="/memberCenter/excellentProductApplication.html">优秀产品认证</a>
+				<a href="/memberCenter/excellent3DProductApplication.html">3D产品认证</a>
+				<a href="javascript:void(0)">企业诚信认证</a>
+				<a href="/evaluate/evaluateList.html">我做的评价</a>
+			</div>
+		</li>
+		<li>
+			<h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">特色服务</a></h3>
+			<div class="sub_menu" style="display: none;">
+				<a href="javascript:void(0)">产品质量评估</a>
+				<a href="/expertService/list.html">专家库</a>
+				<a href="/financialProduct/list.html">金融服务</a>
+			</div>
+		</li>
+		<li>
+			<h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">我的关注</a></h3>
+			<div class="sub_menu" style="display: none;">
+				<a href="/memberCenter/findMyAttentionProduct.html">我关注的产品</a>
+				<a href="/memberCenter/findMyAttentionCompany.html">我关注的企业</a>
+				<a href="/memberCenter/findMyAttentionPurchase.html">我关注的价格指数</a>
+			</div>
+		</li>
+		<li>
+			<h3 class="menu_hd"><i class="plus_ico"></i><a href="">站内信</a></h3>
+			<div class="sub_menu" style="display: none;">
+				<a href="/memberCenter/receiverEmail.html">我的收件箱</a>
+				<a href="/memberCenter/sendEmail.html">我的发件箱</a>
+				<a href="/memberCenter/writerEmail.html">发送消息</a>
+			</div>
+		</li>
+		<li>
+			<h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">客户服务</a></h3>
+			<div class="sub_menu" style="display: none;">
+				<a href="javascript:void(0)">投诉&amp;举报</a>
+				<a href="/userNoteType/list.html">医采币发票申请</a>
+				<a href="javascript:void(0)">联系客服</a>
+			</div>
+		</li>
+	</ul>
+</div>
+</div>
+</body>
+</html>

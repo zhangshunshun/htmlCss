@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	  xmlns:th="http://www.thymeleaf.org"
+	  layout:decorator="foreground/layout-user">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=8" />
+	<title>企业注册</title>
+	<script type="text/javascript" src="../../../js/previewimg.js" th:src="@{/js/previewimg.js}"></script>
+	<script type="text/javascript">
+		jQuery(function() {
+			$("#codeError").hide();
+			$('[name=agree]').click(function(){
+				$('#btn_submit').prop('disabled',!this.checked);
+			});
+			var imgUrl=$("#hidden-picUrl").val();
+			if(imgUrl==""){
+				imgUrl="没有文件 ...";
+			}else{
+				$("#imgHeadPhoto").attr("src",imgUrl);
+			}
+			$('#edit-picUrl').ace_file_input({
+				no_file: imgUrl,
+				btn_choose: '上传图片',
+				btn_change: '更改图片',
+				droppable: false,
+				onchange: null,
+				thumbnail: false//| true | large
+			});
+///////////////////////////////////////
+			var imgUrlLogo=$("#hidden-logoUrl").val();
+			if(imgUrlLogo==""){
+				imgUrlLogo="没有文件 ...";
+			}else{
+				$("#imgLogoPhoto").attr("src",imgUrlLogo);
+			}
+			$('#edit-logoUrl').ace_file_input({
+				no_file: imgUrlLogo,
+				btn_choose: '上传图片',
+				btn_change: '更改图片',
+				droppable: false,
+				onchange: null,
+				thumbnail: false//| true | large
+			});
+//////////////////////////////////////////////
+			var imgUrlLogo1=$("#hidden-companyEffectiveLogo").val();
+			if(imgUrlLogo1==""){
+				imgUrlLogo1="没有文件 ...";
+			}else{
+				$("#imgCompanyEffectiveLogo").attr("src",imgUrlLogo1);
+			}
+			$('#edit-companyEffectiveLogo').ace_file_input({
+				no_file: imgUrlLogo1,
+				btn_choose: '上传图片',
+				btn_change: '更改图片',
+				droppable: false,
+				onchange: null,
+				thumbnail: false//| true | large
+			});
+/////////////////////////////////////////////////
+			var imgUrlLogo2=$("#hidden-licenseUrl").val();
+			if(imgUrlLogo2==""){
+				imgUrlLogo2="没有文件 ...";
+			}else{
+				$("#imgLicense").attr("src",imgUrlLogo2);
+			}
+			$('#edit-licenseUrl').ace_file_input({
+				no_file: imgUrlLogo2,
+				btn_choose: '上传图片',
+				btn_change: '更改图片',
+				droppable: false,
+				onchange: null,
+				thumbnail: false//| true | large
+			});
+////////////////////////////////////////////
+			var imgUrlLogo3=$("#hidden-legalUrl").val();
+			if(imgUrlLogo3==""){
+				imgUrlLogo3="没有文件 ...";
+			}else{
+				$("#imgLegal").attr("src",imgUrlLogo3);
+			}
+			$('#edit-legalUrl').ace_file_input({
+				no_file: imgUrlLogo3,
+				btn_choose: '上传图片',
+				btn_change: '更改图片',
+				droppable: false,
+				onchange: null,
+				thumbnail: false//| true | large
+			});
+//////////////////////////////////////////////
+			var imgUrlLogo4=$("#hidden-entrustUrl").val();
+			if(imgUrlLogo4==""){
+				imgUrlLogo4="没有文件 ...";
+			}else{
+				$("#imgEntrust").attr("src",imgUrlLogo4);
+			}
+			$('#edit-entrustUrl').ace_file_input({
+				no_file: imgUrlLogo4,
+				btn_choose: '上传图片',
+				btn_change: '更改图片',
+				droppable: false,
+				onchange: null,
+				thumbnail: false//| true | large
+			});
+//////////////////////////////////////
+			var imgUrlLogo5=$("#hidden-attorney").val();
+			if(imgUrlLogo5==""){
+				imgUrlLogo5="没有文件 ...";
+			}else{
+				$("#imgAttorney").attr("src",imgUrlLogo5);
+			}
+			$('#edit-attorney').ace_file_input({
+				no_file: imgUrlLogo5,
+				btn_choose: '上传图片',
+				btn_change: '更改图片',
+				droppable: false,
+				onchange: null,
+				thumbnail: false//| true | large
+			});
+/////////////////////////////////////////////////////
+			var imgUrlLogo6=$("#hidden-architecture").val();
+			if(imgUrlLogo6==""){
+				imgUrlLogo6="没有文件 ...";
+			}else{
+				$("#imgArchitecture").attr("src",imgUrlLogo6);
+			}
+			$('#edit-architecture').ace_file_input({
+				no_file: imgUrlLogo6,
+				btn_choose: '上传图片',
+				btn_change: '更改图片',
+				droppable: false,
+				onchange: null,
+				thumbnail: false//| true | large
+			});
+
+
+			//提交更新
+			$("#registerForm").validate({
+				checkStart : true,
+				errorElement: 'span',
+				errorClass: 'help-inline',
+				focusInvalid: false,
+				rules : {
+					loginName : {required: true,minlength:4,maxlength:30},
+					password:{required:true,minlength:6},
+					surePassword:{required:true,equalTo:"#password"},
+					email : {required: true,email:true },
+					title : {required: true},
+					cohr : {required: true},
+
+					provinceId : {required: true},
+					cityId : {required: true},
+					areaId : {required: true},
+					companyPhone:{required:true},
+
+					companyCode : {required: true},
+					companyEffectiveDate : {required: true},
+					companyAddress:{required: true},
+					provinceId:{required: true},
+					capital : {required: true,number:true },
+					lastyearSales : {required: true,number:true },
+					lastyearRatal : {required: true,number:true },
+					introduction:{required: true},
+					fileLogo : {required: true},
+					legalName : {required: true},
+					legalCardno : {required: true},
+					legalMobile : {required: true, isMobile:true},
+					legalPhone : {required: true},
+
+					linkManName : {required: true},
+					linkManPhone : { required: true, isMobile:true},
+					linkManJobTitle : {required: true},
+//					linkManStreet : {required: true},
+//					linkManZipCode : {required: true,maxlength:6,minlength:6},
+
+					businessNo : {required: true},
+					businessEffectiveStart : {required: true},
+					businessEffectiveEnd : {required: true},
+                	businessPathFile : {required: true},
+					businessAccount : {required: true},
+					code : {required: true}
+
+				},
+				messages : {
+					loginName : {required: "请填写登录名",minlength:"登录名最少为4个字符",maxlength:"登录名最多为30个字符"},
+					password : {required: "请填写密码",minlength:"密码最少为6个字符"},
+					surePassword : {required: "请填写确认密码",equalTo:"两次密码输入不一致"},
+					email:{required: "请填写邮箱",email:"请输入正确的邮箱格式"},
+					title:{required: "请填写公司名称"},
+					cohr:{required: "请填写公司简称"},
+
+					provinceId : {required: "请填写公司所在省份"},
+					cityId : {required: "请填写公司所在城市"},
+					areaId : {required: "请填写公司所在区县"},
+					companyPhone:{required:"请填写公司电话"},
+
+					companyCode:{required: "请填写组织机构代码"},
+					companyEffectiveDate:{required: "请填写组织机构代码有效期"},
+					companyAddress:{required: "请填写注册地址"},
+					provinceId:{required: "请选择省份"},
+					capital:{required: "请填写注册资本",number:"注册资本必须为数字"},
+					lastyearSales:{required: "请填写上年度销售额",number:"上年度销售额必须为数字"},
+					lastyearRatal:{required: "请填写上年度纳税额",number:"上年度纳税额必须为数字"},
+					introduction:{required: "请选择公司简介"},
+					fileLogo:{required: "请选择公司logo"},
+					legalName:{required: "请填写法定代表人姓名"},
+					legalCardno:{required: "请填写代表人证件号"},
+					legalMobile:{required: "请填写代表人手机号", isMobile:"手机号码格式有误"},
+					legalPhone:{required: "请填写代表人固定电话"},
+
+					linkManName : {required: "请填写联系人姓名"},
+					linkManPhone : { required: "请填写联系人手机号", isMobile:"手机号码格式有误"},
+					linkManJobTitle : {required: "请填写联系人职位"},
+//					linkManStreet : {required: "请填写联系人街道"},
+//					linkManZipCode : {required: "请填写邮编",maxlength:"邮编格式错误",minlength:"邮编格式错误"},
+
+					businessNo:{required: "请填写营业执照注册号"},
+					businessEffectiveStart:{required: "请填写起始时间"},
+					businessEffectiveEnd:{required: "请填写到期时间"},
+                	businessPathFile:{required: "请选择营业执照扫描件"},
+
+					businessAccount:{required: "请填写税务登记证号"},
+					code:{required: "请填写验证码"}
+				},
+				submitHandler : function(form) {
+					$("#loadingDiv").show();
+					$("#registerForm").ajaxSubmit({
+						dataType:"json",
+						type:"post",
+						success:function(date,res,me){
+							if(date.suc){
+								$("#loadingDiv").hide();
+								$.alert("创建成功,审核后可登陆!",function(){
+									window.location.href = "/user/toUser.htm";
+								});
+							}else {
+								if(date.msg=='验证码错误'){
+									$("#codeError").show();
+									$("#loadingDiv").hide();
+								}else{
+									$("#loadingDiv").hide();
+									$.alert("创建失败了！" + date.msg);
+								}
+							}
+						},error:function(a,b){
+							console.info(a,b);
+						}
+					});
+				},
+				highlight: function (e) {
+					$(e).closest('.control-group').removeClass('info').addClass('error');
+				}
+			});
+
+			initProvinceSelect();
+		});
+		function GetImage(){
+			document.getElementById("imageCode").src="/user/getCode3.htm?"+Math.random();
+		}
+
+		// 地区相关
+		function initProvinceSelect(){
+			var province = $("#provinceSelect").val();
+			$.ajax({
+				url: '/area/findProvinceAll.html',
+				type:'POST',
+				dataType:"json",
+				success: function (data) {
+					var str = [];    str.push('<option value="">----请选择----</option>');
+					if(data!=null){
+						jQuery.each(data,function(i,item){
+							if(province==item.provinceid){
+								str.push("<option value="+item.provinceid+" selected="+true+">"+item.province+"</option>");
+							}else{
+								str.push("<option value="+item.provinceid+">"+item.province+"</option>");
+							}
+						});
+						$("#province").html(str.join(""));
+						if(province!=""){
+//                    $("#province").val(""+province+"");
+							initCity();
+						}else{
+							$("#city").attr("disabled", true);
+							$("#area").attr("disabled", true);
+						}
+					}
+				}});
+		}
+		function initCity(){
+			var city =$("#citySelect").val();
+			var proVar = $("#province").val();
+			if(proVar!=''){
+				$("#city").attr("disabled", false);
+				$.ajax({
+					url: '/area/findCityByProvinceId.html',
+					data:{provinceId : proVar},
+					type:'POST',
+					dataType:"json",
+					success: function (data) {
+						if(data!=null){
+							var str = [];    str.push('<option value="">----请选择----</option>');
+							jQuery.each(data,function(i,item){
+								if(city==item.cityid){
+									str.push("<option value="+item.cityid+" selected="+true+">"+item.city+"</option>");
+								}else{
+									str.push("<option value="+item.cityid+">"+item.city+"</option>");
+								}
+							});
+							$("#city").html(str.join(""));
+							if(city!=''){
+//                        $("#city").val(""+city+"");
+								initArea();
+								$("#area").attr("disabled", false);
+							}else{
+								var strArea = [] ;  str.push('<option value="">----请选择----</option>');
+								$("#area").html(strArea.join(""));
+								$("#area").attr("disabled", true);
+							}
+						}
+					}});
+			}else{
+				var strCity = [] ;  strCity.push('<option value="">----请选择----</option>');
+				$("#city").attr("disabled", true);
+				$("#city").html(strCity.join(""));
+				var strArea = [] ;  strArea.push('<option value="">----请选择----</option>');
+				$("#area").attr("disabled", true);
+				$("#area").html(strArea.join(""));
+			}
+		}
+
+		function initArea(){
+			var area =$("#areaSelect").val();
+			var cityVar = $("#city").val();
+			if(cityVar!=''){
+				$("#area").attr("disabled", false);
+				$.ajax({
+					url: '/area/findAreaByCityId.html',
+					data:{cityId : cityVar},
+					type:'POST',
+					dataType:"json",
+					success: function (data) {
+						if(data!=null){
+							var str = [];    str.push('<option value="">----请选择----</option>');
+							jQuery.each(data,function(i,item){
+								if(area==item.areaid){
+									str.push("<option value="+item.areaid+" selected="+true+">"+item.area+"</option>");
+								}else{
+									str.push("<option value="+item.areaid+">"+item.area+"</option>");
+								}
+							});
+							$("#area").html(str.join(""));
+						}
+					}});
+			}else{
+				var strArea = [] ;  strArea.push('<option value="">----请选择----</option>');
+				$("#area").attr("disabled", true);
+				$("#area").html(strArea.join(""));
+			}
+		}
+	</script>
+	<style>
+		.btn_key[disabled]:hover {background-color:rgb(238,238,238);color:rgb(132,132,132);}
+	</style>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+	<div class="signin_wrap">
+		<div class="signin_mod">
+			<div class="hd hd_tab">
+				<a href="/user/toRegisterPersonal.htm">个人注册</a>
+				<a href="javascript:void(0)" class="current">企业注册</a>
+			</div>
+			<div class="bd">
+				<h4 class="reg_tips">企业会员注册，需要管理员审核，请注册时确保需要填写的信息完整，及准确。以便通过审核  !</h4>
+				<form action="/user/DoRegisterCompany.json" method="post" id="registerForm" enctype="multipart/form-data">
+					<ul class="filed_info item_filed">
+						<li>
+							<label class="keyName"><em class="star">*</em>用户名：</label>
+							<div class="filed_con control-group"><input type="text" name="loginName" class="input_txt" placeholder=""/></div>
+							<p class="tip_text">4-30位字符，可包含英文字母、数字、“－”和“_”</p>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>登入密码：</label>
+							<div class="filed_con control-group"><input name="password" id="password" type="password" class="input_txt" placeholder="请设置密码"/></div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>确认密码：</label>
+							<div class="filed_con control-group"><input type="password" name="surePassword" class="input_txt" placeholder="请再次输入密码"/></div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>常用邮箱：</label>
+							<div class="filed_con control-group"><input name="email" type="text" class="input_txt" placeholder="请输入常用邮箱"/></div>
+							<!--<p class="tip_text arrow_tip">审核通过后，会通过该邮箱通知</p>-->
+						</li>
+					</ul>
+					<ul class="filed_info item_filed">
+						<li>
+							<label class="keyName"><em class="star">*</em>公司名称：</label>
+							<div class="filed_con control-group"><input name="title" type="text" class="input_txt" placeholder=""/></div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>公司简称：</label>
+							<div class="filed_con control-group"><input name="cohr" type="text" class="input_txt" placeholder=""/></div>
+						</li>
+						<li class="address">
+							<label class="keyName"><em class="star">*</em>联系地址：</label>
+							<div class="filed_con control-group">
+								<input type="hidden"  id="provinceSelect"/>
+								<select name="provinceId" style="width: 140px;height: 37px;" class="ui-select" id="province" onchange="initCity();"></select>
+
+								<input type="hidden"  id="citySelect"/>
+								<select name="cityId" style="width: 140px;height: 37px;" class="ui-select" id="city" onchange="initArea();"></select>
+
+								<input type="hidden"  id="areaSelect"/>
+								<select name="areaId" style="width: 140px;height: 37px;" class="ui-select" id="area"></select>
+							</div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>公司电话：</label>
+							<div class="filed_con control-group"><input name="companyPhone" type="text" class="input_txt" placeholder=""/></div>
+						</li>
+						<li>
+							<label class="keyName">公司传真：</label>
+							<div class="filed_con"><input name="fax" type="text" class="input_txt" placeholder=""/></div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>组织结构代码：</label>
+							<div class="filed_con control-group"><input name="companyCode" type="text" class="input_txt" placeholder=""/></div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>组织结构代码有效期：</label>
+							<div class="filed_con control-group">
+								<!--<input type="text" class="input_txt" placeholder=""/>-->
+								<input type="text" style="width: 300px;" class="input_txt" readonly="readonly"
+									   name="companyEffectiveDate" id="companyEffectiveDate"
+									   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})"/>
+							</div>
+						</li>
+						<li class="filed_logo">
+							<label class="keyName">组织机构代码证图片路径：</label>
+							<div class="filed_con control-group">
+								<input type="file" id="edit-companyEffectiveLogo" name="companyEffectiveFile" onchange="PreviewImage(this,'imgCompanyEffectiveLogo','divCompanyEffectiveLogo');" />
+								<input type="hidden" id="hidden-companyEffectiveLogo" />
+								<div style="border: solid 1px #d2e2e2;width:227px;height:227px;margin-bottom:5px;" id="divCompanyEffectiveLogo">
+									<img id="imgCompanyEffectiveLogo" style="width: 225px; height: 225px; "
+										 alt="" />
+								</div>
+							</div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>注册地址：</label>
+							<div class="filed_con control-group"><input name="companyAddress" type="text" class="input_txt" placeholder=""/></div>
+						</li>
+						<li >
+							<label class="keyName"><em class="star">*</em>注册资本：</label>
+							<div class="filed_con control-group">
+								<input type="text" name="capital" class="input_txt" placeholder=""/>
+								<em>万元</em>
+							</div>
+						</li>
+						<li >
+							<div class="filed_con">
+								<label class="keyName"><em class="star">*</em>币种：</label>
+								<select name="capitalType" style="width: 240px;height: 37px;" class="ui-select" >
+									<option value="0">人民币</option>
+									<option value="1" >美金</option>
+									<option value="2">港币</option>
+								</select>
+							</div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>上年度销售额：</label>
+							<div class="filed_con control-group">
+								<input name="lastyearSales" type="text" class="input_txt" placeholder=""/>
+								<em>万元</em>
+							</div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>上年度纳税额：</label>
+							<div class="filed_con control-group">
+								<input name="lastyearRatal" type="text" class="input_txt" placeholder=""/>
+								<em>万元</em>
+							</div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>公司类型：</label>
+							<div class="filed_con">
+								<select name="companyType" style="width: 240px;height: 37px;" class="ui-select" >
+									<option value="1">医疗机构</option>
+									<option value="2">经销商</option>
+									<option value="3">生产商</option>
+									<option value="4">集采中心</option>
+								</select>
+							</div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>公司简介：</label>
+							<div class="filed_con control-group"><textarea maxlength="500" name="introduction" id="" class="textarea"></textarea></div>
+							<p class="tip_text">（0～500字）</p>
+						</li>
+						<li class="filed_logo">
+							<label class="keyName"><em class="star">*</em>公司logo：</label>
+							<div class="filed_con control-group">
+								<input type="file" id="edit-logoUrl" name="fileLogo" onchange="PreviewImage(this,'imglogoPhoto','divLogoPreview');" />
+								<input type="hidden" id="hidden-logoUrl" />
+								<div style="border: solid 1px #d2e2e2;width:227px;height:227px;margin-bottom:5px;" id="divLogoPreview">
+									<img id="imglogoPhoto" style="width: 225px; height: 225px; "
+										 alt="" />
+								</div>
+							</div>
+						</li>
+						<li class="filed_logo">
+							<label class="keyName">公司建筑图片：</label>
+							<div class="filed_con control-group">
+								<input type="file" id="edit-architecture" name="companyArchitectureFile" onchange="PreviewImage(this,'imgArchitecture','divArchitecture');" />
+								<input type="hidden" id="hidden-architecture" />
+								<div style="border: solid 1px #d2e2e2;width:227px;height:227px;margin-bottom:5px;" id="divArchitecture">
+									<img id="imgArchitecture" style="width: 225px; height: 225px; "
+										 alt="" />
+								</div>
+							</div>
+						</li>
+					</ul>
+					<ul class="filed_info item_filed">
+						<li>
+							<label class="keyName"><em class="star">*</em>联系人名字：</label>
+							<div class="filed_con control-group"><input type="text" name="linkManName" class="input_txt" placeholder=""/></div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>联系人手机号：</label>
+							<div class="filed_con control-group"><input type="text" name="linkManPhone" class="input_txt" placeholder=""/></div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>职位：</label>
+							<div class="filed_con control-group"><input type="text" name="linkManJobTitle" class="input_txt" placeholder=""/></div>
+						</li>
+						<li>
+							<label class="keyName">街道地址：</label>
+							<div class="filed_con"><input type="text" name="linkManStreet" class="input_txt" placeholder=""/></div>
+						</li>
+						<li>
+							<label class="keyName">邮编：</label>
+							<div class="filed_con"><input type="text" name="linkManZipCode" class="input_txt" placeholder=""/></div>
+						</li>
+					</ul>
+					<ul class="filed_info item_filed">
+						<li>
+							<label class="keyName"><em class="star">*</em>法定代表人姓名：</label>
+							<div class="filed_con control-group"><input type="text" name="legalName" class="input_txt" placeholder=""/></div>
+						</li>
+						<li >
+							<div class="filed_con">
+								<label class="keyName"><em class="star">*</em>法人证件类型：</label>
+								<select name="legalCardType" style="width: 240px;height: 37px;" class="ui-select" >
+									<option value="1">身份证</option>
+									<option value="2">护照</option>
+								</select>
+							</div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>法定代表人身份证（护照）号：</label>
+							<div class="filed_con control-group"><input type="text" name="legalCardno" class="input_txt" placeholder=""/></div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>法定代表人手机：</label>
+							<div class="filed_con control-group"><input type="text" name="legalMobile" class="input_txt" placeholder=""/></div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>法定代表人固定电话：</label>
+							<div class="filed_con control-group"><input type="text" name="legalPhone" class="input_txt" placeholder=""/></div>
+						</li>
+						<li>
+							<label class="keyName">法人委托授权书：</label>
+							<div class="filed_con control-group"><input type="text" name="legalEntrustAuthorized" class="input_txt" placeholder=""/></div>
+						</li>
+						<li class="filed_logo">
+							<label class="keyName">法人委托授权书图片路径：</label>
+							<div class="filed_con control-group">
+								<input type="file" id="edit-legalUrl" name="legalEntrustAuthorizedFile" onchange="PreviewImage(this,'imgLegal','divLogoLegal');" />
+								<input type="hidden" id="hidden-legalUrl" />
+								<div style="border: solid 1px #d2e2e2;width:227px;height:227px;margin-bottom:5px;" id="divLogoLegal">
+									<img id="imgLegal" style="width: 225px; height: 225px; "
+										 alt="" />
+								</div>
+							</div>
+						</li>
+
+					</ul>
+
+					<ul class="filed_info item_filed">
+						<li>
+							<label class="keyName">授权人：</label>
+							<div class="filed_con "><input type="text" name="authorizedPerson" class="input_txt" placeholder=""/></div>
+						</li>
+						<li>
+							<label class="keyName">授权人email：</label>
+							<div class="filed_con control-group"><input type="text" name="authorizedEmail" class="input_txt" placeholder=""/></div>
+						</li>
+						<li>
+							<label class="keyName">授权人身份证：</label>
+							<div class="filed_con control-group"><input type="text" name="authorizedCard" class="input_txt" placeholder=""/></div>
+						</li>
+						<li>
+							<label class="keyName">被授权人联系电话（手机）：</label>
+							<div class="filed_con"><input type="text" name="authorizedPhone" class="input_txt" placeholder=""/></div>
+						</li>
+						<li>
+							<label class="keyName">被委托人身份证：</label>
+							<div class="filed_con"><input type="text" name="entrustCard" class="input_txt" placeholder=""/></div>
+						</li>
+						<li class="filed_logo">
+							<label class="keyName">被委托人身份证图片路径：</label>
+							<div class="filed_con control-group">
+								<input type="file" id="edit-entrustUrl" name="entrustCardFile" onchange="PreviewImage(this,'imgentrust','divEntrust');" />
+								<input type="hidden" id="hidden-entrustUrl" />
+								<div style="border: solid 1px #d2e2e2;width:227px;height:227px;margin-bottom:5px;" id="divEntrust">
+									<img id="imgentrust" style="width: 225px; height: 225px; "
+										 alt="" />
+								</div>
+							</div>
+						</li>
+					</ul>
+
+					<ul class="filed_info item_filed">
+						<li>
+							<label class="keyName">生产（经营）许可证号：</label>
+							<div class="filed_con "><input type="text" name="productionLicense" class="input_txt" placeholder=""/></div>
+						</li>
+						<li>
+							<label class="keyName">生产（经营）许可证有效期：</label>
+							<div class="filed_con control-group">
+								<input type="text" style="width: 300px;" class="input_txt" readonly="readonly"
+									   name="productionLicenseDate" id="productionLicenseDate"
+									   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})"/>
+							</div>
+						</li>
+						<li>
+							<label class="keyName">生产（经营）许可证范围：</label>
+							<div class="filed_con control-group"><input type="text" name="productionLicenseRange" class="input_txt" placeholder=""/></div>
+						</li>
+						<li class="filed_logo">
+							<label class="keyName">生产（经营）许可证图片路径：</label>
+							<div class="filed_con control-group">
+								<input type="file" id="edit-licenseUrl" name="productionLicenseFile" onchange="PreviewImage(this,'imgLicense','divLogoLicense');" />
+								<input type="hidden" id="hidden-licenseUrl" />
+								<div style="border: solid 1px #d2e2e2;width:227px;height:227px;margin-bottom:5px;" id="divLogoLicense">
+									<img id="imgLicense" style="width: 225px; height: 225px; "
+										 alt="" />
+								</div>
+							</div>
+						</li>
+					</ul>
+
+					<ul class="filed_info item_filed">
+						<li>
+							<label class="keyName"><em class="star">*</em>营业执照注册号：</label>
+							<div class="filed_con control-group"><input type="text" name="businessNo" class="input_txt" placeholder=""/></div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>营业执照有效期：</label>
+							<div class="filed_con control-group">
+								<input type="text" style="width: 150px;" class="input_txt" readonly="readonly"
+									   name="businessEffectiveStart" id="edit-businessEffectiveStart"
+									   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})"/>-
+
+								<input type="text" style="width: 150px;" class="input_txt" readonly="readonly"
+									   name="businessEffectiveEnd" id="edit-businessEffectiveEnd"
+									   onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})"/>
+							</div>
+						</li>
+
+						<li class="filed_logo">
+							<label class="keyName"><em class="star">*</em>营业执照扫描件：</label>
+							<div class="filed_con control-group">
+								<input type="file" name="businessPathFile" id="edit-picUrl" onchange="PreviewImage(this,'imgHeadPhoto','divPreview');" />
+								<input type="hidden" id="hidden-picUrl" />
+								<div style="border: solid 1px #d2e2e2;width:227px;height:227px;margin-bottom:5px;" id="divPreview">
+									<img id="imgHeadPhoto" style="width: 225px; height: 225px; "
+										 alt="" />
+								</div>
+							</div>
+						</li>
+
+						<li>
+							<label class="keyName">进口产品代理委托授权书：</label>
+							<div class="filed_con control-group"><input name="productAttorney" type="text" class="input_txt" placeholder=""/></div>
+						</li>
+						<li class="filed_logo">
+							<label class="keyName">进口产品代理委托授权书图片路径：</label>
+							<div class="filed_con control-group">
+								<input type="file" name="productAttorneyFile" id="edit-attorney" onchange="PreviewImage(this,'imgAttorney','divAttorney');" />
+								<input type="hidden" id="hidden-attorney" />
+								<div style="border: solid 1px #d2e2e2;width:227px;height:227px;margin-bottom:5px;" id="divAttorney">
+									<img id="imgAttorney" style="width: 225px; height: 225px; "
+										 alt="" />
+								</div>
+							</div>
+						</li>
+						<li>
+							<label class="keyName"><em class="star">*</em>税务登记证号：</label>
+							<div class="filed_con control-group"><input name="businessAccount" type="text" class="input_txt" placeholder=""/></div>
+						</li>
+
+
+						<li class="verify">
+							<label class="keyName"><em class="star">*</em>验证码：</label>
+							<div class="filed_con control-group">
+								<input type="text" name="code" class="input_txt w_s" placeholder="请输入验证码"/>
+								<img id="imageCode" onclick="GetImage();" src="/user/getCode3.htm" alt="" />
+								<a href="javascript:GetImage();">换一张</a></div>
+								<p id="codeError" class="tip_text arrow_tip">验证码错误</p>
+
+						</li>
+						<li class="checkbox_area">
+							<div class="filed_con"><label class=""><input name="agree" type="checkbox" />创建网站账号的同时，我同意遵守 <a href="javascript:void(0)">《医采网服务条款》</a></label></div>
+						</li>
+						<li class="filed_action">
+							<!--<a href="javascript:void(0)" class="btn_key">提交申请</a>-->
+							<input style="cursor: pointer" type="submit" id="btn_submit" class="btn_key" disabled="disabled" value="提交申请"/>
+							<a href="/login/toLogin.htm" class="text_link">已有账号登陆&gt;&gt;</a></li>
+					</ul>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

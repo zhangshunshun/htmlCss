@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>申请质量评估</title>
+    <script>
+        $(function(){
+            $('[name=agree]').click(function(){
+                $('#btn_submit').prop('disabled',!this.checked);
+            });
+            $('#edit-material').ace_file_input({
+                no_file: '请将申请资料打包上传',
+                btn_choose: '上传材料',
+                btn_change: '重新上传',
+                droppable: false,
+                onchange: null,
+                thumbnail: false,//| true | large
+//                whitelist:'xls|xlsx'
+                //blacklist:'exe|php'
+                before_change:function(a,b,c){
+                    validator.element($('#edit-material'));
+                    return true;
+                }
+            });
+
+            //提交更新
+            var validator=$("#editcontent").validate( {
+                checkStart : true,
+                errorElement: 'span',
+                errorClass: 'help-inline',
+                focusInvalid: false,
+                rules : {
+                    applicant:{
+                        required:true
+                    },
+                    mobilePhone:{
+                        required:true,
+                        isMobile:true
+                    },
+                    file:{
+                        required:true,
+                        fileSuffix:'rar,RAR,zip,ZIP',
+                        fileMaxSize:52428800
+                    }
+                },
+                messages : {
+                    applicant:{
+                        required:"请填写申请人姓名"
+                    },
+                    mobilePhone:{
+                        required:"请填写联系手机",
+                        isMobile:"联系手机格式有误"
+                    },
+                    file:{
+                        required:'请上传申请资料',
+                        fileSuffix:"请上传rar或zip压缩文件",
+                        fileMaxSize:'文件大小不能超过50MB'
+                    }
+                },
+                submitHandler : function(form) {
+                    $("#editcontent").ajaxSubmit(function(date){
+                        if(date.suc){
+                            $.alert("申请已成功提交，请等待后台审核！",function(){
+                                location.href='/qualityEval/list.html';
+                            });
+                        }else {
+                            alert("申请提交失败了！" + date.msg);
+                        }
+                    });
+                },
+                highlight: function (e) {
+                    $(e).closest('.control-group').removeClass('info').addClass('error');
+                },
+                errorPlacement: function(error, element) {
+                    if(element.is('[type=file]')){
+                        error.addClass('right');
+                    }
+                    error.appendTo(element.parent());
+                    element.css('borderColor','red');
+                }
+            });
+
+
+        });
+    </script>
+    <style>
+        #editcontent .help-inline{
+            color:red;
+            position:absolute;
+            padding:0 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            left:100px;
+            bottom:40px;
+            border:1px solid #ccc;
+        }
+        #editcontent .help-inline:after,#editcontent .help-inline:before{
+            content:"";
+            display:block;
+            border-width:12px 6px;
+            position:absolute;
+            bottom:-24px;
+            left:20px;
+            border-style:solid dashed dashed;
+            border-color:#ccc transparent transparent;
+            font-size:0;
+            line-height:0;
+        }
+        #editcontent .help-inline:after{
+            bottom:-22px;
+            border-color:#fff transparent transparent;
+        }
+        #editcontent .help-inline.right{
+            left:130px;
+            bottom:42px;
+            white-space: nowrap;
+        }
+        .btn_key[disabled]:hover {background-color:rgb(238,238,238);color:rgb(132,132,132);}
+    </style>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="crumbs"><a href="/">首页</a><span class="gt">&gt;</span><span class="current_page">质量评估申请</span></div>
+    <div class="main_right">
+        <div class="mod_box financial_apply">
+            <div class="bd">
+                <h1 class="page_title">产品质量评估申请</h1>
+                <form action="/qualityEvalApply/submit.json" method="post" id="editcontent" enctype="multipart/form-data">
+                    <input type="hidden" name="qualityEvalId" th:value="${q.id}"/>
+                    <input type="hidden" name="companyId" th:value="${company.id}"/>
+                    <input type="hidden" name="qualityEvalTitle" th:value="${q.title}"/>
+                    <ul class="filed_info">
+                        <li>
+                            <label class="keyName">申请日期：</label>
+                            <div class="filed_con" th:text="${#dates.format(#dates.createToday(),'yyyy-MM-dd')}">2015-02-02</div>
+                        </li>
+                        <li>
+                            <label class="keyName">公司名称：</label>
+                            <div class="filed_con"><input type="text" readonly="readonly" name="companyName" class="input_txt w_l" th:value="${company.title}"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName">申请人：</label>
+                            <div class="filed_con"><input type="text" class="input_txt" name="applicant"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName">固定电话：</label>
+                            <div class="filed_con"><input type="text" readonly="readonly" class="input_txt" th:value="${company.companyPhone}"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName">联系手机：</label>
+                            <div class="filed_con"><input type="text" class="input_txt" name="mobilePhone"/></div>
+                        </li>
+                        <li class="apply">
+                            <label class="keyName">申请资料：</label>
+                            <div class="filed_con">
+                                <input type="file" id="edit-material" name="file" />
+                            </div>
+                        </li>
+                        <li class="remarks">
+                            <label class="keyName">备注：</label>
+                            <div class="filed_con"><textarea name="remark" class="textarea"></textarea></div>
+                        </li>
+                        <li class="checkbox_area">
+                            <div class="filed_con"><label class=""><input name="agree" type="checkbox"/>申请产品质量评估的同时，我同意遵守 <a href="javascript:void(0)">《医采网服务条款》</a></label></div>
+                        </li>
+                        <li class="filed_action"><input type="submit" id="btn_submit" class="btn_key" disabled="disabled" value="提交申请"/><a class="btn_weak" href="/qualityEval/list.html">取消</a></li>
+                    </ul>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="asid_left">
+        <div class="mod_box mechanism_mod">
+            <div class="hd">
+                <h2 class="title">产品质量评估</h2>
+            </div>
+            <div class="bd">
+                <h1 th:text="${q.title}"></h1>
+                <p class="tel_box" th:utext="${q.content}">
+                </p>
+                <div class="ft">已有<em class="light" th:text="${q.applyCount}">185</em>位客户免费申请</div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

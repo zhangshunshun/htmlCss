@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title th:text="${type.name}">培训咨询</title>
+
+    <script>
+        $(function(){
+            var options = {
+                currentPage: $("[name=page]").val(),
+                totalPages: $("[name=totalPage]").val(),
+                onPageClicked:function(e,type,page){
+                    $("[name=page]").val(page);
+                    $("#searchForm").submit();
+                }
+            };
+            $('#page').bootstrapPaginator(options);
+        });
+    </script>
+</head>
+<body>
+
+<div id="content" layout:fragment="content">
+    <div class="crumbs"><a href="/">首页</a><span class="gt">&gt;</span><span class="current_page" th:text="${type.name}">培训咨询</span></div>
+    <div class="mod_box notice_mod">
+        <form id="searchForm" th:action="@{/article/list.html(t=${t})}" method="post">
+            <input type="hidden" name="page" th:value="${page.page}" />
+            <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+            <div class="hd" th:if="${t!='exposure' and t!='survey' and t!='service'}">
+                <h2 class="title" th:text="${type.name}">培训咨询</h2>
+            </div>
+            <div class="hd form_hd" th:if="${t=='exposure' or t=='service'}">
+                <div class="select_box">
+                    <input class="input_txt" type="text" name="filter['title']" th:value="${page.filter['title']}"/>
+                </div>
+                <input type="submit" value="搜索" class="btn_weak"/>
+            </div>
+            <div class="hd form_hd" th:if="${t=='survey'}">
+                <div class="select_box">
+                    <input class="input_txt" placeholder="请输入产品名称" type="text" name="filter['productName']" th:value="${page.filter['productName']}"/>
+                </div>
+                <input type="submit" value="查看行情" class="btn_weak"/>
+            </div>
+            <div class="bd">
+                    <ul class="info_list">
+                        <li th:each="a:${page.result}"><i class="drop"></i><a th:href="@{/article/detail.html(id=${a.id})}" th:text="${a.title}">一起仿制药专利纠纷引发的故事</a><span class="time" th:text="${#dates.format(a.createDate,'yyyy-MM-dd HH:mm:ss')}">2013-05-08 17:25:20</span></li>
+                    </ul>
+                <div id="page"></div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

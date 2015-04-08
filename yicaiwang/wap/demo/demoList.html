@@ -1,0 +1,17 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head>
+  <meta charset="UTF-8" />
+  <title layout:title-pattern="$CONTENT_TITLE - $DECORATOR_TITLE">demo</title>
+
+</head>
+<body>
+<h2>demo测试 使用maven管理！ </h2>
+
+<input type="text" name="id" id="id" th:value="${demo.id}"/>
+<input type="text" name="name" id="name" th:value="${demo.name}"/>
+<input type="text" name="name" id="phone" th:value="${demo.phone}"/>
+
+</body>
+</html>

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-brief">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>采购订单页面</title>
+    <script type="text/javascript" src="../../../static/js/productOrders.js" th:src="@{/static/js/productOrders.js}"></script>
+    <style>
+        .label {
+            border-radius: 0;
+            text-shadow: none;
+            font-size: 11px;
+            font-weight: normal;
+            padding: 1px 5px 3px;
+            background-color:rgba(251, 254, 255, 0) !important;
+        }
+        .lay1{ width:200px; height:120px; border:1px solid #e3e3e3; float:left ;margin-left:80px}
+    </style>
+    <script>
+        $(function(){
+            initProvinceSelect();
+            // 提交验证
+            $("#addPurchaseOrders").validate({
+                checkStart: true,
+                errorElement: 'span',
+                errorClass: 'help-inline',
+                focusInvalid: false,
+                rules: {
+                    messrs: {required: true, maxlength: 20},
+                    provinceId: {required: true},
+                    street: {required: true,maxlength: 100},
+                    postcode: {required: true},
+                    phone: {required: true, maxlength: 11, isMobile: true},
+                    productFreight:{required:true},
+                    comid:{required:true}
+                },
+                messages: {
+                    messrs: {required: "必填", maxlength: "最多输入20个字符"},
+                    provinceId: {required: "必填"},
+                    street: {required: "必填",maxlength: "最多输入20个字符"},
+                    postcode: {required: "必须填写"},
+                    phone: {required: "必须填写", maxlength: "最多输入11个字符", isMobile: "手机号码格式有误"},
+                    productFreight: {required: "必填"},
+                    comid: {required: "必选"}
+                },
+                highlight: function (e) {
+                    $(e).closest('.control-group').removeClass('info').addClass('error');
+                },
+                unhighlight: function (e) {
+                    $(e).closest('.control-group').removeClass('error');
+                }
+            });
+
+
+            $("#submit").click(function(){
+                if($("#addPurchaseOrders").valid()){
+                    $("#loadingDiv").show();
+                $("#addPurchaseOrders").ajaxSubmit({
+                    url: '/productorders/add.json',
+                    type: 'POST',
+                    dataType: "json",
+                    success:function (data) {
+                        if (data.suc){
+                            alert("操作成功了!");
+                             window.location.href="/productorders/findOrdersPayment.html?id="+data.productordersId;
+                            $("#loadingDiv").hide();
+                        } else if(data.suc== false) {
+                            alert("保存失败了!");
+                          //  window.location.href="/commonsite/list.html";
+                            $("#loadingDiv").hide();
+                        }
+                    },
+                    error: function (XmlHttpRequest, textStatus, errorThrown) {
+                        alert("error");
+                    }
+                })
+                }
+            })
+
+
+         })
+        // 地区相关
+        function initProvinceSelect(){
+            var province = $("#provinceSelect").val();
+            $.ajax({
+                url: '/area/findProvinceAll.html',
+                type:'POST',
+                dataType:"json",
+                success: function (data) {
+                    var str = [];    str.push('<option value="">------请选择-----</option>');
+                    if(data!=null){
+                        jQuery.each(data,function(i,item){
+                            if(province==item.provinceid){
+                                str.push("<option value="+item.provinceid+" selected="+true+">"+item.province+"</option>");
+                            }else{
+                                str.push("<option value="+item.provinceid+">"+item.province+"</option>");
+                            }
+                        });
+                        $("#province").html(str.join(""));
+                        if(province!=""){
+//                    $("#province").val(""+province+"");
+                            initCity();
+                        }else{
+                            $("#city").attr("disabled", true);
+                            $("#area").attr("disabled", true);
+                        }
+                    }
+                }});
+        }
+        function initCity(){
+            var city =$("#citySelect").val();
+            var proVar = $("#province").val();
+            $("#provinceSelect").val(proVar);
+            if(proVar!=''){
+                $("#city").attr("disabled", false);
+                $.ajax({
+                    url: '/area/findCityByProvinceId.html',
+                    data:{provinceId : proVar},
+                    type:'POST',
+                    dataType:"json",
+                    success: function (data) {
+                        if(data!=null){
+                            var str = [];    str.push('<option value="">------请选择-----</option>');
+                            jQuery.each(data,function(i,item){
+                                if(city==item.cityid){
+                                    str.push("<option value="+item.cityid+" selected="+true+">"+item.city+"</option>");
+                                }else{
+                                    str.push("<option value="+item.cityid+">"+item.city+"</option>");
+                                }
+                            });
+                            $("#city").html(str.join(""));
+                            if(city!=''){
+//                        $("#city").val(""+city+"");
+                                initArea();
+                                $("#area").attr("disabled", false);
+                            }else{
+                                var strArea = [] ;  str.push('<option value="">------请选择-----</option>');
+                                $("#area").html(strArea.join(""));
+                                $("#area").attr("disabled", true);
+                            }
+                        }
+                    }});
+            }else{
+                var strCity = [] ;  strCity.push('<option value="">------请选择-----</option>');
+                $("#city").attr("disabled", true);
+                $("#city").html(strCity.join(""));
+                var strArea = [] ;  strArea.push('<option value="">------请选择-----</option>');
+                $("#area").attr("disabled", true);
+                $("#area").html(strArea.join(""));
+            }
+        }
+
+        function initArea(){
+            var area =$("#areaSelect").val();
+            var cityVar = $("#city").val();
+            $("#citySelect").val(cityVar);
+            if(cityVar!=''){
+                $("#area").attr("disabled", false);
+                $.ajax({
+                    url: '/area/findAreaByCityId.html',
+                    data:{cityId : cityVar},
+                    type:'POST',
+                    dataType:"json",
+                    success: function (data) {
+                        if(data!=null){
+                            var str = [];    str.push('<option value="">------请选择-----</option>');
+                            jQuery.each(data,function(i,item){
+                                if(area==item.areaid){
+                                    str.push("<option value="+item.areaid+" selected="+true+">"+item.area+"</option>");
+                                }else{
+                                    str.push("<option value="+item.areaid+">"+item.area+"</option>");
+                                }
+                            });
+                            $("#area").html(str.join(""));
+                        }
+                    }});
+            }else{
+                var strArea = [] ;  strArea.push('<option value="">------请选择-----</option>');
+                $("#area").attr("disabled", true);
+                $("#area").html(strArea.join(""));
+            }
+
+        }
+
+        function newArea(){
+            var areaVar = $("#area").val();
+           $("#areaSelect").val(areaVar);
+        }
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+ <form id="addPurchaseOrders"  action="/productorders/add.html" method="post">
+    <div class="wrap">
+        <div class="crumbs">当前位置:<a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><a href="javascript:void(0)">我买到的产品</a><span class="gt">&gt;</span><span class="current_page">支付</span></div>
+        <div class="mod_step">
+            <ul class="clearfix">
+                <li class="step start completed">
+                    <div class="status"><i class="numb">1</i><i class="line"></i></div>
+                    <p>确认订单信息</p>
+                </li>
+                <li class="step">
+                    <div class="status"><i class="numb">2</i><i class="line"></i></div>
+                    <p>付款</p>
+                </li>
+                <li class="step end">
+                    <div class="status"><i class="numb">3</i><i class="line"></i></div>
+                    <p>完成</p>
+                </li>
+            </ul>
+        </div>
+        <div class="mod_item mod_address">
+            <h2 class="mod_item_hd">请付款方式</h2>
+            <div class="mod_item_bd">
+                <ul class="mod_choose">
+                    <li class="item">
+                        <input type="radio" name="site" id="radigroup0_0" class="radio"  value="1" checked="true" /><label for="radigroup0_0" class="label">使用新地址</label>
+                        <input type="radio" name="site" id="radigroup0_1" class="radio"  value="2" /><label for="radigroup0_0" class="label">使用常用地址</label>
+                    </li>
+                </ul>
+                <ul class="form_list form_address" id="address">
+
+                    <li class="form_item">
+                        <label for="inpt_receiver" class="form_name">收货人：</label>
+                        <div class="form_cont control-group">
+                            <input type="text" class="form_input input1" value="" id="inpt_receiver" name="messrs"/>
+                        </div>
+                    </li>
+                    <li class="form_item"> <span class="form_name">所在地区：</span>
+                        <div class="form_cont control-group">
+                            <input type="hidden"  id="provinceSelect" name="provinceId" />
+                            <select name="commsitProvinceId" id="province" style="width:130px; height: 40px" onchange="initCity();">
+                                <option th:each="province:${provinceList}" th:value="${province.id}" th:text="${province.province}" th:selected="${company.provinceId==province.id}"></option>
+                            </select>
+                            <input type="hidden"  id="citySelect"  name="cityId"/>
+                            <select name="commsitCityId" id="city" style="width:130px; height: 40px" onchange="initArea();"></select>
+                            <input type="hidden"  id="areaSelect"  name="areaId"/>
+                            <select name="commsitAreaId" id="area" style="width:120px; height: 40px" onchange="newArea();"></select>
+                        </div>
+                    </li>
+                    <li class="form_item">
+                        <label for="inpt_street" class="form_name">街道地址：</label>
+                        <div class="form_cont control-group">
+                            <input type="text" class="form_input input2"  id="inpt_street" name="street"/>
+                        </div>
+                    </li>
+                    <li class="form_item">
+                        <label for="inpt_postcode" class="form_name">邮编：</label>
+                        <div class="form_cont control-group">
+                            <input type="text" class="form_input input2" id="inpt_postcode" name="postcode"/>
+                        </div>
+                    </li>
+                    <li class="form_item">
+                        <label for="inpt_mobile" class="form_name">手机：</label>
+                        <div class="form_cont control-group">
+                            <input type="text" class="form_input input2"  id="inpt_mobile" name="phone"/>
+                        </div>
+                    </li>
+                    <li class="form_item">
+                        <label for="inpt_tel" class="form_name">固定电话：</label>
+                        <div class="form_cont control-group">
+                            <input type="text" class="form_input input2"  id="inpt_tel" name="tel"/>
+                        </div>
+                    </li>
+                    <li class="form_item form_agreement">
+                        <div class="form_cont">
+                            <input type="hidden" name="isAddress" id="isAddress1" value="0"/>
+                            <input type="checkbox"  id="inpt_default"  value="1"/>
+                            <label for="inpt_default">设置为默认地址</label>
+                        </div>
+                    </li>
+                    <li class="form_item">
+                        <div class="form_cont">
+                            <button type="button" class="btn_link  readOnly">确认收货信息</button>
+                            <button type="button" class="btn_link  readOnlyUpdate" style="margin-left: 20px">修改收货信息</button>
+                        </div>
+                    </li>
+                </ul>
+
+                <div id="address1" style="display: none" th:if="${commonsiteList!=null}" >
+                    <div class="lay1 control-group" style="background-color:#f1f1f1" th:each="a:${commonsiteList}">
+                        <div ><input type="radio" name="comid" th:value="${a.id}" id="comid"/><!--<span style="color:royalblue; margin-left: 120px"> 默认地址</span>--></div>
+                        <div ><span style="font-weight:bolder;margin-left: 10px">收&nbsp;&nbsp;件&nbsp;人：</span><span th:text="${a.commsitMessrs}"></span></div>
+                        <div ><span style="font-weight:bolder;margin-left: 10px">联系电话：</span><span th:text="${a.commsitPhone!=null?a.commsitPhone:a.commsitTel}"></span></div>
+                        <div ><span style="font-weight:bolder;margin-left: 10px">收货地址：</span><span th:text="${a.proname}+${a.citname}+${a.areaname}+${a.commsitStreet}"></span></div>
+                    </div>
+                </div>
+                <div id="isAddress" style="display:none; margin-left: 150px"  th:if="${commonsiteList==null}"><h3>抱歉您没有常用地址,请选择使用新的地址</h3></div>
+            </div>
+        </div>
+        <div class="mod_item mod_invoice">
+            <h2 class="mod_item_hd">发票信息</h2>
+            <div class="mod_item_bd">
+                <ul class="mod_choose">
+                    <li class="item"><input type="radio" name="isbill" id="radigroup1_0" class="radio" checked="checked"  value="2"/><label for="radigroup1_0" class="label">不需要发票</label></li>
+                    <li class="item"><input type="radio" name="isbill" id="radigroup1_1" class="radio" value="1" /><label for="radigroup1_1" class="label">需要发票</label></li>
+                </ul>
+            </div>
+        </div>
+        <div class="mod_item mod_confim">
+            <h2 class="mod_item_hd">确认订单</h2>
+            <div class="mod_item_bd">
+                <div class="cart_main">
+                    <div class="cart_thead">
+                        <div class="column c_goods">货品</div>
+                        <div class="column c_price">单价（元）</div>
+                        <div class="column c_quantity">数量</div>
+                        <div class="column c_sum">金额（元）</div>
+                        <div class="column c_post">运费（元）</div>
+                    </div>
+                    <div class="cart_list">
+                        <div class="cart_item">
+                            <div class="cart_tbody" th:each="productList:${ordersList}">
+                                <div class="cart_tbody_hd"  >
+                                    卖家：<a href="javascript:void(0)" th:text="${productList.comTitle}"></a>
+                                    <input type="hidden" th:value="${productList.referenceId}" name="productReferenceId"/><!--主订单的购物城ID-->
+                                    <input type="hidden" th:value="${productList.productUserId}" name="productUserId"/><!--上架人-->
+                                    <input type="hidden" th:value="${productList.productId}" name="productId"/><!--主产品的购物车ID-->
+                                    <input type="hidden" th:value="${productList.salesPrices}" name="actualPrice"/><!--主产品的实际价格-->
+                                    <input type="hidden" class="productRepertory" id="productRepertory" th:value="${productList.productRepertory}"/> <!--主产品的剩余库存量-->
+                                </div>
+                                    <div class="cart_tbody_bd clearfix sumPrice">
+                                        <div class="column c_goods">
+                                            <div class="pic"><a href="javascript:void(0)"><img th:src="${'htttp://114.215.80.184/img'+productList.path}" alt=""/></a></div>
+                                            <div class="decs">
+                                                <h3 class="p_name"><a href="javascript:void(0)" class="weblink" th:text="${productList.productName}"></a></h3>
+                                                <p class="p_extend" th:text="${'规格：'+productList.productNorms}"></p>
+                                            </div>
+                                        </div>
+                                        <div class="column c_price ordersPrice" ><span class="numb price"  th:text="${productList.salesPrices}"></span></div>
+                                        <div class="column c_quantity">
+                                            <div class="quantity_form" >
+                                                <a href="javascript:void(0);" class="decrement disabled min" >-</a>
+                                                <input autocomplete="off" type="text" class="itxt num" th:value="${productList.num}" name="productNum" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'1')}else{this.value=this.value.replace(/\D/g,'1')}" onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'1')}else{this.value=this.value.replace(/\D/g,'1')}"/>
+                                                <a href="javascript:void(0);" class="increment add" >+</a>
+                                            </div>
+                                        </div>
+                                        <div class="column c_sum"><span class="numb jine" th:text="${productList.productPrice}"></span></div>
+                                        <div class="column c_post  control-group" th:if="${productList.productUserlogis==1}">
+                                            <input type="text" class="inpt yunFei"  name="productFreight" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}" onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"/>
+                                        </div>
+                                        <div class="column c_post" th:if="${productList.productUserlogis==2}">
+                                           <span>卖方承担</span> <input type="hidden"  value="0" name="productFreight" />
+                                        </div>
+                                    </div>
+
+
+                                <div class="cart_tbody_bd clearfix sumPrice" th:each="patrsList:${productList.childList}">
+                                    <input type="hidden" th:value="${patrsList.referenceId}" name="partsReferenceId"/><!--配件表的购物车id-->
+                                   <!-- <input type="hidden" th:value="${patrsList.mpsId}" name=""/>-->
+                                    <div class="column c_goods">
+                                        <div class="pic">配件：<a href="javascript:void(0)"><img th:src="${'htttp://114.215.80.184/img'+patrsList.medPath}" alt=""/></a></div>
+                                        <div class="decs">
+                                            <h3 class="p_name"><a href="javascript:void(0)" class="weblink" th:text="${patrsList.mpsName}"></a></h3>
+                                        </div>
+                                    </div>
+                                    <div class="column c_price ordersPrice" ><span class="numb price"  th:text="${patrsList.mppuSalesPrices}"></span></div>
+                                    <div class="column c_quantity">
+                                        <div class="quantity_form" >
+                                            <a href="javascript:void(0);" class="decrement disabled min" >-</a>
+                                            <input autocomplete="off" type="text" class="itxt num" name="partsNum" th:value="${patrsList.mcNum}" onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'1')}else{this.value=this.value.replace(/\D/g,'1')}" onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'1')}else{this.value=this.value.replace(/\D/g,'1')}"/>
+                                            <a href="javascript:void(0);" class="increment add" >+</a>
+                                        </div>
+                                    </div>
+                                    <div class="column c_sum"><span class="numb jine" th:text="${patrsList.partsPrice}"></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cart_expand clearfix">
+                        <div class="message">
+                            <label for="inpt_message" class="label">给卖家留言：</label>
+                            <input type="text" class="inpt"  name="message" id="inpt_message" data-tips="用户输入内容后添加类名：inpt_focus" />
+                        </div>
+                        <div class="pro_cost">
+                            <div class="post_sum">运费共计：<span class="price sunYunFei"></span> </div>
+                            <div class="sum_price">货品总金额： <span class="price kinds"></span></div>
+                        </div>
+                    </div>
+                    <div class="cart_toolbar">
+                        <div class="amount_sum"><span class="amount_item" th:if="${ordersList!=null}" th:text="${'主货品种类：'+ordersList.size()}">种</span><span class="amount_item sumCount">数量总计：<span>0</span>件</span></div>
+                        <div class="post_sum">运费共计：<span class="price sunYunFei"></span> </div>
+                        <div class="pro_price">货品总金额： <span class="price kinds"></span></div>
+                        <div class="sum_price">应付总额（含运费）: <span class="price sunZong"></span>
+                            <input type="hidden" name="totalPrices" id="totalPrices"/>
+                        </div>
+                        <div class="btn_box"><button type="button" class="btn_key btn_link" th:if="${ordersList!=null}" id="submit">提交订单</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-brief">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>采购订单页面</title>
+    <style>
+      .label {
+            border-radius: 0;
+            text-shadow: none;
+            font-size: 11px;
+            font-weight: normal;
+            padding: 1px 5px 3px;
+            background-color:rgba(251, 254, 255, 0) !important;
+        }
+    </style>
+    <script>
+        $(document).ready(function(){
+            $("#count1").dayuwscroll({
+                parent_ele:'#wrapBox1',
+                pre_btn:'#left1',
+                next_btn:'#right1',
+                path: 'left',
+                auto:false,
+                time:3000,
+                num:1,
+                gd_num:1,
+                waite_time:1000
+            });
+        });
+
+        //<![CDATA[
+        $(function(){
+            var msg = $("#msg").val();
+            if(msg!=''){
+                var divTwo=$(".btn_box");
+                divTwo.find('button').attr("disabled", "disabled");
+                divTwo.find('button').addClass("btn_key1");
+
+            }
+            var newMsg = $("#newMsg").val();
+            if(newMsg!=''){
+                var divTwo=$(".btn_box");
+                divTwo.find('button').attr("disabled", "disabled");
+                divTwo.find('button').addClass("btn_key1");
+            }
+
+
+            var pop_up = $(".dialog_box");
+            var pop_filter = $(".dialog_filter");
+            $(".js_btn_id").click(function(){
+                var url = "/productorders/orders.html?id="+$("#hidden-productid").val()+'&type='+'view';
+                $("#iframe").attr("src",url);
+                $("#iframe").load();
+                pop_up.show();
+                pop_filter.show();
+            });
+            $(".dialog_box .close,.dialog_filter").click(function(){pop_up.hide();pop_filter.hide();});
+
+
+            //点击在线支付
+           $("#radigroup1_0").click(function(){
+               var divOne=$("#div1");
+               var divTwo=$(".btn_box");
+               var hShow=$("#hShow")
+               divOne.css("display","inline-block");
+               divTwo.find('button').html("去支付")
+               hShow.html('请选择支付方式');
+
+           });
+            //点击货到付款
+            $("#radigroup1_1").click(function(){
+                var divOne=$("#div1");
+                var divTwo=$(".btn_box");
+                var hShow=$("#hShow")
+                divOne.css("display","none");
+                divTwo.find('button').html("确定付款")
+                hShow.html('');
+
+            });
+
+
+            //表单提交
+            $("#accountResultForm").validate({
+                checkStart: true,
+                errorElement: 'span',
+                errorClass: 'help-inline',
+                focusInvalid: false,
+                rules: {
+                    alipayName: {required: true}
+                },
+                messages : {
+                    alipayName : {required : "必须填写"}
+
+                },
+                submitHandler : function(form) {
+                    $("#loadingDiv").show();
+                   $("#accountResultForm").submit();
+                    $("#loadingDiv").hide();
+                },
+                highlight: function (e) {
+                    $(e).closest('.control-group').removeClass('info').addClass('error');
+                }
+            });
+
+        });
+        //]]>
+    </script>
+    <style>
+        .btn_key1[disabled]:hover {background-color:rgb(238,238,238);color:rgb(132,132,132);}
+        .btn_key1 {background-color:rgb(238,238,238);color:rgb(132,132,132);}
+    </style>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="wrap mod_item_pay">
+        <div class="crumbs">当前位置:<a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><a href="javascript:void(0)">我买到的产品</a><span class="gt">&gt;</span><span class="current_page">支付</span></div>
+        <div class="mod_step">
+            <ul class="clearfix">
+                <li class="step start completed">
+                    <div class="status"><i class="numb">1</i><i class="line"></i></div>
+                    <p>确认订单信息</p>
+                </li>
+                <li class="step completed">
+                    <div class="status"><i class="numb">2</i><i class="line"></i></div>
+                    <p>付款</p>
+                </li>
+                <li class="step end">
+                    <div class="status"><i class="numb">3</i><i class="line"></i></div>
+                    <p>完成</p>
+                </li>
+            </ul>
+        </div>
+      <form method="post" id="accountResultForm" action="/productorders/pay.html">
+          <h2 style="color: red; margin-left:400px;" th:if="${productorders==null}">该订单不存在或已失效</h2>
+        <div class="mod_item mod_confim" th:if="${productorders!=null}">
+            <h2 class="mod_item_hd_pay">收银台</h2>
+            <div>
+                <input type="hidden" th:value="${productorders.id}" id="hidden-productid"/>
+                <div class="mod_item_pay_main clearfix">
+                    <div class="order_tips" id="validTrue" th:if="${newMsg==''}">
+                        <div class="order">订单提交成功，请您尽快付款！ 订单号：<span th:text="${productorders.proordNumber}"></span></div>
+                        <div class="tips"><span>请您在提交订单后24小时内完成支付，否则订单会自动取消。</span></div>
+                    </div>
+                    <div class="order_tips" id="validFalse"  th:if="${newMsg!=''}">
+                        <div class="tips"><h2 style="color: red;">该订单已超时失效!</h2></div>
+                    </div>
+
+                    <div class="price_detail">
+                        <div class="sum_price">应付金额: <span class="price" th:text="${'￥'+productorders.proordRental}"></span>元<input type="hidden" name="fee" th:value="${productorders.proordRental}"/>
+                        <input type="hidden" name="start" id="begindate" th:value="${#dates.format(productorders.createDate,'yyyy-MM-dd HH:ss:dd')}"/>
+                        </div>
+                        <div>
+                            <a href="javascript:void(0)" class="btn_link js_btn_id"><img class="icon_pay" src="../../../static/imgs/icon_pay.png" /><i class="icoc_zoom"></i>订单详情</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mod_item mod_invoice">
+                <h2 class="mod_item_hd_pay">选择付款方式</h2>
+                <div>
+                    <ul class="mod_choose_pay clearfix">
+                        <li class="item"><input type="radio" name="payment" id="radigroup1_0" class="radio" checked="checked" value="1" /><label for="radigroup1_0" class="label">在线付款</label></li>
+                        <li class="item"><input type="radio" name="payment" id="radigroup1_1" class="radio" value="2" /><label for="radigroup1_1" class="label">货到付款</label></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mod_item mod_invoice">
+                <input type="hidden" name = "accountId" th:value="${accountId}" />
+                <input type="hidden" name = "id" th:value="${productorders.id}" />
+                <input type="hidden" id = "msg" th:value="${msg}" />
+                <input type="hidden" id = "newMsg" th:value="${newMsg}" />
+
+                <h2 class="mod_item_hd_pay" id="hShow">请选择支付方式</h2>
+                <div id="div1">
+                    <ul class="mod_choose_pay clearfix">
+                        <li class="item"><input type="radio" class="radio"  checked="checked" /><label for="" class="label"><img src="../../../static/imgs/pay.png" /></label></li>
+                    </ul>
+                    <ul class="mod_choose_pay clearfix">
+                        <li class="item control-group">
+                            <span>支付宝账户：</span>
+                            <input type="text" name="alipayName" class="input_txt"/>
+                        </li>
+                    </ul>
+                    <ul class="mod_choose_pay clearfix">
+                        <li class="item">
+                            <span>备&emsp;&emsp;&emsp;注：</span>
+                            <input type="text" name="note" class="input_txt"/>
+                        </li>
+                    </ul>
+                </div>
+                <div class="btn_box"><button  type="submit" id="submit" class="btn_key btn_link">去支付</button></div>
+            </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- 查看清单详情 start-->
+    <div class="dialog_filter" style="display:none;"></div>
+    <div class="dialog_box property_pop" style="display:none;">
+        <a class="close" href="javascript:void(0)"></a>
+        <div class="hd">
+            <h3 class="title">订单详情</h3>
+        </div>
+        <iframe id="iframe" style="float:left;width: 840px;height: 520px;" frameborder="no" border="0" marginwidth="0" marginheight="0"  allowtransparency="yes"></iframe>
+    </div>
+    <!-- 查看订单详情end-->
+
+</div>
+</body>
+</html>

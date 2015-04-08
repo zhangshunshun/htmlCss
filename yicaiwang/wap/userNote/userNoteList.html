@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>发票管理-发票信息管理</title>
+    <script type="text/javascript" src="../../../js/previewimg.js" th:src="@{/js/previewimg.js}"></script>
+    <link href="../../../static/css/ace.min.css" th:href="@{/static/css/ace.min.css}" rel="stylesheet" type="text/css" />
+    <script>
+    //<![CDATA[
+    $(function(){
+        //点击个人的操作
+        $("#personage").click(function(){
+            var oneTitleName=$("#oneTitleName");
+            var titleName=$("#titleName");
+            var usernoteStatusOne=$("#usernoteStatusOne");
+            var usernoteStatuTwo=$("#usernoteStatuTwo");
+            oneTitleName.css("display","block");
+             titleName.css("display","none");
+            usernoteStatuTwo.css("display","none")
+            $("input[name=usernoteStatus]").val(['1']);
+            var none1=$("#none1");
+            var none2=$("#none2");
+            var none3=$("#none3");
+            var none4=$("#none4");
+            var none5=$("#none5");
+            var none6=$("#none6");
+            var none7=$("#none7");
+            var none8=$("#none8");
+            none1.css("display","none");
+            none2.css("display","none");
+            none3.css("display","none");
+            none4.css("display","none");
+            none5.css("display","none");
+            none6.css("display","none");
+            none7.css("display","none");
+            none8.css("display","none");
+        });
+        //点击企业的
+        $("#firm").click(function(){
+            var oneTitleName=$("#oneTitleName");
+            var titleName=$("#titleName");
+            var usernoteStatusOne=$("#usernoteStatusOne");
+            var usernoteStatuTwo=$("#usernoteStatuTwo");
+            oneTitleName.css("display","none");
+            titleName.css("display","block");
+            usernoteStatuTwo.css("display","inline-block")
+        });
+        //点击增值税普通的
+        $("#usernoteStatusOne input").click(function(){
+            var none1=$("#none1");
+            var none2=$("#none2");
+            var none3=$("#none3");
+            var none4=$("#none4");
+            var none5=$("#none5");
+            var none6=$("#none6");
+            var none7=$("#none7");
+            var none8=$("#none8");
+            none1.css("display","none");
+            none2.css("display","none");
+            none3.css("display","none");
+            none4.css("display","none");
+            none5.css("display","none");
+            none6.css("display","none");
+            none7.css("display","none");
+            none8.css("display","none");
+        });
+
+        $("#usernoteStatuTwo input").click(function(){
+            var none1=$("#none1");
+            var none2=$("#none2");
+            var none3=$("#none3");
+            var none4=$("#none4");
+            var none5=$("#none5");
+            var none6=$("#none6");
+            var none7=$("#none7");
+            var none8=$("#none8");
+            none1.css("display","inline-block");
+            none2.css("display","inline-block");
+            none3.css("display","inline-block");
+            none4.css("display","inline-block");
+            none5.css("display","inline-block");
+            none6.css("display","block");
+            none7.css("display","block");
+            none8.css("display","block");
+        });
+
+
+        var imgUrl=$("#hidden-picUrl").val();
+        if(imgUrl==""){
+            imgUrl="没有文件 ...";
+        }else{
+            $("#imgHeadPhoto").attr("src",imgUrl);
+        }
+        $('#edit-picUrl').ace_file_input({
+            no_file: imgUrl,
+            btn_choose: '上传图片',
+            btn_change: '更改图片',
+            droppable: false,
+            onchange: null,
+            thumbnail: false//| true | large
+        });
+
+        var imgUrl=$("#hidden-picUrl1").val();
+        if(imgUrl==""){
+            imgUrl="没有文件 ...";
+        }else{
+            $("#imgHeadPhoto1").attr("src",imgUrl);
+        }
+        $('#edit-picUrl1').ace_file_input({
+            no_file: imgUrl,
+            btn_choose: '上传图片',
+            btn_change: '更改图片',
+            droppable: false,
+            onchange: null,
+            thumbnail: false//| true | large
+        });
+
+        var imgUrl=$("#hidden-picUrl2").val();
+        if(imgUrl==""){
+            imgUrl="没有文件 ...";
+        }else{
+            $("#imgHeadPhoto2").attr("src",imgUrl);
+        }
+        $('#edit-picUrl2').ace_file_input({
+            no_file: imgUrl,
+            btn_choose: '上传图片',
+            btn_change: '更改图片',
+            droppable: false,
+            onchange: null,
+            thumbnail: false//| true | large
+        });
+
+
+        //ajax提交整个表单进行添加操作
+        $("#userNoteAdd").validate({
+            checkStart: true,
+            errorElement: 'span',
+            errorClass: 'help-inline',
+            focusInvalid: false,
+            rules: {
+                usernoteType: {required: true},
+                usernoteTitle: {required: true,maxlength: 20},
+                usernoteStatus: {required: true},
+                usernoteRegistration: {required: true, maxlength: 50},
+                usernoteBankname:{required: true},
+                usernoteBankaccount:{required: true},
+                usernoteRegaddress:{required: true},
+                usernotePhone: {required: true,  isMobile: true},
+                PathFile1: {required: true},
+                PathFile2: {required: true},
+                PathFile3: {required: true}
+            },
+            messages: {
+                usernoteType: {required: "必填"},
+                usernoteTitle: {required: "必填",maxlength:"最多输入20个字符"},
+                usernoteStatus: {required: "必填"},
+                usernoteRegistration: {required: "必填", maxlength: "最多输入50个字符"},
+                usernoteBankname:{required: "必填"},
+                usernoteBankaccount:{required: "必填"},
+                usernoteRegaddress:{required: "必填"},
+                usernotePhone: {required: "必填", isMobile: "号码格式有误"},
+                PathFile1: {required: "必须上传"},
+                PathFile2: {required: "必须上传"},
+                PathFile3: {required: "必须上传"}
+            },
+            highlight: function (e) {
+                $(e).closest('.control-group').removeClass('info').addClass('error');
+            },
+            unhighlight: function (e) {
+                $(e).closest('.control-group').removeClass('error');
+            }
+        });
+
+
+        $(".btn_key").click(function(){
+            if ($("#userNoteAdd").valid()) {
+                $("#loadingDiv").show();
+                $('#userNoteAdd').ajaxSubmit({
+                    url: '/usernote/add.json',
+                    type: 'POST',
+                    dataType: "json",
+                    success:function (data) {
+                        if (data.suc){
+                            alert("操作成功了!");
+                           window.location.href="/usernote/list.html";
+                            $("#loadingDiv").hide();
+                        } else if(data.suc== false) {
+                            alert("保存失败了!");
+                          //  window.location.href="/commonsite/list.html";
+                            $("#loadingDiv").hide();
+                        }
+                    },
+                    error: function (XmlHttpRequest, textStatus, errorThrown) {
+                        alert("error");
+                    }
+                });
+            }
+
+        });
+
+
+    });
+    //]]>
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="wrap">
+        <div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">发票管理</span></div>
+        <div class="main_right">
+            <div class="cur_title"><h2>发票管理</h2></div>
+            <div class="manage_mod">
+                <div class="hd hd_tab">
+                    <a href="/userNoteType/list.html">发票列表</a>
+                    <a href="javascript:void(0)" class="current">发票信息管理</a>
+                    <a href="/commonsite/list.html">寄送地址管理</a>
+                </div>
+                <form action="/usernote/add.json" method="post" id="userNoteAdd" enctype="multipart/form-data" >
+                <div class="bd">
+                    <h4 class="write_tips">*请您完善以下发票信息。(发票信息仅限一条，一旦生效无法修改，请您慎重填写。)</h4>
+                    <ul class="filed_info invoice_filed">
+                        <li>
+                            <label class="keyName"><em class="star">*</em>开具类型：</label>
+                            <div class="filed_con"><label class="sel_box"><input type="radio" name="usernoteType" id="personage" value="1" checked="checked" />个人</label><label class="sel_box"><input type="radio" name="usernoteType" id="firm" value="2"/>企业</label></div>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>发票抬头：</label>
+                            <div class="filed_con control-group" id="titleName" style="display: none">
+                                <input type="text" class="input_txt" name="usernoteTitle" placeholder="输入抬头"/>
+                            </div>
+                            <div class="filed_con" id="oneTitleName"  style="display: block">
+                                <span>个人</span>
+                            </div>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>发票类型：</label>
+                            <div class="filed_con">
+                                <label class="sel_box" id="usernoteStatusOne"  style="display: inline-block"><input type="radio" name="usernoteStatus"  value="1" checked="checked" />增值税普通发票</label>
+                                <label class="sel_box" id="usernoteStatuTwo"  style="display: none"><input type="radio" name="usernoteStatus" value="2"/>增值税专用发票</label>
+                            </div>
+                        </li>
+                        <li id="none1" style="display: none">
+                            <label class="keyName"><em class="star">*</em>税务登记证号：</label>
+                            <div class="filed_con control-group"><input type="text" placeholder="" class="input_txt" name="usernoteRegistration"/></div>
+                        </li>
+                        <li id="none2" style="display: none">
+                            <label class="keyName"><em class="star">*</em>基本户开户银行名称：</label>
+                            <div class="filed_con control-group"><input type="text" placeholder="" class="input_txt" name="usernoteBankname"/></div>
+                        </li>
+                        <li id="none3" style="display: none">
+                            <label class="keyName"><em class="star">*</em>基本户开户账号：</label>
+                            <div class="filed_con control-group"><input type="text" placeholder="" class="input_txt" name="usernoteBankaccount"/></div>
+                        </li>
+                        <li id="none4"  style="display: none">
+                            <label class="keyName"><em class="star">*</em>注册场所地址：</label>
+                            <div class="filed_con control-group"><input type="text" placeholder="" class="input_txt" name="usernoteRegaddress"/></div>
+                        </li>
+                        <li id="none5" style="display: none">
+                            <label class="keyName"><em class="star">*</em>注册电话号码：</label>
+                            <div class="filed_con control-group"><input type="text" placeholder="" class="input_txt" name="usernotePhone"/></div>
+                        </li>
+                        <li id="none6"  style="display: none">
+                            <label class="keyName"><em class="star">*</em>营业执照复印件：</label>
+                            <div class="filed_con control-group">
+                                <input type="file" name="PathFile1" id="edit-picUrl2" onchange="PreviewImage(this,'imgHeadPhoto2','divPreview2');" />
+                                <input type="hidden" id="hidden-picUrl2" />
+                                <div style="border: solid 1px #d2e2e2;width:227px;height:227px;margin-bottom:5px;" id="divPreview2">
+                                    <img id="imgHeadPhoto2" style="width: 225px; height: 225px; "
+                                         alt="" />
+                                </div>
+                            </div>
+
+                        </li>
+                        <li id="none7" style="display: none">
+                            <label class="keyName"><em class="star">*</em>税务登记复印件：</label>
+                            <div class="filed_con control-group">
+                                <input type="file" name="PathFile2" id="edit-picUrl1" onchange="PreviewImage(this,'imgHeadPhoto1','divPreview1');" />
+                                <input type="hidden" id="hidden-picUrl1" />
+                                <div style="border: solid 1px #d2e2e2;width:227px;height:227px;margin-bottom:5px;" id="divPreview1">
+                                    <img id="imgHeadPhoto1" style="width: 225px; height: 225px; "
+                                         alt="" />
+                                </div>
+                            </div>
+                        </li>
+                        <li id="none8"  style="display: none">
+                            <label class="keyName"><em class="star">*</em>一般纳税人资格认证复印件：</label>
+                            <div class="filed_con control-group">
+                                <input type="file" name="PathFile3" id="edit-picUrl" onchange="PreviewImage(this,'imgHeadPhoto','divPreview');" />
+                                <input type="hidden" id="hidden-picUrl" />
+                                <div style="border: solid 1px #d2e2e2;width:227px;height:227px;margin-bottom:5px;" id="divPreview">
+                                    <img id="imgHeadPhoto" style="width: 225px; height: 225px; "
+                                         alt="" />
+                                </div>
+                            </div>
+                        </li>
+                        <li class="filed_action"><a href="javascript:void(0)" class="btn_key">提交</a></li>
+                    </ul>
+                </div>
+                </form>
+            </div>
+        </div>
+        <div class="asid_left">
+            <div class="account_menu">
+                <ul class="aside_menu">
+                    <li>
+                        <h3 class="menu_hd"><a href="javascript:void(0)">会员中心</a><i class="minus_ico"></i></h3>
+                        <div class="sub_menu" style="display: none">
+                            <a href="javascript:void(0)">心外科</a>
+                            <a href="javascript:void(0)" >肿瘤科</a>
+                            <a href="javascript:void(0)">妇科</a>
+                            <a href="javascript:void(0)">口腔科</a>
+                        </div>
+                    </li>
+                    <li>
+                        <h3 class="menu_hd"><a href="javascript:void(0)">账户信息设置 </a><i class="plus_ico"></i></h3>
+                        <div class="sub_menu" >
+                            <a href="/memberCenter/accountInfo.html">个人信息</a>
+                            <a href="/memberCenter/companyInfo.html">公司信息</a>
+                            <a href="/user/toUpdatePassword.html">密码修改</a>
+                            <a href="/company/toLinkMan.html">联系人管理</a>
+                            <a href="/userNoteType/list.html" class="acitve">发票信息</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

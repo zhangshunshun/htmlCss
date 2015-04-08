@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="product/layout-iframe">
+<head lang="en">
+    <meta charset="UTF-8"/>
+    <title>商品弹窗</title>
+
+    <!--改变父框架的尺寸 开始-->
+    <script type="text/javascript">
+        function resizeFrame() {
+            var ids = document.getElementById('ids').textContent;
+            ids = ids.substr(0,ids.length-1);
+            window.parent.document.getElementById('ids').value=ids;
+            var  aa = ids.split(",");
+            window.parent.document.getElementById('feiyong').value=aa.length*20;
+            window.parent.document.getElementById('iframe1').height = document.body.scrollHeight;
+        }
+    </script>
+    <!--改变父框架的尺寸 结束-->
+
+    <script type="text/javascript">
+        function addProduct(){
+            window.parent.document.getElementById('dialog_box').style.display="";
+            window.parent.document.getElementById('dialog_filter').style.display="";
+        }
+    </script>
+
+</head>
+<body onload="resizeFrame()" style="overflow-x:hidden;background-color: #fff;">
+<div id="content" layout:fragment="content">
+<div style="display: none;" id="ids"><span th:each="product:${productListForGood}" th:text="${product[id]}+','"></span></div>
+<div class="mod_p_recom" style="width: 957px;border:none;margin: 1px;">
+    <div class="mod_p_recom_list" style="border:none;">
+        <li class="item" th:each="good:${productListForGood}" style="border: none;">
+            <div class="pic"><a href="javascript:void(0)" th:id="${good[id]}" onclick="gotoDetail(this.id)"><img th:src="${good[imagePath]}" alt=""/></a></div>
+            <h3><a href="javascript:void(0)" th:id="${good[id]}" onclick="gotoDetail(this.id)" th:text="${good[name]}">专业生产和销售LED手术室无影整体反射医用手术灯 病床 吊塔</a></h3>
+            <p class="other"><i class="rmb">&yen;</i><span th:text="${good[money]}"></span></p>
+            <p class="sale">已售：<span th:text="${good[saleCount]==null}?'0':${good[saleCount]}"></span>件</p>
+        </li>
+        <li th:if="${productListForGood.size() == 0}" class="item" style="border: none;">
+            <div style="font-size: 14px; margin-top: 10px;" align="right">添加优秀产品：</div>
+        </li>
+        <li class="item apply_info" style="border: none;">
+            <div class="filed_con filed_pic">
+                <a class="add_pro thumb" style="border: 2px dashed #c5c5c5;" id="tp-pop-up" href="javascript:void(0)" onclick="addProduct()">+</a>
+            </div>
+        </li>
+    </div>
+</div>
+    </div>
+</body>
+</html>

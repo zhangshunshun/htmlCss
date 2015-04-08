@@ -1,0 +1,166 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+xmlns:th="http://www.thymeleaf.org" xmlns:c="http://www.w3.org/1999/html">
+<head>
+<meta charset="utf-8" />
+<title>产品参数对比</title>
+<link href="../../../static/css/global.css" rel="stylesheet" type="text/css" />
+<link href="../../../static/css/product.css" rel="stylesheet" type="text/css" />
+<link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+<script type="text/javascript" src="../../../static/js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="../../../static/js/js.js"></script>
+</head>
+<body>
+<div class="member_bar">
+  <div class="wrap">
+    <div class="welName">您好，<span class="blue">yicai</span> </div>
+    <div class="mod_qucik_nav">
+        <ul class="qucik_nav clearfix">
+          <li class="item item_index"><a href="javascript:void(0)" class="item_hd weblink">医采网首页</a></li>
+          <li class="item item_members"><a href="javascript:void(0)" class="item_hd">会员中心</a></li>
+          <li class="item item_cart"><a href="javascript:void(0)" class="item_hd"><i class="icon_cart"></i><span>我的购物车</span><i>25</i><i class="icon_drop"></i></a></li>
+          <li class="item item_attention"><a href="javascript:void(0)" class="item_hd">我的关注</a></li>
+          <li class="item item_supply"><a href="javascript:void(0)" class="item_hd">我是供应商</a></li>
+          <li class="item item_service"><a href="javascript:void(0)" class="item_hd"><i class="icon_service"></i><span>在线客服咨询</span></a></li>
+        </ul>
+      </div>
+  </div>
+</div>
+<div class="header">
+  <div class="wrap">
+    <div class="logo_member"><a href="javascript:void(0)"><img src="imgs/logo_member.png" /></a> </div>
+  </div>
+</div>
+<div class="container">
+    <div class="wrap">
+		  <div class="crumbs">当前位置:<a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><a href="javascript:void(0)">产品中心</a><span class="gt">&gt;</span><span class="current_page">产品参数对比</span></div>
+      <div class="mod_box compare_mod">
+        <div class="hd">
+          <a href="javascript:void(0)" class="btn_weak">删除</a>
+          <a href="javascript:void(0)" class="btn_weak">采购询价</a>
+          <a href="javascript:void(0)" class="btn_weak">添加更多产品</a>
+          <a href="javascript:void(0)" class="btn_weak">返回</a>
+        </div>
+        <!--<table class="compare_table">-->
+          <!--<tr>-->
+            <!--<th></th>-->
+            <!--<td><input type="checkbox"/></td>-->
+            <!--<td><input type="checkbox"/></td>-->
+            <!--<td><input type="checkbox"/></td>-->
+          <!--</tr>-->
+          <!--<tr>-->
+            <!--<th>产品名称</th>-->
+            <!--<td>心电图机（单道）</td>-->
+            <!--<td>心电图机（单道）</td>-->
+            <!--<td>心电图机（单道）</td>-->
+          <!--</tr>-->
+          <!--<tr>-->
+            <!--<th>图 片</th>-->
+            <!--<td><span class="thumb"><img src="thumb/100x100.jpg" alt=""/></span></td>-->
+            <!--<td><span class="thumb"><img src="thumb/100x100.jpg" alt=""/></span></td>-->
+            <!--<td><span class="thumb"><img src="thumb/100x100.jpg" alt=""/></span></td>-->
+          <!--</tr>-->
+          <!--<tr>-->
+            <!--<th>型号</th>-->
+            <!--<td>SE-1</td>-->
+            <!--<td>SE-1</td>-->
+            <!--<td>SE-1</td>-->
+          <!--</tr>-->
+          <!--<tr>-->
+            <!--<th>交流电干扰抑制</th>-->
+            <!--<td>交流电干扰抑制及肌电滤波、导联脱落检测、 灵敏度增益/走纸速度选择</td>-->
+            <!--<td>交流电干扰抑制及肌电滤波、导联脱落检测、 灵敏度增益/走纸速度选择</td>-->
+            <!--<td>交流电干扰抑制及肌电滤波、导联脱落检测、 灵敏度增益/走纸速度选择</td>-->
+          <!--</tr>-->
+          <!--<tr>-->
+            <!--<th>电池持续使用</th>-->
+            <!--<td>电池充满后可以连续工作3个小时</td>-->
+            <!--<td>电池充满后可以连续工作3个小时</td>-->
+            <!--<td>电池充满后可以连续工作3个小时</td>-->
+          <!--</tr>-->
+          <!--<tr>-->
+            <!--<th>操作界面</th>-->
+            <!--<td>中文</td>-->
+            <!--<td>中文</td>-->
+            <!--<td>中文</td>-->
+          <!--</tr>-->
+          <!--<tr>-->
+            <!--<th>浮地输入</th>-->
+            <!--<td>是</td>-->
+            <!--<td>是</td>-->
+            <!--<td>是</td>-->
+          <!--</tr>-->
+          <!--<tr>-->
+            <!--<th>具有除颤保护</th>-->
+            <!--<td>是</td>-->
+            <!--<td>是</td>-->
+            <!--<td>是</td>-->
+          <!--</tr>-->
+          <!--<tr>-->
+            <!--<th>技术性能要求</th>-->
+            <!--<td>/</td>-->
+            <!--<td>/</td>-->
+            <!--<td>/</td>-->
+          <!--</tr>-->
+          <!--<tr>-->
+            <!--<th>定标电压有误</th>-->
+            <!--<td>1mV±2%</td>-->
+            <!--<td>1mV±2%</td>-->
+            <!--<td>1mV±2%</td>-->
+          <!--</tr>-->
+          <!--<tr>-->
+            <!--<th>灵敏度增益</th>-->
+            <!--<td>2.5，5，10，20，自动mm/mV</td>-->
+            <!--<td>2.5，5，10，20，自动mm/mV</td>-->
+            <!--<td>2.5，5，10，20，自动mm/mV</td>-->
+          <!--</tr>-->
+          <!--<tr>-->
+            <!--<th>档位</th>-->
+            <!--<td>，5，10，20，自动mm/mV</td>-->
+            <!--<td>，5，10，20，自动mm/mV</td>-->
+            <!--<td>，5，10，20，自动mm/mV</td>-->
+          <!--</tr>-->
+        <!--</table>-->
+
+          <table class="compare_table">
+              <tr>
+                  <span>
+                    <th>产品图片</th>
+                    <td th:each="path:${picturePaths}">
+                      <img th:src="${path}" alt=""/>
+                    </td>
+                  </span>
+              </tr>
+              <tr th:each="map:${list}">
+                  <span th:each="hashMap:${map}">
+                      <th th:text="${hashMap.key}">灵敏度增益</th>
+                      <td th:each="name:${hashMap.value}" th:text="${name}"></td>
+                  </span>
+                  <!--<th th:each="hashMap:${map}" th:text="${hashMap.key}">灵敏度增益</th>-->
+                  <!--<td th:each="hashMap:${map}" th:text="${hashMap.value}">2.5，5，10，20，自动mm/mV</td>-->
+              </tr>
+          </table>
+
+      </div>
+    </div>
+</div>
+
+<div class="foot">
+	<div class="wrap">
+		<dl class="ft_right">
+			<dt><i class="ico ft_tel_ico"></i>服务热线：</dt>
+			<dd>
+				<p>021－8888888</p>
+				<p>021－8888888</p>
+			</dd>
+		</dl>
+		<div class="ft_nav">
+			<a href="javascript:void(0)">首页</a><a href="javascript:void(0)">关于我们</a><a href="javascript:void(0)">会员服务</a><a href="javascript:void(0)">广告服务</a><a href="javascript:void(0)">在线客服咨询</a><a href="javascript:void(0)">专家库</a><a href="javascript:void(0)">招标采购平台</a><a href="javascript:void(0)">网站地图</a><a href="javascript:void(0)">友情链接</a>
+		</div>
+		<p class="ft_copy"> 版权所有 &copy; 中国医疗器械采购公共服务平台  www.cyicai.com <br /> Copyright zhongguo yiliaoqixie International Financial Asset E</p>
+	</div>
+</div>
+</body>
+</html>

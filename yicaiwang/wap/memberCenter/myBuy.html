@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+    <script>
+        $(function(){
+
+            var options = {
+                currentPage: $("[name=page]").val(),
+                totalPages: $("[name=totalPage]").val(),
+                onPageClicked:function(e,type,page){
+                    $("[name=page]").val(page);
+                    $("#searchForm").submit();
+                }
+            };
+            $('#page').bootstrapPaginator(options);
+
+        });
+
+        function formatDate(date,format){
+            var paddNum = function(num){
+                num += "";
+                return num.replace(/^(\d)$/,"0$1");
+            }
+            //指定格式字符
+            var cfg = {
+                yyyy : date.getFullYear() //年 : 4位
+                ,yy : date.getFullYear().toString().substring(2)//年 : 2位
+                ,M  : date.getMonth() + 1  //月 : 如果1位的时候不补0
+                ,MM : paddNum(date.getMonth() + 1) //月 : 如果1位的时候补0
+                ,d  : date.getDate()   //日 : 如果1位的时候不补0
+                ,dd : paddNum(date.getDate())//日 : 如果1位的时候补0
+                ,h : date.getHours()  //时
+                ,hh : paddNum(date.getHours())  //时
+                ,m : date.getMinutes() //分
+                ,mm : paddNum(date.getMinutes()) //分
+                ,s  : date.getSeconds()   //秒 : 如果1位的时候不补0
+                ,ss : paddNum(date.getSeconds())//秒 : 如果1位的时候补0
+            }
+            format || (format = "yyyy-MM-dd hh:mm:ss");
+            return format.replace(/([a-z])(\1)*/ig,function(m){return cfg[m];});
+        }
+
+        function getTime(type){
+            var now=new Date();
+            if(type==1){
+                now.setDate(now.getDate()-3);
+                now.setHours(0);
+                now.setMinutes(0);
+                now.setSeconds(0);
+                $("#startTime").val(formatDate(now));
+            }else if(type==2){
+                now.setDate(now.getDate()-7);
+                now.setHours(0);
+                now.setMinutes(0);
+                now.setSeconds(0);
+                $("#startTime").val(formatDate(now));
+            }else if(type==3){
+                var myDate=new Date();
+                myDate.setMonth(myDate.getMonth()-1);
+                var newDate = myDate.getFullYear() + "-" + (myDate.getMonth()+1) + "-" + myDate.getDate()+" "+myDate.getHours()+":"+ myDate.getMinutes()+":"+myDate.getSeconds();
+                $("#startTime").val(newDate);
+            }
+            var nowEnd=new Date();
+            $("#endTime").val(formatDate(nowEnd));
+        }
+    </script>
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>我要买</title>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+<div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">我要买</span></div>
+<div class="main_right">
+    <div class="cur_title"><h2>我买的产品</h2></div>
+    <div class="manage_mod">
+        <div class="hd hd_tab">
+            <a href="/memberCenter/myBuy.html" class="current">近三个月订单</a>
+            <a href="/memberCenter/myBuyAfter.html">三个月前订单</a>
+        </div>
+        <div class="bd">
+            <form method="post" action="/memberCenter/myBuy.html" id="searchForm">
+                <input type="hidden" name="page" th:value="${page.page}" />
+                <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+            <div class="hd_input">
+                <div>订单号：<input type="text" name="filter['proordNumber']" th:value="${page.filter['proordNumber']}" class="text"/> 产品名称：<input type="text" class="text text2" th:value="${page.filter['name']}"  name="filter['name']"/> </div>
+                <div>成交时间：<input type="text" class="text" name="filter['startTime']"  th:value="${page.filter['startTime']}" id="startTime" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"/>到<input type="text" class="text" name="filter['endTime']" id="endTime" th:value="${page.filter['endTime']}" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"/>
+                    <label class="time">
+                        [&nbsp;
+                        <a href="javascript:getTime(1);">最近3天</a>
+                        &nbsp;&nbsp;
+                        <a href="javascript:getTime(2);">最近1周</a>
+                        &nbsp;&nbsp;
+                        <a href="javascript:getTime(3);">最近1个月</a>
+                        &nbsp;]
+                    </label>
+                    <input type="submit" class="btn" value="搜 索"/></div>
+            </div>
+            </form>
+            <table class="table_row sale_pro">
+                    <span  th:each="order:${orderList}">
+                        <span th:each="map:${order}">
+                           <span th:each="o:${map}">
+                               <tr>
+                              <th th:if="${o.key=='proordNumber'}" th:each="prood:${o.value}">
+                                  单号：<a th:href="@{/productorders/orders.html(id=${prood.orderId},type='prod')}"><span th:text="${prood.proordNumber}"> </span></a>
+                                  付款状态：<span th:if="${prood.proordState==1}">已付款</span>
+                                  <a th:href="@{/productorders/findOrdersPayment.html(id=${prood.orderId})}"><span th:if="${prood.proordState==2}">未付款</span></a>
+                              </th>
+                                   <th>
+                                       <span th:if="${o.key=='orderList'}" th:each="orderList:${o.value}" class="number">
+                                           <p>
+                                                <img th:src="${orderList.path}"/>
+                                               <a th:href="@{/product/productStandard.html(productId=${orderList.promainProductid})}"> <span th:text="${orderList.productname}"></span></a>
+                                                <span th:text="${orderList.promainActualprice}"></span>
+                                                <span th:text="${orderList.promainAmount}"></span>
+                                               <span th:text="${orderList.jine}"></span>
+                                               <a th:if="${orderList.proordState==1}" th:href="@{/evaluate/evaluateProduct.html(evaComuserid=${orderList.createUser},evaProductid=${orderList.promainProductid})}" >评价</a>
+                                                <span th:if="${orderList.productoracc!=null}" th:each="part:${orderList.productoracc}">
+                                                   <p>
+                                                       <img th:src="${part.accorderspath}"/>
+                                                        <span th:text="${part.accordersname}"></span>
+                                                        <span th:text="${part.accordActualprice}"></span>
+                                                        <span th:text="${part.accordAmount}"></span>
+                                                        <span th:text="${part.accordersjie}"></span>
+                                                   </p>
+                                                </span>
+                                           </p>
+                                        </span>
+                                   </th>
+                               </tr>
+                           </span>
+                        </span>
+                    </span>
+            </table>
+            <div class="pagination">
+                <div id="page"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="asid_left">
+    <div class="account_menu">
+        <ul class="aside_menu prodouct_bar">
+            <li><h3 class="menu_hd">常用功能</h3></li>
+            <li class="active"><a href="javascript:void(0)">发布求购</a><i class="minus_ico"></i></li>
+            <li><a href="javascript:void(0)">我的购物车</a><i class="minus_ico"></i></li>
+            <li><a href="/memberCenter/myBuy.html">我买到的产品</a><i class="minus_ico"></i></li>
+            <li><a href="javascript:void(0)">我做的评价</a><i class="minus_ico"></i></li>
+            <li><a href="javascript:void(0)">我发布的求购</a><i class="minus_ico"></i></li>
+        </ul>
+    </div>
+</div>
+</div>
+</body>
+</html>

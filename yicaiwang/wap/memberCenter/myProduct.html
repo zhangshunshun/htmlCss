@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>我要卖</title>
+    <script type="text/javascript">
+        /*<![CDATA[*/
+        $(function(){
+            var options = {
+                currentPage: $("[name=page]").val(),
+                totalPages: $("[name=totalPage]").val(),
+                onPageClicked:function(e,type,page){
+                    $("[name=page]").val(page);
+                    $("#searchForm").submit();
+                }
+            }
+            $('#page').bootstrapPaginator(options);
+        });
+        function editProduct(id){
+            window.location.href="/product/addedProductDetail.html?id="+id;
+        }
+        function removeThis(id){
+            $.ajax({
+                url:"/product/removeProductUser.json?id="+id+"&companyId="+$("#productId-"+id).val(),
+                type: "POST",
+                dataType: "json",
+                success: function (data) {
+                    if (data.flag) {
+                        $.alert(data.msg)
+                        window.location.reload();
+                    } else {
+                        $.alert(data.msg);
+                        window.location.reload();
+                    }
+                }
+            });
+        }
+       function addedThisProduct(id){
+           $.ajax({
+               url:"/product/addedSubmitProductUser.json?id="+id,
+               type: "POST",
+               dataType: "json",
+               success: function (data) {
+                   if (data.flag) {
+                       $.alert(data.msg)
+                       window.location.reload();
+                   } else {
+                       $.alert(data.msg);
+                       window.location.reload();
+                   }
+               }
+           });
+       }
+        /*]]>*/
+    </script>
+    <style type="text/css">
+        .mybtn {
+            padding: 0;
+            border: 0 solid;
+            float: left;
+            color: 	#333 !important;
+        }
+    </style>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+
+    <div class="container">
+        <div class="wrap">
+            <div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">我的产品库</span></div>
+            <div class="main_right">
+                <div class="cur_title"><h2>我的产品库</h2></div>
+                <form action="/product/myProduct.html" id="searchForm">
+                    <input type="hidden"  name="page" th:value="${page.page}" />
+                    <input type="hidden"  name="totalPage" th:value="${page.totalPage}" />
+                </form>
+                <div class="re_product">
+                    <div class="bd">
+                        <ul class="pro_list">
+                            <li th:each="product:${page.result}" th:if="${product.status==2 or product.status==3}">
+                                <a href="javascript:void(0)" class="pic"><img src="thumb/213x197.jpg"/></a>
+                                <h3 class="name"><a href="javascript:void(0)" th:text="${product.productName}">专业生产和销售LED手术室无影灯 整体反射医用手术灯 病床 吊塔</a></h3>
+                                <div class="price">¥<span th:text="${product.salesPrices}+'元'"></span></div>
+                                <div class="btn_box">
+                                    <a href="javascript:void(0)" onclick="removeThis(this.id)" th:id="${product.id}" class="mybtn">下架</a>
+                                    <input type="hidden" th:id="'productId-'+${product.id}" th:value="${product.companyId}"/>
+                                    <a href="javascript:void(0)" th:id="${product.productId}" onclick="editProduct(this.id)" style="color: #f6f6f6" class="mybtn"><i></i>编辑</a></div>
+                            </li>
+                            <li th:each="product:${page.result}" th:if="${product.status==1}">
+                                <a href="javascript:void(0)" class="pic"><img src="thumb/213x197.jpg"/></a>
+                                <h3 class="name"><a href="javascript:void(0)" th:text="${product.productName}">专业生产和销售LED手术室无影灯 整体反射医用手术灯 病床 吊塔</a></h3>
+                                <div class="price">¥<span th:text="${product.salesPrices}+'元'"></span></div>
+                                <div class="btn_box btn_three"><a href="javascript:void(0)" onclick="addedThisProduct(this.id)" th:id="${product.id}" class="mybtn">上架产品</a>
+                                    <a href="javascript:void(0)" th:id="${product.productId}" onclick="editProduct(this.id)" class="mybtn" style="width: 66px;"><i></i>编辑</a>
+                                    </div>
+                            </li>
+                        </ul>
+                        <div class="pagination">
+                            <div id="page"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="asid_left">
+                <div class="account_menu">
+                    <ul class="aside_menu prodouct_bar">
+                        <li><h3 class="menu_hd">常用功能</h3></li>
+                        <li><a href="/product/addedChooseProduct.html">上架新产品</a><i class="minus_ico"></i></li>
+                        <li><a href="javascript:void(0)">批量导人产品</a><i class="minus_ico"></i></li>
+                        <li><a href="javascript:void(0)">发布供应信息</a><i class="minus_ico"></i></li>
+                        <li><a href="/memberCenter/mySell.html">我卖出的产品</a><i class="minus_ico"></i></li>
+                        <li class="active"><a href="/product/myProduct.html">我的产品库</a><i class="minus_ico"></i></li>
+                        <li><a href="javascript:void(0)">我的投标信息</a><i class="minus_ico"></i></li>
+                        <li><a href="javascript:void(0)">我的供应信息</a><i class="minus_ico"></i></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>评估价格</title>
+    <script>
+       $(function(){
+            var options = {
+                currentPage: $("[name=page]").val(),
+                totalPages: $("[name=totalPage]").val(),
+                onPageClicked:function(e,type,page){
+                    $("[name=page]").val(page);
+                    $("#searchForm").submit();
+                }
+            };
+            $('#page').bootstrapPaginator(options);
+
+           //点击左边的地区查询右边的数据
+           $(".area_lisat").find('a').click(function(){
+               $(this).parent().each(function () {//移除其余非点中状态
+                   $('.area_lisat a').removeClass("current");
+               });
+               $(this).addClass("current");//给所点中的增加样式
+               /*alert($(this).text().substring(0,2));*/
+               $("[name=page]").val(1);
+               $("#reginoal").val($(this).text().substring(0,2));
+               $("#searchForm").submit();
+           });
+
+            var r=$('#reginoal').val();
+           if(r!=''){
+               $('.area_lisat a:contains('+r+')').addClass('current').siblings().removeClass('current');
+           }
+        });
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="wrap">
+        <div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">采购指数</span></div>
+        <div class="priceDynamics_row">
+            <div class="hd">
+                <h2 class="title">最新价格播报 <span>（元/台）</span></h2>
+               <!-- <a href="javascript:void(0)" class="more">更多&gt;&gt;</a>-->
+            </div>
+            <div class="bd">
+                <div class="price_main">
+                    <table class="table_row price_table">
+                        <thead>
+                        <tr>
+                            <th class="name">产品</th>
+                            <th>价格</th>
+                            <th>地区</th>
+                            <th>日期</th>
+                            <!--<th>走势</th>-->
+                            <th class="operate">商家</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="reviewProductList:${page.result}">
+                            <td class="name" th:text="${reviewProductList.name}"></td>
+                            <td><span class="price" th:text="${'￥'+reviewProductList.money}"></span></td>
+                            <td th:text="${reviewProductList.proName}"></td>
+                            <td th:text="${reviewProductList.createDate}"></td>
+                           <!-- <td><img src="imgs/data_ico.jpg" alt=""/></td>-->
+                            <td class="operate"><a th:href="@{/company/detail.html(companyId=${reviewProductList.companyId})}"><i class="ico ren_ico"></i>供应商信息</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="container">
+                    <div id="page" class="pagination"></div>
+                    </div>
+                </div>
+                <div class="price_aside">
+                    <form id="searchForm" method="post" action="/reviewproduct/list.html">
+                        <input type="hidden" name="page" th:value="${page.page}" />
+                        <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+                        <input type="hidden" id="reginoal" name="filter['reginoal']" th:value="${page.filter['reginoal']}"/>
+                    <div class="area_lisat">
+                        <a>华北<span>市场</span></a>
+                        <a>华东<span>市场</span></a>
+                        <a>华南<span>市场</span></a>
+                        <a>华中<span>市场</span></a>
+                        <a>西北<span>市场</span></a>
+                        <a>西南<span>市场</span></a>
+                        <a>东北<span>市场</span></a>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+    <script type="text/javascript" charset="utf-8" src="../../../static/js/kindeditor/kindeditor.js"></script>
+    <script charset="utf-8" src="../../../static/js/kindeditor/lang/zh_CN.js"></script>
+    <link type="text/css" rel="stylesheet" href="../../../static/css/select.css"/>
+    <script src="../../../static/js/jquery.select.js"></script>
+
+    <script type="text/javascript">
+        KindEditor.ready(function(K) {
+            window.editor = K.create('#edit_desc', {
+                cssPath : '../../../admin/kindeditor/plugins/code/prettify.css',
+                allowFlashUpload:false,
+                syncType : 'auto',
+                allowFileManager : true,
+                uploadJson:'/article/uploadImage.json'
+
+            });
+
+
+            function desc(){
+                if(editor.html().length > 0){
+                    return true
+                }else{
+                    $("#error-content").show();
+                    return false;
+                }
+            }
+
+            $(function(){
+
+                //验证
+                $("#test").validate( {
+                    checkStart : true,
+                    errorElement: 'span',
+                    errorClass: 'help-inline',
+                    focusInvalid: false,
+                    ignore:'',
+                    rules : {
+                        sendName: {
+                            required: true
+                        },
+                        title: {
+                            required: true
+                        }
+                    },
+                    messages : {
+                        sendName : {
+                            required : "必须填写"
+                        },
+                        title : {
+                            required : "必须填写"
+                        }
+                    },
+                    highlight: function (e) {
+                        $(e).closest('.filed_con').removeClass('info').addClass('error');
+                    },
+                    errorPlacement:function(error,element){
+                        if(element.is('[name=sendName]')){
+                            error.insertAfter(element.siblings('.ui-select'));
+                        }else{
+                            error.appendTo(element.parent());
+                        }
+                    }
+
+                });
+
+
+
+
+
+
+                //提交按钮
+                $(".btn_key").click(function(){
+                    var sendName = $('#select-man').select('getMultipleText',';');     //发送对象名字
+                    var title = $("#title").val();      //标题
+                    var content =editor.html();          //内容
+                    var option={"sendName":sendName,"title":title,"content":content}
+                    $('#man').val(sendName);
+                    if( $("#test").valid()) {
+                        if (desc()) {
+                            $.ajax({
+                                url: "/memberCenter/insertEmail.html",
+                                type: 'POST',
+                                data: option,
+                                dataType: "json",
+                                success: function (date) {
+                                    if (date.suc) {
+                                        $.alert("发送成功");
+//                                        $("#man").val("");
+                                        $("#title").val("");
+                                        editor.html("");
+                                        location.href="/memberCenter/sendEmail.html";
+                                    } else {
+                                        $.alert(date.msg);
+                                        $("#man").val("");
+                                        $("#title").val("");
+                                        editor.html("");
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+
+
+
+
+                $('#select-man').select({
+                    multiple:true,
+                    search:true,
+                    onSelected:function(e,$option){
+//                        $('#man').val($('#select-man').select('getMultipleText',';'));
+                    }
+                });
+//                $(".btn-setting").click(function(){
+//                    $("#select-name").val('');
+//                    $("#search-2").val('');
+//                    $("#btn-ok").addClass("disabled");
+//                    $("#form-field-select-2").find(":selected").prop('selected',false);
+//                    dialog({
+//                        title:'选择联系人',
+//                        content:$('#select-man').select({multiple:true,search:true}).select('wrap')[0],
+//                        width:304
+//
+//                    }).showModal();
+//                    var arr=$('#select-man').select('getMultipleText',';');
+//                    console.info(arr);
+//                });
+
+                $('#btn-ok').click(function(){
+                    if($(this).hasClass("disabled")){
+                        return false;
+                    }
+                    var s=$("#form-field-select-2").find(":selected");
+                    $("#man").val($.map(s,function(n){
+                        return $(n).html()+";";
+                    }).join(''));
+                    $('.close').click();
+                });
+                $("#form-field-select-2").bind("click",function(){
+                    var s = $(this).find(":selected");
+                    $("#select-name").val($.map(s,function(n){
+                        return $(n).html()+";";
+                    }).join(''));
+                    $("#btn-ok").removeClass("disabled");
+                });
+                $("#search-2").bind("input propertychange", function() {
+                    var sendName=$(this).val();
+                   $.post('/memberCenter/findSendName.html', {"sendName":sendName},function(data){
+                        if(data.sysUserList){
+                            $("#form-field-select-2").html("");
+                            $.each(data.sysUserList, function() {
+                                $("<option/>").addClass("max-class").val(this.sendName).text(this.sendName).appendTo("#form-field-select-2");
+                            });
+                        }
+                    },'json');
+                });
+            })
+        });
+    </script>
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>写邮件</title>
+    <style>
+
+        [class^="icon-"], [class*=" icon-"] {
+            font-family: FontAwesome;
+            font-style: normal;
+            font-weight: normal;
+            text-decoration: inherit;
+        }
+        #search-2{
+            margin-left: 0;
+            display: inline-block;
+            float:none;
+            width:100%;
+            box-sizing: border-box;
+            min-height: 30px;
+            border-radius: 4px;
+            font-size: 14px;
+            height:20px;
+            line-height: 20px;
+            margin-bottom:10px;
+            vertical-align: middle;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<div id="content" layout:fragment="content">
+
+    <div id="modal-man" style="width:302px;display: none;">
+        <div class="widget-box">
+            <div class="header-color-blue2">
+                <span class="block input-icon input-icon-right">
+                    <input type="text" placeholder="" id="search-2" class="span12" />
+                    <i class="icon-search icon-on-right bigger-110"></i>
+                </span>
+            </div>
+            <div class="widget-body">
+                <select multiple="multiple" id="form-field-select-2" style="width: 300px;height: 100px;border: 0px;">
+                    <option th:each="u:${sysUserList}" th:value="${u.id}" class="max-class"><span th:text="${u.sendName}"></span></option>
+                </select>
+            </div>
+        </div>
+        <input type="text" id="select-name" readonly="readonly" placeholder="" class="input_txt" style="width:233px;"/>
+        <button type="button" style="height:35px;line-height:21px;" class="btn btn-primary disabled" id="btn-ok">确定</button>
+    </div>
+
+
+        <div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">填写信息</span></div>
+        <div class="main_right">
+            <div class="cur_title"><h2>填写信息</h2></div>
+            <div class="manage_mod">
+                <div class="bd">
+                    <form id="test" method="post" >
+                    <ul class="filed_info information_filed">
+                        <li style="color: red">发送多个联系人请用分号隔开</li>
+                        <li>
+                            <label class="keyName">发送对象：</label>
+                            <div class="filed_con control-group">
+                                <input type="hidden" id="man" name="sendName"/>
+                                <select multiple="multiple" id="select-man" style="">
+                                    <option th:each="u:${sysUserList}" th:value="${u.id}" class="max-class"><span th:text="${u.sendName}"></span></option>
+                                </select>
+                                <!--<a href="javascript:void(0)" class="btn btn-small btn-success btn-setting" ><i class="icon-list-alt"></i>选择联系人</a>-->
+                            </div>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>标题：</label>
+                            <div class="filed_con control-group"><input type="text" class="input_txt" placeholder="" id="title" name="title"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>内容：</label>
+                            <div class="filed_con control-group"><textarea  style="width:90%;height:300px;" name="desc" id="edit_desc"></textarea>
+                                <span class="help-inline" id="error-content" style="display: none;color:red;" generated="true" for="edit_desc">请填写内容</span></div>
+                        </li>
+                        <li class="filed_action"><a class="btn_key" href="javascript:void(0)">提交</a><a class="btn_weak" href="javascript:void(0)">取消</a><a class="btn_weak" href="javascript:void(0)">重 置</a></li>
+                    </ul>
+                </form>
+            </div>
+            </div>
+
+        </div>
+        <div class="asid_left">
+            <div class="account_menu">
+                <ul class="aside_menu prodouct_bar">
+                    <li><a href="/memberCenter/receiverEmail.html">收件箱</a><i class="minus_ico"></i></li>
+                    <li class="active"><a href="/memberCenter/sendEmail.html">发件箱</a><i class="minus_ico"></i></li>
+                    <li><a href="/memberCenter/writerEmail.html">发送消息</a><i class="minus_ico"></i></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

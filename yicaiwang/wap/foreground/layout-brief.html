@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <meta charset="utf-8"/>
+    <title layout:title-pattern="$CONTENT_TITLE - $DECORATOR_TITLE">ul</title>
+
+    <meta name="description" content="responsive photo gallery using colorbox"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <link href="../../../static/css/global.css" th:href="@{/static/css/global.css}" rel="stylesheet" type="text/css" />
+    <!--<link href="../../../static/css/common.css" th:href="@{/static/css/common.css}" rel="stylesheet" type="text/css" />-->
+    <link href="../../../static/css/account.css" th:href="@{/static/css/account.css}" rel="stylesheet" type="text/css" />
+    <link href="../../../static/css/ace.min.css" th:href="@{/static/css/ace.min.css}" rel="stylesheet" type="text/css" />
+    <link href="../../../static/css/ui-dialog.css" th:href="@{/static/css/ui-dialog.css}" rel="stylesheet" type="text/css" />
+    <!--<link href="../../../static/css/popup.css" th:href="@{/static/css/popup.css}" rel="stylesheet" type="text/css" />-->
+    <link href="../../../static/css/product.css" th:href="@{/static/css/product.css}" rel="stylesheet" type="text/css" />
+    <link href="../../../static/css/fix.css" th:href="@{/static/css/fix.css}" rel="stylesheet" type="text/css" />
+    <link href="../../../static/css/common.css" th:href="@{/static/css/common.css}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="../../../static/js/jquery-1.10.2.min.js" th:src="@{/static/js/jquery-1.10.2.min.js}"></script>
+    <script type="text/javascript" src="../../../static/js/jquery.form.js" th:src="@{/static/js/jquery.form.js}"></script>
+    <script type="text/javascript" src="../../../static/js/jquery.metadata.js" th:src="@{/static/js/jquery.metadata.js}"></script>
+    <script type="text/javascript" src="../../../static/js/slides.min.jquery.js" th:src="@{/static/js/slides.min.jquery.js}"></script>
+    <script type="text/javascript" src="../../../static/js/dialog-plus-min.js" th:src="@{/static/js/dialog-plus-min.js}"></script>
+    <script type="text/javascript" src="../../../static/js/dialog.js" th:src="@{/static/js/dialog.js}"></script>
+    <script type="text/javascript" src="../../../static/js/scroll.js" th:src="@{/static/js/scroll.js}"></script>
+    <script type="text/javascript" src="../../../static/js/js.js" th:src="@{/static/js/js.js}"></script>
+    <script type="text/javascript" src="../../../static/js/jquery.validate.min.js" th:src="@{/static/js/jquery.validate.min.js}"></script>
+    <script type="text/javascript" src="../../../static/js/validate-methods.js" th:src="@{/static/js/validate-methods.js}"></script>
+    <script type="text/javascript" src="../../../static/js/bootstrap-paginator.js" th:src="@{/static/js/bootstrap-paginator.js}"></script>
+</head>
+<body>
+<div class="member_bar">
+    <div class="wrap">
+        <div class="welName">您好，<span class="blue">yicai</span> </div>
+        <ul class="top_menu">
+            <li class="item"><a href="javascript:void(0)" class="blue">医采网首页</a> </li>
+            <li class="item"><a href="javascript:void(0)">会员中心</a> </li>
+            <li class="item"><a href="javascript:void(0)"><i class="icon i_cart"></i>我的购物车<span class="num">25</span><i class="icon i_arrow"></i></a> </li>
+            <li class="item"><a href="javascript:void(0)">我的关注</a> </li>
+            <li class="item"><a href="javascript:void(0)">我是供应商</a> </li>
+            <li class="item service"><a href="javascript:void(0)"><i class="icon i_ser"></i>在线客服咨询</a> </li>
+        </ul>
+    </div>
+</div>
+<div class="header">
+    <div class="wrap">
+        <div class="logo_member"><a href="javascript:void(0)"><img src="../../../static/imgs/logo_member.png" /></a> </div>
+        <div class="head_search">
+            <div class="ui-select">
+                <ul class="select-list">
+                    <li class="hover">供应商</li>
+                    <li>采购商</li>
+                    <li>产品行情</li>
+                    <li>价格指数</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container container_center">
+    <div class="wrap" layout:fragment="content">
+
+    </div>
+</div>
+<div class="foot">
+    <div class="wrap">
+        <dl class="ft_right">
+            <dt><i class="ico ft_tel_ico"></i>服务热线：</dt>
+            <dd th:if="${session.footPhone!=null}" th:utext="${session.footPhone.content}">
+                <p>021－8888888</p>
+                <p>021－8888888</p>
+            </dd>
+            <dd th:if="${session.footPhone==null}">
+                <p>021－8888888</p>
+                <p>021－8888888</p>
+            </dd>
+        </dl>
+        <div class="ft_nav" th:if="${session.footLink==null}">
+            <a href="javascript:void(0)">首页</a><a href="javascript:void(0)">关于我们</a><a href="javascript:void(0)">会员服务</a><a href="javascript:void(0)">广告服务</a><a href="javascript:void(0)">在线客服咨询</a><a href="javascript:void(0)">专家库</a><a href="javascript:void(0)">招标采购平台</a><a href="javascript:void(0)">网站地图</a><a href="javascript:void(0)">友情链接</a>
+        </div>
+        <div class="ft_nav" th:if="${session.footLink!=null}">
+            <a th:each="link:${session.footLink}" th:href="${link.url}" th:text="${link.title}"></a>
+        </div>
+        <p class="ft_copy" th:if="${session.footCopy==null}"> 版权所有 &copy; 中国医疗器械采购公共服务平台  www.cyicai.com <br/> Copyright zhongguo yiliaoqixie International Financial Asset E</p>
+        <p class="ft_copy" th:if="${session.footCopy!=null}" th:utext="${session.footCopy.content}"></p>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>我做的评价</title>
+    <style>
+        input[readonly] {
+            color: #939192;
+            background: #f5f5f5 !important;
+            cursor: default;
+        }
+    </style>
+    <script>
+        $(function(){
+            var options = {
+                currentPage: $("[name=page]").val(),
+                totalPages: $("[name=totalPage]").val(),
+                onPageClicked:function(e,type,page){
+                    $("[name=page]").val(page);
+                    $("#searchForm").submit();
+                }
+            };
+            $('#page').bootstrapPaginator(options);
+
+        })
+
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+<div class="container">
+    <div class="wrap">
+        <div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><a href="/memberCenter/index.html">会员中心</a><span class="gt">&gt;</span><span class="current_page">我做的评价</span></div>
+        <div class="main_right">
+            <div class="cur_title"><h2>我做的评价</h2></div>
+            <div class="manage_mod">
+                <div class="bd">
+                    <form method="post" id="searchForm" action="/evaluate/evaluateList.html">
+                        <input type="hidden" name="page" th:value="${page.page}" />
+                        <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+                    <div class="hd_input">
+                        <div>评价等级：<label class="sel_box"><input type="radio" value="0" name="filter['evaGrade']" th:checked="${page.filter['evaGrade']=='0'}"/>全部</label><label class="sel_box"><input type="radio" value="1" name="filter['evaGrade']" th:checked="${page.filter['evaGrade']=='1'}"/>好评</label><label class="sel_box"><input type="radio" value="2" name="filter['evaGrade']" th:checked="${page.filter['evaGrade']=='2'}"/>中评</label><label class="sel_box"><input type="radio" value="3" name="filter['evaGrade']" th:checked="${page.filter['evaGrade']=='3'}"/>差评</label></div>
+                        <div>产品名称：<input type="text" class="text text2" th:value="${page.filter['proName']}" name="filter['proName']"/>评论时间：<input type="text" class="text text4 input_txt input_date"  readonly="readonly" th:value="${page.filter['begin']}" name="filter['begin']" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})"/>到<input type="text" class="text text4 input_txt input_date" th:value="${page.filter['end']}"  name="filter['end']" readonly="readonly" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd'})"/>
+                            <input type="submit" class="btn" value="查 询"/>
+                        </div>
+                    </div>
+                    </form>
+                    <table class="table_row sale_pro">
+                        <thead>
+                        <tr>
+                            <th>评价等级</th>
+                            <th>评价内容</th>
+                            <th>产品名称</th>
+                            <th>卖家名称</th>
+                            <th>评价时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="a:${page.result}">
+                                <td th:if="${a.evaGrade==1}">
+                                    <img class="appraise_ico" src="../../../static/imgs/icon_good.png" />好评
+                                </td>
+                                <td th:if="${a.evaGrade==2}">
+                                    <img class="appraise_ico" src="../../../static/imgs/icon_medium.png" />中评
+                                </td>
+                                <td th:if="${a.evaGrade==3}">
+                                    <img class="appraise_ico" src="../../../static/imgs/icon_bad.png" />差评
+                                </td>
+                                <td th:text="${a.evaContent}"></td>
+                                <td th:text="${a.productname}"></td>
+                                <td th:text="${a.comTitle}"></td>
+                                <td th:text="${#dates.format(a.createDate,'yyyy-MM-dd')}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="pagination"><div id="page" class="pagination"></div></div>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="asid_left">
+            <div class="account_menu">
+                <ul class="aside_menu prodouct_bar">
+                    <li><h3 class="menu_hd">常用功能</h3></li>
+                    <li ><a href="/supply/findSupplyByCompanyId.html">我发布的供应信息</a><i class="minus_ico"></i></li>
+                    <li><a href="/product/getCart.html">我的购物车</a><i class="minus_ico"></i></li>
+                    <li><a href="/supply/findSupplyByCompanyId.html">我买到的产品</a><i class="minus_ico"></i></li>
+                    <li class="active"><a href="javascript:void(0)">我做的评价</a><i class="minus_ico"></i></li>
+                    <li><a href="/supply/findPurchaseByCompanyId.html">我发布的求购</a><i class="minus_ico"></i></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

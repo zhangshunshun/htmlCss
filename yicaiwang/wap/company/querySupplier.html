@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	  xmlns:th="http://www.thymeleaf.org"
+	  layout:decorator="foreground/layout">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=8" />
+	<title>供应商</title>
+	<script>
+		$(function(){
+			var options = {
+				currentPage: $("[name=page]").val(),
+				totalPages: $("[name=totalPage]").val(),
+				onPageClicked:function(e,type,page){
+					$("[name=page]").val(page);
+					$("#searchForm").submit();
+				}
+			};
+			$('#page').bootstrapPaginator(options);
+
+			$('.select-list li').click(function(){
+				var s=$(this).html();
+				$('#hidden-x').val(s=='请选择'?'':s);
+			});
+
+//			if($("#reginoal_hidd").val()!=''){
+//				$("#reginoal_select").text($("#reginoal_hidd").val());
+//
+//			}
+		});
+
+	</script>
+	<style >
+		.supplier_list li {
+			border:0;
+			float: none;
+			height: auto;
+			padding-top: 40px;
+			width: auto;
+		}
+	</style>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+	<div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">供应商</span></div>
+	<div class="mod_box supplier_row">
+
+		<form id="searchForm" th:action="@{/company/querySupplier.htm}" method="post">
+			<input type="hidden" name="page" th:value="${page.page}" />
+			<input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+			<input type="hidden" id="hidden-x" name="reginoal" />
+			<input type="hidden"  id="reginoal_hidd" th:value="${reginoal}"/>
+			<div class="hd form_hd">
+				<div class="select_box"><strong class="keyName">供应商名称：</strong>
+					<input type="text" name="title" class="input_txt" th:value="${title}" /></div>
+				<div class="select_box"><strong class="keyName">公司所在地区：</strong>
+
+					<div class="ui-select">
+						<div class="selectMod">
+						<span class="select-input" id="reginoal_select">请选择</span><span class="select-drop"><s class="arrow arrow-tthin"></s></span></div>
+						<ul class="select-list">
+							<li class="hover">请选择</li>
+							<li>东北</li><li >华东</li><li>华南</li>
+							<li>华北</li><li>华中</li><li>西南</li><li>西北</li>
+						</ul>
+					</div>
+
+				</div>
+				<input type="submit" value="查询" style="cursor: pointer" class="btn_weak"/>
+			</div>
+		</form>
+
+		<div class="bd">
+			<ul class="supplier_list">
+
+				<li th:each="a,s:${page.result}">
+					<a href="javascript:void(0)" class="thumb">
+						<img th:src="${a.logoUrl}" alt=""/></a>
+					<h2><a th:href="@{/company/detail.html(companyId=${a.id})}" ><span th:text="${a.title}"></span></a></h2>
+					<p class="sum">公司所在地：<span th:text="${a.provinceName}"></span><span th:text="${a.citName}"></span></p>
+					<p class="intro"><span th:text="${a.introduction}"></span></p>
+				</li>
+			</ul>
+		</div>
+		<div id="page"></div>
+		<!--<div class="pagination">-->
+			<!--<a class="dis page-prev" href="javascript:void(0)">&lt;</a><a class="page-cur">1</a><a href="javascript:void(0)">2</a><a href="javascript:void(0)">3</a><span class="page-break">...</span><a href="javascript:void(0)">14</a><a class="page-next" href="javascript:void(0)">&gt;</a><span class="page-skip">共25页，到第<input class="page-num" type="text" />页<button id="page_submit" name="page_submit" class="btn_key page-submit" type="button">确定</button></span>-->
+		<!--</div>-->
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	  xmlns:th="http://www.thymeleaf.org"
+	  layout:decorator="foreground/layout-new">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=8" />
+	<title>首页</title>
+	<script type="text/javascript">
+		$(window).load(function() {
+			$('#slider').nivoSlider();
+		});
+	</script>
+</head>
+<body>
+<th:block layout:fragment="content">
+	<div class="banner1">
+		<div id="slider" class="banner">
+			<!--只要替换图片就可以了，图片的尺寸必须是宽1000像素，高276像素-->
+			<a style="cursor:auto" target="_blank"><img th:src="@{/static/imgs/1.jpg}" /></a>
+			<a style="cursor:auto" target="_blank"><img th:src="@{/static/imgs/2.jpg}" /></a>
+			<a style="cursor:auto" target="_blank"><img th:src="@{/static/imgs/3.jpg}" /></a>
+			<a style="cursor:auto" target="_blank"><img th:src="@{/static/imgs/4.jpg}" /></a>
+		</div>
+		<!--<img src="images/hp_03.jpg"> </div>-->
+	</div>
+
+	<!--banner end-->
+
+	<!--内容背景 start-->
+	<div class="hp_content"></div>
+	<!--内容背景 end-->
+
+	<!--内容 start-->
+	<div class="content_container">
+		<!--登陆-采购-搜索  start-->
+		<div class="content_a" cellpadding="0">
+			<table class="table_CD">
+				<tr>
+					<td>
+						<table class="table_a" cellpadding="0" >
+							<tr>
+								<td><a href="#">登陆</a></td>
+								<td><a href="#">注册</a></td>
+							</tr>
+						</table>
+
+						<table class="table_a" cellpadding="0" >
+							<tr>
+								<td>采购规模</td>
+								<td><span class="table_span">9999亿元</span></td>
+							</tr>
+						</table>
+
+						<form action="" method="post">
+							<table class="table_a" cellpadding="0" >
+								<tr>
+									<td class="form_td"><input class="form_input" value="关键词"/></td>
+									<td><a href="#">搜索</a></td>
+								</tr>
+							</table>
+						</form>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<!--登陆-采购-搜索  end-->
+
+		<!--5张图 start-->
+		<ul class="content_ul">
+			<li><img th:src="@{/static/imgs/p1.jpg}"/> </li>
+			<li><img th:src="@{/static/imgs/p2.jpg}"/></li>
+			<li><img th:src="@{/static/imgs/p3.jpg}"/></li>
+			<li><img th:src="@{/static/imgs/p4.jpg}"/></li>
+			<li><img th:src="@{/static/imgs/p5.jpg}"/></li>
+		</ul>
+		<!--5张图 end-->
+
+		<div class="blank5"></div>
+		<!--9tu start-->
+		<div class="content_b">
+			<ul class="content_b_ul">
+				<li>
+					<strong>行业调查</strong>
+					<dl>
+						<dt>
+							<img th:src="@{/static/imgs/hp_001.jpg}" alt="行业调查" width="82" height="80"/>
+						</dt>
+						<dd>
+							提供中国医疗市场全方位的专项市场调查及研究，并根据客户不同需求，度身定制专属市场调研报告和服务。
+						</dd>
+					</dl>
+				</li>
+				<li>
+					<strong>价格评价</strong>
+					<dl>
+						<dt>
+							<img th:src="@{/static/imgs/hp_004.jpg}" alt="价格评价" width="82" height="80"/>
+						</dt>
+						<dd>
+							汇集全国500多家供应商，1000多个品种，7000多条医疗产品提供不同地区最新产品行情信息和价格指数，数据准确、及时、全面。
+						</dd>
+					</dl>
+				</li>
+				<li>
+					<strong>产品目录</strong>
+					<dl>
+						<dt>
+							<img th:src="@{/static/imgs/hp_007.jpg}" alt="产品目录" width="82" height="80"/>
+						</dt>
+						<dd>
+							为了规范医疗机构医疗器械购销活动，引入市场竞争机制，提高医疗器械采购透明度。
+						</dd>
+					</dl>
+				</li>
+			</ul>
+
+			<ul class="content_b_ul">
+				<li>
+					<strong>市场报告 </strong>
+					<dl>
+						<dt>
+							<img th:src="@{/static/imgs/hp_002.jpg}" alt="市场报告 " width="82" height="80"/>
+						</dt>
+						<dd>
+							致力于为企业提供招标、采购、拟在建项目信息及网上招标采购等一系列服务。
+						</dd>
+					</dl>
+				</li>
+				<li>
+					<strong>服务评价</strong>
+					<dl>
+						<dt>
+							<img th:src="@{/static/imgs/hp_005.jpg}" alt="服务评价" width="82" height="80"/>
+						</dt>
+						<dd>
+							树立医疗器械行业服务质量的标杆,对医疗器械服务质量进行科学评价,提高医疗器械行业的服务质量。
+						</dd>
+					</dl>
+				</li>
+				<li>
+					<strong>医采通</strong>
+					<dl>
+						<dt>
+							<img th:src="@{/static/imgs/hp_008.jpg}" alt="医采通" width="82" height="80"/>
+						</dt>
+						<dd>
+							反映中国境内涉及医疗器械招标采购行为的活跃程度，同时反映了中国医疗器械招标活动的规模和发展趋势。
+						</dd>
+					</dl>
+				</li>
+			</ul>
+
+			<ul class="content_b_ul">
+				<li>
+					<strong>质量评估</strong>
+					<dl>
+						<dt>
+							<img th:src="@{/static/imgs/hp_003.jpg}" alt="质量评估" width="82" height="80"/>
+						</dt>
+						<dd>
+							拥有权威检测机构提供多种类型的产品检测服务及技术支持。
+						</dd>
+					</dl>
+				</li>
+				<li>
+					<strong>专家库</strong>
+					<dl>
+						<dt>
+							<img th:src="@{/static/imgs/hp_006.jpg}" alt="专家库" width="82" height="80"/>
+						</dt>
+						<dd>
+							全国医疗权领域最大且最富经验的医疗团队，为医疗健康行业构建权威医疗器械平台。
+
+						</dd>
+					</dl>
+				</li>
+				<li>
+					<strong>曝光台</strong>
+					<dl>
+						<dt>
+							<img th:src="@{/static/imgs/hp_009.jpg}" alt="曝光台" width="82" height="80"/>
+						</dt>
+						<dd>
+							创造一个保护广大民众合法权益的绿色维权平台。
+						</dd>
+					</dl>
+				</li>
+			</ul>
+		</div>
+		<div class="content_b_bottom"></div>
+		<!--9tu end-->
+	</div>
+	<!--内容 end-->
+</th:block>
+</body>
+</html>

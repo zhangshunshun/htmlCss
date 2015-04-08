@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+    <script type="text/javascript" charset="utf-8" src="../../../static/js/kindeditor/kindeditor.js"></script>
+    <script charset="utf-8" src="../../../static/js/kindeditor/lang/zh_CN.js"></script>
+    <link type="text/css" rel="stylesheet" href="../../../static/css/select.css"/>
+    <script src="../../../static/js/jquery.select.js"></script>
+    <script src="../../../static/js/email.js"></script>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <script type="text/javascript">
+        KindEditor.ready(function(K) {
+            window.editor = K.create('#edit_desc', {
+                cssPath : '../../../admin/kindeditor/plugins/code/prettify.css',
+                allowFlashUpload:false,
+                syncType : 'auto',
+                allowFileManager : true,
+                uploadJson:'/article/uploadImage.json'
+
+            })});
+    </script>
+    <script type="text/javascript">
+        function desc(){
+            if(editor.html().length > 0){
+                return true
+            }else{
+                $("#error-content").show();
+                return false;
+            }
+        }
+
+
+        $(function(){
+
+            $("#quxiao").click(function(){
+                $(".dialog_filter").click();
+            })
+
+            //回复邮件
+            $("#send_button").click(function(){
+                var title = $("#sendtitle").val();      //标题
+                var content =editor.html();          //内容
+                var sendName =$("#sendName").val(); //发送名
+                var emailId1 = $("#emailId").val();
+                var emailId2 = $("#emailId2").val();
+                var emaiId;
+                if(emailId2!=""){
+                    emaiId =emailId2;
+                }else{
+                    emaiId =emailId1;
+                }
+                var option={"sendName":sendName,"title":title,"content":content,"emailId":emaiId}
+
+                if(desc()){
+                    $.ajax({
+                        url: "/memberCenter/insertEmail.html",
+                        type: 'POST',
+                        data: option,
+                        dataType: "json",
+                        success: function (date) {
+                            if (date.suc) {
+                                $.alert("发送成功");
+                                window.location.href="/memberCenter/sendEmail.html";
+                            } else {
+                                $.alert(date.msg);
+                                window.location.href="/memberCenter/sendEmail.html";
+                            }
+                        }
+                    });
+                }
+            });
+
+            //删除方法
+            $(".delete").click(function(){
+                var id=$(this).closest("tr").attr("id");
+                if(confirm("确定要删除吗？")){
+                $.ajax({
+                    url:"/memberCenter/deleteEmail.html",
+                    type:'POST',
+                    data:{"id":id},
+                    dataType:"json",
+                    success:function(date) {
+                        if (date.suc) {
+                            $.alert("删除成功",function(){
+                                window.location.href="/memberCenter/sendEmail.html";
+                            });
+                        }else{
+                            $.alert(date.msg);
+                        }
+                    }
+                })
+            }
+            });
+
+
+            var options = {
+                currentPage: $("[name=page]").val(),
+                totalPages: $("[name=totalPage]").val(),
+                onPageClicked:function(e,type,page){
+                    $("[name=page]").val(page);
+                    $("#searchForm").submit();
+                }
+            };
+            $('#page').bootstrapPaginator(options);
+        });
+
+    </script>
+    <title>我的发件箱</title>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+        <div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">我的收信箱</span></div>
+        <div class="main_right">
+            <div class="cur_title"><h2>我的发信箱</h2></div>
+            <form method="post" action="/memberCenter/sendEmail.html" id="searchForm">
+                <input type="hidden" name="page" th:value="${page.page}" />
+                <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+            <div class="manage_mod">
+                <div class="bd">
+                    <table class="member_table mailbox_table">
+                        <thead>
+                        <tr class="name">
+                            <th class="name">标题</th>
+                            <th>收件人</th>
+                            <th>时间</th>
+                            <th class="operate">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="email:${page.result}" th:id="${email.id}">
+                            <td class="name" th:text="${email.title}">采购询价</td>
+                            <td class="sendName"  th:text="${email.sendName}">张三</td>
+                            <input class="emailId" type="hidden"  th:value="${email.emailId}"/>
+                            <td><span class="time" th:text="${email.createTime}">2013-05-08 17:25:20</span></td>
+                            <td class="operate"><!--<a  class="huifu">回复</a>|--><a  class="delete">删除</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="pagination">
+                        <div class="pagination">
+                            <div id="page"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </form>
+
+            <div class="dialog_filter" style="display: none"></div>
+            <div class="dialog_box" style="display: none">
+                <a href="javascript:void(0)" class="close"></a>
+                <div class="hd">
+                    <h3 class="title">参与者:</h3>
+                </div>
+                <div class="message_bd message_mod">
+                    <div class="classify_mod">
+                        <input type="hidden"  id="sendName" />
+                        <input type="hidden"  id="sendtitle" />
+                        <input type="hidden"  id="emailId" />
+                        <input type="hidden"  id="emailId2" />
+                        <ul style="overflow-y:auto;max-height: 202px;" id ="ulEmail">
+
+                        </ul>
+                        <div class="clearfix">
+                            <div class="filed_con control-group"><textarea  style="width:90%;height:260px;" name="desc" id="edit_desc"></textarea>
+                                <span class="help-inline" id="error-content" style="display: none;color:red;" generated="true" for="edit_desc">请填写内容</span></div>
+                        </div>
+                        <div class="btn_box"><button type="button" class="btn_key " id="send_button">发 送</button><button type="button" class="btn_key btn_weak" id="quxiao">取 消</button></div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+        <div class="asid_left">
+            <div class="account_menu">
+                <ul class="aside_menu prodouct_bar">
+                    <li><a href="/memberCenter/receiverEmail.html">收件箱</a><i class="minus_ico"></i></li>
+                    <li class="active"><a href="/memberCenter/sendEmail.html">发件箱</a><i class="minus_ico"></i></li>
+                    <li><a href="/memberCenter/writerEmail.html">发送消息</a><i class="minus_ico"></i></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

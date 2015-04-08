@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>金融产品详细介绍</title>
+    <script>
+        $(function(){
+
+        });
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="crumbs"><a href="/">首页</a><span class="gt">&gt;</span><span class="current_page">金融产品详细介绍</span></div>
+    <div class="main_right">
+        <img th:src="@{/static/thumb/intro_pic.jpg}" alt="" class="intro_pic"/>
+        <div class="mod_box financial_about">
+            <div class="hd hd_tab">
+                <a href="javascript:void(0)" class="current">产品介绍</a><a href="#anchor">业务流程</a>
+            </div>
+            <div class="bd">
+                <div class="hd_info">
+                    <span class="col"><em class="keyName">额度范围：</em><span th:text="${p.limitRange}">1-2000万</span></span>
+                    <span class="col"><em class="keyName">贷款期限：</em><span th:text="${p.loanDeadline}">随借随还</span></span>
+                    <span class="col"><em class="keyName">月利率：</em><span th:text="${p.monthRate}">0.55%-0.65%</span></span>
+                    <span class="col"><em class="keyName">放款时间：</em><span th:text="${p.lendTime}">一个月内</span></span>
+                    <span class="col"><em class="keyName">还款方式：</em><span th:text="${p.wayOfRepayment}">面议</span></span>
+                </div>
+                <dl class="item">
+                    <dt><em>申请条件</em>  <span class="pop_error_tips"><em class="pop_cont">以下为基本要求，满足以上条件不代表您一定能获得贷款，建议您进一步确认详情。</em><b class="arrow arrow-lthin"><s></s></b></span></dt>
+                    <dd id="conditions" th:utext="${p.conditions}">
+                        <p>一、申请人年龄22——55周岁</p>
+                        <p>二、个人征信良好 公司成立一年以上</p>
+                        <p>三 、企业六证一卡</p>
+                        <p>四 、借款人夫妻双方身份证 借款人户口本 结婚证 近6个月对公流水及个人流水 公司租赁合同</p>
+                        <p>五 、房产证</p>
+                        <p>六、企业两年的年报表、利润表</p>
+                        <p>七、企业近3个月的月报表、利润表</p>
+                    </dd>
+                </dl>
+                <dl class="item">
+                    <dt><em>产品介绍</em><hr/></dt>
+                    <dd th:text="${p.introduction}">
+                        <p>1、上海有房，企业经营性抵押贷款，正常开票缴税的最快一周出批复，先息后本、年最低利率6.72%2、上海有房，企业 经营性抵押贷</p>
+                    </dd>
+                </dl>
+                <span id="anchor"></span>
+                <dl class="item">
+                    <dt><em>业务流程</em><hr/></dt>
+                    <dd><img th:src="@{/static/thumb/process_pic.jpg}" alt=""/></dd>
+                </dl>
+                <dl class="item">
+                    <dt><em>申请材料</em><hr/></dt>
+                    <dd th:text="${p.material}"></dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="asid_left">
+        <div class="mod_box mechanism_mod">
+            <div class="hd">
+                <h2 class="title">金融机构</h2>
+            </div>
+            <div class="bd">
+                <h1 th:text="${p.publishCompany}">中世贸发有限公司</h1>
+                <p class="tel_box">
+                    <i class="ico tel_ico_s"></i><strong class="number">400 890 0016 </strong>转<strong class="number"> 28779</strong>
+                </p>
+                <p style="width:102%;">
+                    <strong class="keyName">推荐指数：</strong>
+                    <img th:if="${p.recommendIndex>=1}" th:src="@{/static/imgs/star_yellow.png}" alt=""/>
+                    <img th:unless="${p.recommendIndex>=1}" th:src="@{/static/imgs/star_white.png}" alt=""/>
+                    <img th:if="${p.recommendIndex>=2}" th:src="@{/static/imgs/star_yellow.png}" alt=""/>
+                    <img th:unless="${p.recommendIndex>=2}" th:src="@{/static/imgs/star_white.png}" alt=""/>
+                    <img th:if="${p.recommendIndex>=3}" th:src="@{/static/imgs/star_yellow.png}" alt=""/>
+                    <img th:unless="${p.recommendIndex>=3}" th:src="@{/static/imgs/star_white.png}" alt=""/>
+                    <img th:if="${p.recommendIndex>=4}" th:src="@{/static/imgs/star_yellow.png}" alt=""/>
+                    <img th:unless="${p.recommendIndex>=4}" th:src="@{/static/imgs/star_white.png}" alt=""/>
+                    <img th:if="${p.recommendIndex>=5}" th:src="@{/static/imgs/star_yellow.png}" alt=""/>
+                    <img th:unless="${p.recommendIndex>=5}" th:src="@{/static/imgs/star_white.png}" alt=""/>
+                </p>
+                <div class="ft">已有<em class="light" th:text="${p.applyCount}">185</em>位客户免费申请</div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

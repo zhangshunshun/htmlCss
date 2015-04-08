@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>我要卖</title>
+    <script type="text/javascript">
+        /*<![CDATA[*/
+        jQuery(function(){
+            $(".plus").each(function(){
+                $(this).click(function(){
+                    $(this).next("input").val(parseInt($(this).next("input").val())+1);
+                    return;
+                })
+            });
+
+            $(".no_minus").each(function(){
+                $(this).click(function(){
+                    if(parseInt($(this).prev("input").val())==0){
+                        $.alert("库存数量不能小于0");
+                    }else{
+                        $(this).prev("input").val(parseInt($(this).prev("input").val())-1);
+                        return;
+                    }
+                })
+            });
+
+            $("#form1").validate( {
+                checkStart : true,
+                errorElement: 'span',
+                errorClass: 'help-inline',
+                focusInvalid: false,
+                rules : {
+                    salesPrices : {
+                        required: true,
+                        number:true
+                    }
+                },
+                messages : {
+                    salesPrices : {
+                        required : "必填",
+                        number : "请填数字"
+                    }
+                }
+            });
+        })
+
+        function saveInfo(status){
+            if($("#form1").valid()){
+                $("#status").val(status);
+                if($("#productUserId").val()!=null  && $("#productUserId").val()!=''){
+                    updateInfo();
+                    return;
+                }
+                $("#form1").ajaxSubmit({
+                    type: "POST",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.flag) {
+                            $.alert(data.msg)
+                        } else {
+                            $.alert(data.msg)
+                        }
+                    }
+                });
+            }
+        }
+
+        function updateInfo(){
+            if($("#form1").valid()){
+                $("#form1").ajaxSubmit({
+                    url:"/product/updateProductDetail.json",
+                    type: "POST",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.flag) {
+                            $.alert(data.msg)
+                        } else {
+                            $.alert(data.msg)
+                        }
+                    }
+                });
+            }
+        }
+        /*]]>*/
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+
+    <div class="container">
+        <form id="form1" action="/product/submitNewProduct.json">
+        <input type="hidden" th:value="${product.id}" id="productId" name="productId"/>
+        <input type="hidden" th:value="${product.userId}" name="product-userId"/>
+        <input type="hidden" th:value="${productUser.status}" id="status" name="status"/>
+        <input type="hidden" th:value="${productUser.id}" id="productUserId" name="id"/>
+        <div class="wrap">
+            <div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">发票管理</span></div>
+            <div class="main_right">
+                <div class="cur_title"><h2>上架新商品</h2></div>
+                <div class="mod_box pro_detail">
+                    <div class="hd">
+                        <h3 class="title">产品基本信息</h3>
+                        <a href="/product/addedChooseProduct.html" class="anew_btn">重新选择商品</a>
+                    </div>
+                    <div class="bd">
+                        <table class="pro_detail_table">
+                            <tr class="bg">
+                                <td class="t1">产品名称：</td>
+                                <td class="t2" th:text="${product.name}"></td>
+                            </tr>
+                            <tr>
+                                <td class="t1">厂商参考价：</td>
+                                <td class="t2"><span class="price" th:text="${product.money}"></span></td>
+                            </tr>
+                            <tr class="bg">
+                                <td class="t1">产品编号：</td>
+                                <td class="t2" th:text="${product.productNo}">04390711</td>
+                            </tr>
+                            <tr>
+                                <td class="t1">产品型号：</td>
+                                <td class="t2" th:text="${product.version}">CMQ390711</td>
+                            </tr>
+                            <tr class="bg">
+                                <td class="t1">产品类别：</td>
+                                <td class="t2" th:text="${product.categoryName}">临床手术麻醉机</td>
+                            </tr>
+                            <tr>
+                                <td class="t1">产品认证：</td>
+                                <td class="t2" th:text="${product.approve}">CE，SGS，BV国际认证</td>
+                            </tr>
+                            <tr class="bg">
+                                <td class="t1">注册证号：</td>
+                                <td class="t2" th:text="${product.registerNo}">(淮)字2010号260093号</td>
+                            </tr>
+                            <tr>
+                                <td class="t1">原产国：</td>
+                                <td class="t2" th:text="${product.country}">中国</td>
+                            </tr>
+                            <tr class="bg">
+                                <td class="t1">生产地：</td>
+                                <td class="t2"  th:text="${product.area}">上海</td>
+                            </tr>
+                            <tr>
+                                <td class="t1">生产商：</td>
+                                <td class="t2" th:text="${product.companyName}">上海拾光慈航医疗器械有些公司</td>
+                            </tr>
+                            <tr class="bg">
+                                <td class="t1">相关科室：</td>
+                                <td class="t2"><span th:each="office,s:${product.officeList}" th:text="${s.last}?${office.name}:${office.name}+'、'"></span></td>
+                            </tr>
+                            <tr>
+                                <td class="t1">简要说明：</td>
+                                <td class="t2" th:utext="${product.intro}">原装进口，人体工程学设计。包括Prima SP2麻醉机主机，氧、笑、空三气源，机械6管流量计，具有辅助供氧及流量计背光灯；双罐位配一个英国PENLON原装挥发罐；</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="mod_box inventory_info">
+                    <div class="hd">
+                        <h3 class="title">售价及库存信息</h3>
+                    </div>
+                    <div class="bd">
+                        <table class="inv_info_table">
+                            <thead>
+                            <tr>
+                                <td class="t1"></td>
+                                <td class="t2">产品名称</td>
+                                <td class="t3">销售单价（元）</td>
+                                <td class="t4">库存数量(件)</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <div class="pro_info">
+                                        <a href="javascript:void(0)" class="pic"><img th:src="'http://114.215.80.184:10080'+${product.imagePath}" /></a>
+                                        <h3 class="name"><a href="javascript:void(0)" th:text="${product.name}">山东欣雨辰生产电动手术床.</a></h3>
+                                        <p class="gray">规格：<span th:text="${product.norms}"></span></p>
+                                    </div>
+                                </td>
+                                <td><input type="text" class="text" th:value="${productUser.salesPrices}" name="salesPrices"/></td>
+                                <td>
+                                    <div class="amount_wrap">
+                                        <a class="btn_plus plus" href="javascript:void(0)">+</a>
+                                        <input type="text" readonly="readonly" name="repertory" class="text_amount" th:value="${productUser.repertory!=null and productUser.repertory!=0}?${productUser.repertory}:'1'"/>
+                                        <a class="btn_plus no_minus" href="javascript:void(0)">-</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <table class="inv_info_table">
+                            <thead>
+                            <tr>
+                                <td class="t1"></td>
+                                <td class="t2">配套配件名称</td>
+                                <td class="t3">销售单价（元）</td>
+                                <td class="t4">库存数量(件)</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="parts,s:${partsList}">
+                                <td></td>
+                                <td>
+                                    <div class="pro_info">
+                                        <a href="javascript:void(0)" class="pic"><img th:src="'http://114.215.80.184:80'+${parts.imgPath}" /></a>
+                                        <h3 class="name"><a href="javascript:void(0)" th:text="${parts.name}">山东欣雨辰生产电动手术床.</a></h3>
+                                        <p class="gray">型号：<span th:text="${parts.version}"></span></p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="text" th:value="${parts.salesPrices!=null and parts.salesPrices!=0}?${parts.salesPrices}:'0'" class="{required:true,number:true,messages:{required:'必填',number:'请填整数'}} text" th:name="'productPartsUsers['+${s.count-1}+'].salesPrices'" value=""/>
+                                    <input type="hidden" th:name="'productPartsUsers['+${s.count-1}+'].id'" th:value="${parts.partsUserId}"/>
+                                    <input type="hidden" th:name="'productPartsUsers['+${s.count-1}+'].partId'" th:value="${parts.id}"/>
+                                </td>
+                                <td>
+                                    <div class="amount_wrap">
+                                        <a class="btn_plus plus" href="javascript:void(0)">+</a>
+                                        <input type="text" readonly="readonly" class="{required:true,number:true,messages:{required:'必填',number:'请填数字'}} text_amount" th:name="'productPartsUsers['+${s.count-1}+'].repertory'" th:value="${parts.repertory==null or parts.repertory==0}?'1':${parts.repertory}"/>
+                                        <a class="btn_plus no_minus" href="javascript:void(0)">-</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="mod_box">
+                    <div class="hd">
+                        <h3 class="title">其他信息</h3>
+                    </div>
+                    <div class="bd">
+                        <ul class="other_info">
+                            <li><label class="name">物流费用：</label><span class="option"><input type="radio" value="2" th:checked="${productUser.logistics==2}" name="logistics" checked="checked"/>卖方承担运费</span><span class="option"><input type="radio" th:checked="${productUser.logistics==1}" value="1" name="logistics"/>买方承担运费</span></li>
+                            <li><label class="name">发票支持：</label><span class="option"><input type="radio" value="1" name="invoice" th:checked="${productUser.invoice==1}" checked="checked"/>普通发票</span><span class="option"><input name="invoice" th:checked="${productUser.invoice==2}" value="2" type="radio"/>增值税发票</span></li>
+                            <li><label class="name">备注：</label><textarea name="remark" th:text="${productUser.remark}" class="textarea"></textarea></li>
+                            <li><label class="name"></label>
+                                <input type="button" th:if="${productUser.id!=null}" onclick="updateInfo()" class="btn btn-info" value="保存"/>
+                                <input type="button" onclick="saveInfo(2)" th:if="${productUser.status!=2}" class="btn btn-info" value="上架发布"/>
+                                <input type="button"  class="btn btn_gray" onclick="javaScript:window.location.href='/product/addedProduct.html'" value="取 消"/></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="asid_left">
+                <div class="account_menu">
+                    <ul class="aside_menu prodouct_bar">
+                        <li><h3 class="menu_hd">常用功能</h3></li>
+                        <li class="active"><a href="javascript:void(0)">上架新产品</a><i class="minus_ico"></i></li>
+                        <li><a href="javascript:void(0)">批量导人产品</a><i class="minus_ico"></i></li>
+                        <li><a href="javascript:void(0)">发布供应信息</a><i class="minus_ico"></i></li>
+                        <li><a href="/memberCenter/mySell.html">我卖出的产品</a><i class="minus_ico"></i></li>
+                        <li><a href="/product/myProduct.html">我的产品库</a><i class="minus_ico"></i></li>
+                        <li><a href="javascript:void(0)">我的投标信息</a><i class="minus_ico"></i></li>
+                        <li><a href="javascript:void(0)">我的供应信息</a><i class="minus_ico"></i></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

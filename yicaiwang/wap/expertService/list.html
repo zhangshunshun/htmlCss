@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>专家服务</title>
+    <style>
+
+        .aside_menu .sub_menu a.active {
+            color:#186be5;
+        }
+    </style>
+    <script>
+        $(function(){
+            var options = {
+                currentPage: $("[name=page]").val(),
+                totalPages: $("[name=totalPage]").val(),
+                onPageClicked:function(e,type,page){
+                    $("[name=page]").val(page);
+                    $("#searchForm").submit();
+                }
+            };
+            $('#page').bootstrapPaginator(options);
+
+
+            $('.sub_menu a').click(function(){
+                $('#hidden-typeId').val($(this).hasClass('active')?'':this.id);
+                $("[name=page]").val(1);
+                $("#searchForm").submit();
+            });
+
+            $('.sub_menu:empty').hide().prev().find('i').attr('class','minus_ico');
+        });
+
+    </script>
+</head>
+<body>
+
+<div id="content" layout:fragment="content">
+    <div class="crumbs"><a href="/">首页</a><span class="gt">&gt;</span><span class="current_page">专家服务</span></div>
+    <div class="main_right">
+        <div class="mod_box experts_mod">
+            <form id="searchForm" th:action="@{/expertService/list.html}" method="post">
+                <input type="hidden" name="page" th:value="${page.page}" />
+                <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+                <input type="hidden" name="filter['typeId']" id="hidden-typeId" th:value="${page.filter['typeId']}"/>
+                <div class="hd form_hd">
+                    <div class="select_box"><input type="text" name="filter['expname']" th:value="${page.filter['expname']}" class="input_txt" placeholder="搜索专家关键字"/></div><input type="submit" value="搜索" class="btn_weak"/>
+                </div>
+                <div class="cur_title"><h2>优秀专家</h2></div>
+                <ul class="people_list">
+                    <li th:each="e:${page.result}">
+                        <a th:href="@{/expertService/detail.html(id=${e.id})}" class="thumb">
+                            <img th:if="${#strings.isEmpty(e.expimage)}" th:src="@{/static/thumb/thumb_120x120.jpg}" alt=""/>
+                            <img th:if="${not #strings.isEmpty(e.expimage)}" th:src="${e.expimage2}" alt=""/>
+                        </a>
+                        <h4 class="name"><a th:href="@{/expertService/detail.html(id=${e.id})}" th:text="${e.expname}">王丽丽</a></h4>
+                        <p th:text="${e.expinfirmary}">科学研究院</p>
+                        <p>科室：<span th:text="${e.expsection}">设备科</span></p>
+                    </li>
+                </ul>
+                <div id="page">
+                </div>
+                </form>
+        </div>
+    </div>
+    <div class="asid_left">
+        <div class="mod_box contact_mod">
+            <div class="hd">
+                <h3 class="title">专家分类</h3>
+            </div>
+            <div class="bd">
+                <ul class="aside_menu">
+                    <li th:each="t:${types}" th:if="${t.calpranid==0}">
+                        <h3 class="menu_hd">
+                            <a href="javascript:void(0)" th:text="${t.claname}"></a>
+                            <i class="plus_ico"></i>
+                        </h3>
+                        <div class="sub_menu"><a th:id="${tt.id}" th:class="${page.filter['typeId']==#strings.toString(tt.id)?'active':''}" href="javascript:void(0)" th:each="tt:${types}" th:if="${tt.calpranid==t.id}" th:text="${tt.claname}">心外科</a></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

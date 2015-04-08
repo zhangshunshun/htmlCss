@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+    <link href="../../../static/css/ace.min.css" th:href="@{/static/css/ace.min.css}" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" >
+
+        //图片上传
+        //js本地图片预览，兼容ie[6-9]、火狐、Chrome17+、Opera11+、Maxthon3
+        function PreviewImage(fileObj, imgPreviewId, divPreviewId) {
+            var allowExtention = ".jpg,.bmp,.gif,.png"; //允许上传文件的后缀名document.getElementById("hfAllowPicSuffix").value;
+            var extention = fileObj.value.substring(fileObj.value.lastIndexOf(".") + 1).toLowerCase();
+            var browserVersion = window.navigator.userAgent.toUpperCase();
+            if (allowExtention.indexOf(extention) > -1) {
+                if (fileObj.files) {//HTML5实现预览，兼容chrome、火狐7+等
+                    if (window.FileReader) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            document.getElementById(imgPreviewId).setAttribute("src", e.target.result);
+                        }
+                        reader.readAsDataURL(fileObj.files[0]);
+                    } else if (browserVersion.indexOf("SAFARI") > -1) {
+                        alert("不支持Safari6.0以下浏览器的图片预览!");
+                    }
+                } else if (browserVersion.indexOf("MSIE") > -1) {
+                    if (browserVersion.indexOf("MSIE 6") > -1) {//ie6
+                        document.getElementById(imgPreviewId).setAttribute("src", fileObj.value);
+                    } else {//ie[7-9]
+                        fileObj.select();
+                        if (browserVersion.indexOf("MSIE 9") > -1)
+                            fileObj.blur(); //不加上document.selection.createRange().text在ie9会拒绝访问
+                        var newPreview = document.getElementById(divPreviewId + "New");
+                        if (newPreview == null) {
+                            newPreview = document.createElement("div");
+                            newPreview.setAttribute("id", divPreviewId + "New");
+                            newPreview.style.width = document.getElementById(imgPreviewId).width + "px";
+                            newPreview.style.height = document.getElementById(imgPreviewId).height + "px";
+                            newPreview.style.border = "solid 1px #d2e2e2";
+                        }
+                        newPreview.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='scale',src='" + document.selection.createRange().text + "')";
+                        var tempDivPreview = document.getElementById(divPreviewId);
+                        tempDivPreview.parentNode.insertBefore(newPreview, tempDivPreview);
+                        tempDivPreview.style.display = "none";
+                    }
+                } else if (browserVersion.indexOf("FIREFOX") > -1) {//firefox
+                    var firefoxVersion = parseFloat(browserVersion.toLowerCase().match(/firefox\/([\d.]+)/)[1]);
+                    if (firefoxVersion >= 7) {//firefox7.0+
+                        document.getElementById(imgPreviewId).setAttribute("src", window.URL.createObjectURL(fileObj.files[0]));
+                    } else {//firefox7以下版本
+                        document.getElementById(imgPreviewId).setAttribute("src", fileObj.files[0].getAsDataURL());
+                    }
+                } else {
+                    document.getElementById(imgPreviewId).setAttribute("src", fileObj.value);
+                }
+            } else {
+                alert("仅支持" + allowExtention + "为后缀名的文件!");
+                fileObj.value = ""; //清空选中文件
+                if (browserVersion.indexOf("MSIE") > -1) {
+                    fileObj.select();
+                    document.selection.clear();
+                }
+                fileObj.outerHTML = fileObj.outerHTML;
+            }
+            return fileObj.value;    //返回路径
+        }
+
+
+
+
+
+
+        //修改方法
+        $( function(){
+
+            var imgUrl=$("#hidden-headPath").val();
+            if(imgUrl==""){
+                imgUrl="没有文件 ...";
+            }
+            $('#edit-headPath').ace_file_input({
+                no_file: imgUrl,
+                btn_choose: 'Choose',
+                btn_change: 'Change',
+                droppable: false,
+                onchange: null,
+                thumbnail: false//| true | large
+//                whitelist:'xls|xlsx'
+                //blacklist:'exe|php'
+                //onchange:''
+            });
+
+
+
+            $("#edit_button").click(function () {
+                if($("#test").valid()){
+
+                    $("#test").ajaxSubmit({
+                        url:'/memberCenter/updateAccountInfo.html',
+                        type:'POST',
+                        dataType:"json",
+                        success:function(date) {
+                            if(date.suc){
+                                $.alert('修改成功');
+                            }else{
+                                $.alert('修改失败');
+                            }
+                        }
+                    });
+                }
+
+            });
+
+            $("#test").validate( {
+                checkStart : true,
+                errorElement: 'span',
+                errorClass: 'help-inline',
+                focusInvalid: false,
+                rules : {
+                    userName : {
+                        required: true,
+                        maxlength:200
+                    },
+                    email:{
+                        required: true,
+                        email:true
+                    },
+                    phone:{
+                        required: true,
+                        maxlength:11
+                    },
+                    address:{
+                        required: true
+                    },
+                    paymentPassword:{required:$("#paymentPassword").length>0},
+                    paymentPassword2:{required:$("#paymentPassword").length>0,equalTo:"#paymentPassword"}
+                },
+                messages : {
+                    userName : {
+                        required : "必须填写",
+                        maxlength : "最多输入200个字符"
+                    },
+                    email : {
+                        required : "必须填写",
+                        email : "输入邮箱有误"
+                    },
+                    phone : {
+                        required : "必须填写",
+                        maxlength : "最多输入11个字符"
+                    },
+                    address : {
+                        required : "必须填写"
+                    },
+                    paymentPassword:{
+                        required:"必须填写"
+                    },
+                    paymentPassword2:{
+                        required:"必须填写",
+                        equalTo:"密码不一致"
+                    }
+                },
+                highlight: function (e) {
+                    $(e).closest('.filed_con').removeClass('info').addClass('error');
+                }
+            });
+        });
+
+    </script>
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>个人中心</title>
+</head>
+<body>
+
+<div id="content" layout:fragment="content">
+
+    <div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">个人信息</span></div>
+    <div class="main_right">
+        <form id="test" enctype="multipart/form-data">
+            <div class="cur_title"><h2>个人信息 </h2></div>
+            <div class="user_mod">
+                <div class="bd">
+                    <ul class="filed_info user_filed">
+                        <input  th:value="${sysUser.id}" type="hidden" id="id" name="id"/>
+                        <li>
+                            <div class="filed_con">
+                                <label class="control-label">上传头像：</label>
+                                <div class="controls">
+                                    <div class="widget-main" style="padding:0px;width:220px;">
+                                        <div style="border: solid 1px #d2e2e2;width:227px;height:227px;margin-bottom:5px;" id="divPreview">
+                                            <img id="imgHeadPhoto" style="width: 225px; height: 225px; " alt=""  th:src="${sysUser.headPath2}"/>
+                                        </div>
+                                        <input type="file" id="edit-headPath" name="file"  onchange="PreviewImage(this,'imgHeadPhoto','divPreview');" />
+                                        <input type="hidden" id="hidden-headPath" />
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <label class="keyName">姓名：</label>
+                            <div class="filed_con control-group"><input type="text" value="" placeholder="请输入原有密码" class="input_txt" name="userName"  id="userName" th:value="${sysUser.userName}"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName">性别</label >
+                            <div class="filed_con control-group"><label class="sel"><input type="radio"  value="1" th:checked="${sysUser.sex==1}"   name="sex"/>男</label><label class="sel">
+                                <input name="sex" type="radio" value="2" th:checked="${sysUser.sex==2}"/>女</label></div>
+                        </li>
+                        <li>
+                            <label class="keyName">邮箱：</label>
+                            <div class="filed_con control-group"><input type="text" value="" placeholder="请再次输入新密码" class="input_txt" name="email" id="email" th:value="${sysUser.email}"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName">手机号：</label>
+                            <div class="filed_con control-group"><input type="text" value="" placeholder="请再次输入新密码" class="input_txt" name="phone" id="phone" th:value="${sysUser.phone}"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName ">联系地址：</label>
+                            <div class="filed_con control-group"><input type="text" value="" placeholder="请再次输入新密码" class="input_txt" name="address" id="address" th:value="${sysUser.address}"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName">支付密码：</label>
+                            <div class="filed_con control-group">
+                                <input type="password"  placeholder="请再次输入新密码" class="input_txt" name="paymentPassword" id="paymentPassword" th:value="${sysUser.paymentPassword}"/>
+                            </div>
+                        </li>
+                        <li>
+                            <label class="keyName">确认密码：</label>
+                            <div class="filed_con control-group">
+                                <input type="password"  placeholder="请再次输入新密码" class="input_txt" name="paymentPassword2" id="paymentPassword2" th:value="${sysUser.paymentPassword}"/>
+                            </div>
+                        </li>
+                        <li>
+                            <label class="keyName">账号：</label>
+                            <div class="filed_con" th:text="${sysUser.loginName}" id="loginName">lwdi</div>
+                        </li>
+
+                        <li class="filed_action">
+                            <input type="button" class="btn_key" value="修改我的个人信息" id="edit_button"/>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="asid_left">
+        <div class="account_menu">
+            <ul class="aside_menu">
+                <li>
+                    <h3 class="menu_hd"><a href="javascript:void(0)">会员中心</a><i class="plus_ico"></i></h3>
+                    <div class="sub_menu" style="display: none;">
+                        <a href="javascript:void(0)">心外科</a>
+                        <a href="javascript:void(0)">肿瘤科</a>
+                        <a href="javascript:void(0)">妇科</a>
+                        <a href="javascript:void(0)">口腔科</a>
+                    </div>
+                </li>
+                <li>
+                    <h3 class="menu_hd"><a href="javascript:void(0)">账户信息设置 </a><i class="minus_ico"></i></h3>
+                    <div class="sub_menu" >
+                        <a href="/memberCenter/accountInfo.html" class="acitve">个人信息</a>
+                        <a href="/memberCenter/companyInfo.html">公司信息</a>
+                        <a href="/user/toUpdatePassword.html">密码修改</a>
+                        <a href="/company/toLinkMan.html">联系人管理</a>
+                        <a href="/userNoteType/list.html">发票信息</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

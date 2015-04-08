@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-brief">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>供应商列表</title>
+    <script>
+        //<![CDATA[
+        $(function(){
+            //身份的选择
+            initProvinceSelect();
+            //分页的
+            var options = {
+                currentPage: $("[name=page]").val(),
+                totalPages: $("[name=totalPage]").val(),
+                onPageClicked:function(e,type,page){
+                    $("[name=page]").val(page);
+                    $("#findProviderPost").submit();
+                }
+            };
+            $('#page').bootstrapPaginator(options);
+
+
+
+            //控制层的隐藏和显示
+         $(".light").click(function(){
+             var div = $("#ProvideNone");
+             div.css("display") == "none" && div.show() || div.hide();
+          });
+
+
+            //查询的提交
+            $("#seaCheck").click(function(){
+                if($("#city").val()!=null && $("#city").val()!=''){
+                   $("#diZhi").text($("#city").find("option:selected").text());
+                   $("#dizhiname").val($("#city").find("option:selected").text()) ;
+                   $("#citySelect").val($("#city").find("option:selected").val()) ;
+                }else if ($("#province").val()!=''){
+                    $("#diZhi").text($("#province").find("option:selected").text());
+                    $("#dizhiname").val($("#province").find("option:selected").text()) ;
+                    $("#provinceSelect").val($("#province").find("option:selected").val());
+                }else if ($("#city").val()=='' &&  $("#province").val()==''){
+                    $("#diZhi").text('全国');
+                    $("#dizhiname").val('全国')
+                    $("#citySelect").val('') ;
+                    $("#provinceSelect").val('') ;
+                }else if($("#province").val()==''){
+                    $("#diZhi").text('全国');
+                    $("#dizhiname").val('全国')
+                    $("#citySelect").val('') ;
+                    $("#provinceSelect").val('') ;
+                }
+               $("#findProviderPost").submit();
+            });
+
+            var dizhiname=$("#dizhiname").val();
+            if(dizhiname!=null && dizhiname!=''){
+                $("#diZhi").text(dizhiname)  ;
+            }
+
+        });
+        //]]>
+        // 地区相关
+        function initProvinceSelect(){
+            var province = $("#provinceSelect").val();
+            $.ajax({
+                url: '/area/findProvinceAll.html',
+                type:'POST',
+                dataType:"json",
+                success: function (data) {
+                    var str = [];    str.push('<option value="">------请选择-----</option>');
+                    if(data!=null){
+                        jQuery.each(data,function(i,item){
+                            if(province==item.provinceid){
+                                str.push("<option value="+item.provinceid+" selected="+true+">"+item.province+"</option>");
+                            }else{
+                                str.push("<option value="+item.provinceid+">"+item.province+"</option>");
+                            }
+                        });
+                        $("#province").html(str.join(""));
+                        if(province!=""){
+//                    $("#province").val(""+province+"");
+                          /*  initCity();*/
+                        }else{
+                            $("#city").attr("disabled", true);
+//                            $("#area").attr("disabled", true);
+                        }
+                    }
+                }});
+        }
+
+
+
+        function initCity(){
+            var city =$("#citySelect").val();
+            var proVar = $("#province").val();
+            if(proVar!=''){
+                $("#city").attr("disabled", false);
+                $.ajax({
+                    url: '/area/findCityByProvinceId.html',
+                    data:{provinceId : proVar},
+                    type:'POST',
+                    dataType:"json",
+                    success: function (data) {
+                        if(data!=null){
+                            var str = [];    str.push('<option value="">------请选择-----</option>');
+                            jQuery.each(data,function(i,item){
+                                if(city==item.cityid){
+                                    str.push("<option value="+item.cityid+" selected="+true+">"+item.city+"</option>");
+                                }else{
+                                    str.push("<option value="+item.cityid+">"+item.city+"</option>");
+                                }
+                            });
+                            $("#city").html(str.join(""));
+
+                        }
+                    }});
+            }else{
+                var strCity = [] ;  strCity.push('<option value="">------请选择-----</option>');
+                $("#city").attr("disabled", true);
+                $("#city").html(strCity.join(""));
+            }
+        }
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="wrap">
+        <div class="crumbs">当前位置:<a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><a href="javascript:void(0)">产品中心</a><span class="gt">&gt;</span><span class="current_page">供应商列表</span></div>
+        <div class="home_are">
+            <i class="ico area_ico"></i><strong id="diZhi">全国</strong><a href="javascript:void(0)" class="light">［切换城市］</a>
+            <form id="findProviderPost" action="/company/findProviderList.html" method="post" >
+                <input type="hidden" name="page" th:value="${page.page}" />
+                <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+                <input type="hidden" name="dizhiname" id="dizhiname" th:value="${diZhi}"/>
+                <input type="hidden" name="filter['productId']"  th:value="${page.filter['productId']}"/>
+              <div id="ProvideNone" STYLE="display: none">
+                <input type="hidden"  id="provinceSelect"  name="filter['provinceid']" th:value="${page.filter['provinceid']}" />
+                <select  id="province" style="width:180px;" onchange="initCity();">
+                    <option th:each="province:${provinceList}" th:value="${province.id}" th:text="${province.province}" ></option>
+                </select>
+                <input type="hidden"  id="citySelect"  name="filter['cityid']" th:value="${page.filter['cityid']}" />
+                <select  id="city" style="width: 180px;"></select>
+                <input id="seaCheck" type="button" value="检索"/>
+            </div>
+            </form>
+        </div>
+        <div class="mod_box dealer_mod">
+            <div class="hd">
+                <h2 class="title">供应商列表</h2>
+            </div>
+            <div class="bd">
+                <table class="dealer_table">
+                    <thead>
+                    <tr>
+                        <th class="name">供应商</th>
+                        <th>地区</th>
+                        <th>物流信息</th>
+                        <th>售价（元）</th>
+                        <th class="operate">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="companyProviderList:${page.result}">
+                        <td class="name"><a href="javascript:void(0)" th:text="${companyProviderList.title}"></a><span class="tag" th:if="${companyProviderList.prouserStatus==3}" >厂家直销</span></td>
+                        <td ><span th:text="${companyProviderList.provName}"></span><span th:text="${companyProviderList.citName}"></span></td>
+                        <td th:text="${companyProviderList.logistics==1?'买方承担运费':'买方承担运费'}"></td>
+                        <td><span class="price" th:text="${companyProviderList.salesPrice}"></span></td>
+                        <td class="operate"><a class="btn_link_chat" th:if="${sysUser!=null}" th:href="@{/memberCenter/writerEmail.html(sendName=${companyProviderList.loginName})}"><i class="icon_chat"></i><span>立即咨询</span></a><a th:href="@{/product/partsChoose.html(id=${companyProviderList.prouId},userId=${companyProviderList.proUserId})}" class="btn_weak">查看商品详情</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <div id="page" class="pagination"></div>
+                </div>
+            </div>
+        </div>
+</div>
+</div>
+</body>
+</html>

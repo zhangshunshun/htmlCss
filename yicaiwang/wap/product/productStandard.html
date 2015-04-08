@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta charset="utf-8" />
+<title>产品规格</title>
+    <link href="../../../static/css/popup.css" th:href="@{/static/css/popup.css}" rel="stylesheet" type="text/css" />
+    <style>
+        .supplier_list_product{zoom:1;margin-right:-2px;}
+        .supplier_list_product li{ float:left; width:359px; height:125px;padding-top:12px;border-right:1px solid #d4d4d4;border-bottom:1px solid #d4d4d4; overflow:hidden;}
+        .supplier_list_product h3{ height:24px; line-height:24px; font-size:16px; font-weight:bold;padding-left:20px; overflow:hidden;}
+        .supplier_list_product h3 a{color:#333;}
+        .supplier_list_product h3 a:hover{color:#2c81ff;}
+
+        .supplier_list_product .tags{ display:inline-block; height:12px; font-size:12px; line-height:1;font-weight:normal;color:#2c81ff;margin-left:20px;padding:2px 4px;background-color:#d5e6ff;border-radius:2px;}
+        .supplier_list_product .tel,
+        .supplier_list_product .pro_price{ height:20px; line-height:22px;padding-top:2px;padding-left:20px; overflow:hidden;}
+        .supplier_list_product .price{ font-size:14px; color:#F00; font-weight:bold;}
+
+        .supplier_list_product .btns_box{padding-top:8px;padding-left:10px;}
+        .supplier_list_product .icon_chat{ display:inline-block; width:14px; height:12px; vertical-align:middle;margin-right:6px; background:url(../../../static/imgs/icon_chat.gif) 0 0 no-repeat; overflow:hidden;}
+        .supplier_list_product .btns{ display:inline-block;width:100px; height:24px; line-height:25px;color:#333; vertical-align:top; text-align:center; white-space:nowrap;word-wrap:normal;margin-left:10px;border-radius:2px;}
+        .supplier_list_product .btns_link1{color:#FFF;background-color:#2c81ff;border:1px solid #2c81ff;}
+        .supplier_list_product .btns_link1 span{ display:inline-block;color:#FFF; vertical-align:middle;}
+        .supplier_list_product .btns_link2{background-color:#f9f9f9;border:1px solid #D4D4D4;}
+        .supplier_list_product .disabled{color:#999;background-color:#f8f8f8;border-color:#f8f8f8;}
+        .supplier_list_product .disabled span{ color:#999;}
+        .supplier_list_product .disabled .icon_chat{background-position:0 -15px;}
+    </style>
+<link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+
+    <!--页面上的js-->
+    <script type="text/javascript">
+        //关注产品的ajax
+        function care(type,id){
+            $("#loadingDiv").show();
+            $.ajax({
+                url:"/attention/add.json",
+                type:"POST",
+                data: {
+                    attType:type,
+                    attGenre:id
+                },
+                dataType:"json",
+                success:function(data){
+                    if(data.flag){
+                        alert("操作成功");
+                        $('#care').hide();
+                        $('#removeAttention').show();
+                        $("#loadingDiv").hide();
+                    }else{
+                        alert("操作失败了，"+data.msg);
+                        $("#loadingDiv").hide();
+                    }
+                },
+                error:function(a,b,c){
+                    alert("数据连接异常");
+                    $("#loadingDiv").hide();
+                }
+            })
+        }
+
+        //取消关注
+        function removeAttention(id){
+            $("#loadingDiv").show();
+            $.ajax({
+                url:"/attention/remove.json",
+                type:"POST",
+                data:{
+                    id:id
+                },
+                dataType:"json",
+                success:function(data){
+                    if(data.flag){
+                        alert("操作成功");
+                        $('#removeAttention').hide();
+                        $('#care').show();
+                        $("#loadingDiv").hide();
+                    }else{
+                        alert("操作失败了，"+data.msg);
+                        $("#loadingDiv").hide();
+                    }
+                },
+                error:function(a,b,c){
+                    alert("数据连接异常");
+                    $("#loadingDiv").hide();
+                }
+            })
+        }
+
+
+        $(function(){
+            var pop_up = $(".dialog_box");
+            var pop_filter = $(".dialog_filter");
+            $(".js_btn_id").click(function(){
+                var url = "/product/index.html?productId="+$("#hidden-product").val();
+                $("#iframe").attr("src",url);
+                $("#iframe").load();
+                pop_up.show();
+                pop_filter.show();
+            });
+            $(".dialog_box .close,.dialog_filter").click(function(){pop_up.hide();pop_filter.hide();});
+        });
+
+    </script>
+</head>
+<body class="g_container">
+<div id="content" layout:fragment="content">
+    <input type="hidden" id="hidden-product" th:value="${product.id}" />
+<div class="container">
+	<div class="wrap">
+		<div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><a href="javascript:void(0)">产品中心</a><span class="gt">&gt;</span><a href="javascript:void(0)">临床医学</a><span class="gt">&gt;</span><a href="javascript:void(0)">心扉外科</a><span class="gt">&gt;</span><a href="javascript:void(0)">麻醉机</a><span class="gt">&gt;</span><a href="javascript:void(0)">手动麻醉机</a><span class="gt">&gt;</span><span class="current_page">供应商详情页</span></div>
+		<div class="propertyWrap clearfix">
+        	<div class="gallery">
+            	<div class="picView">
+                	<div class="view"><img th:if="${mediaList!=null}" th:src="'http://114.215.80.184:80/'+${mediaList[0].path}" alt="" id="J_view_img" style="width: 400px;height: 400px;"/></div>
+                    <a href="javascript:void(0)" class="btn_link js_btn_id"><i class="icoc_zoom"></i><span>查看全景图</span></a>
+                </div>
+                <div id="pics_wrap" class="picsWrap"> <a href="javascript:void(0)" class="scrollL" id="scrollL" hidefocus="true" title="上一张">上一张</a>
+                  <div id="picsList" class="picsList">
+                    <ul id="../../../static/thumblist" style="width: 405px;">
+                      <li th:each="media:${mediaList}" class="cur">
+                          <a href="javascript:;" data-img="../../../static/thumb/img400x400.jpg" data-socurse="../../../static/thumb/img800x800.jpg">
+                              <img title="" alt="" th:src="'http://114.215.80.184:80/'+${media.path}" />
+                          </a>
+                      </li>
+                      <!--<li class=""> <a href="javascript:;" data-img="../../../static/thumb/img400x400_1.jpg" data-socurse="../../../static/thumb/img800x800_1.jpg"> <img title="" alt="" src="../../../static/thumb/img72x72.jpg" /> </a> </li>-->
+                      <!--<li class=""> <a href="javascript:;" data-img="../../../static/thumb/img400x400.jpg" data-socurse="../../../static/thumb/img800x800.jpg"> <img title="" alt="" src="../../../static/thumb/img72x72.jpg" /> </a> </li>-->
+                      <!--<li class=""> <a href="javascript:;" data-img="../../../static/thumb/img400x400.jpg" data-socurse="../../../static/thumb/img800x800.jpg"> <img title="" alt="" src="../../../static/thumb/img72x72.jpg" /> </a> </li>-->
+                      <!--<li class=""> <a href="javascript:;" data-img="../../../static/thumb/img400x400.jpg" data-socurse="../../../static/thumb/img800x800.jpg"> <img title="" alt="" src="../../../static/thumb/img72x72.jpg" /> </a> </li>-->
+                      <!--<li class=""> <a href="javascript:;" data-img="../../../static/thumb/img400x400.jpg" data-socurse="../../../static/thumb/img800x800.jpg"> <img title="" alt="" src="../../../static/thumb/img72x72.jpg" /> </a> </li>-->
+                    </ul>
+                  </div>
+                  <a href="javascript:;" class="scrollR" id="scrollR" hidefocus="true" title="下一张">下一张</a> </div>
+            </div>
+            <div class="property">
+            	<div class="hd hasbtns">
+            		<h2><span th:text="${product.name}">手动麻醉机</span><span class="price"><i class="rmb">&yen;</i><span th:text="${product.money}+'万'">1.42~2.1万</span></span></h2>
+                    <div class="btns_box">
+                        <span id="care" th:class="${attentionId == null?'':'hidden'}"><a href="javascript:void(0)" th:onclick="'care(2,'+${product.id}+')'" class="btns">+关注该产品</a></span>
+                        <span id="removeAttention" th:class="${attentionId == null?'hidden':''}"><a href="javascript:void(0)" th:onclick="'removeAttention('+${attentionId}+')'" class="btns">取消关注</a></span>
+                        <a href="javascript:void(0)" class="btns">加入产品对比</a></div>
+            	</div>
+                <div class="p_property">
+                	<ul class="p_property_list">
+                    	<li class="item">
+                    		<h3 class="item_hd">产品编号：</h3>
+                    		<div class="item_bd" th:text="${product.productNo}">04390711</div>
+                    	</li>
+                    	<li class="item">
+                    		<h3 class="item_hd">产品型号：</h3>
+                    		<div class="item_bd" th:text="${product.version}">CMQ390711</div>
+                    	</li>
+                    	<li class="item">
+                    		<h3 class="item_hd">产品类别：</h3>
+                    		<div class="item_bd" th:text="${product.categoryName}">临床手术麻醉机</div>
+                    	</li>
+                    	<li class="item">
+                    		<h3 class="item_hd">产品认证：</h3>
+                    		<div class="item_bd" th:text="${product.approve}">CE，SGS，BV国际认证<i class="icon_identification"></i></div>
+                    	</li>
+                    	<li class="item">
+                    		<h3 class="item_hd">注册证号：</h3>
+                    		<div class="item_bd" th:text="${product.registerNo}">(淮)字2010号260093号</div>
+                    	</li>
+                    	<li class="item">
+                    		<h3 class="item_hd">原产国：</h3>
+                    		<div class="item_bd" th:text="${product.country}">中国</div>
+                    	</li>
+                    	<li class="item">
+                    		<h3 class="item_hd">生产地：</h3>
+                    		<div class="item_bd" th:text="${product.area}">上海</div>
+                    	</li>
+                    	<li class="item">
+                    		<h3 class="item_hd">生产商：</h3>
+                    		<div class="item_bd"><span th:text="${product.companyName}">上海拾光慈航医疗器械有些公司</span><a href="javascript:void(0)" class="btn_link_chat"><i class="icon_chat"></i><span>联络供应商</span></a></div>
+                    	</li>
+                    	<li class="item">
+                    		<h3 class="item_hd">相关科室：</h3>
+                    		<div class="item_bd" th:text="${office}">心扉外科、骨科</div>
+                    	</li>
+                    	<li class="item">
+                    		<h3 class="item_hd">简要说明：</h3>
+                    		<div class="item_bd" th:text="${product.intro}">
+                              原装进口，人体工程学设计。包括Prima SP2麻醉机主机，氧、笑、空三气源，机械6管流量计，具有辅助供氧及流量计背光灯；双罐位配一个英国PENLON原装挥发罐；
+                            </div>
+                    	</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+		<div class="mod_detail_item mod_other_recom clearfix">
+        	<div class="mod_main">
+            	<div class="hd">
+                	<h2>推荐经销商</h2>
+                    <a th:href="@{/company/findProviderList.html(productId=${product.id})}" class="more">更多<i class="gt">&gt;&gt;</i></a>
+                </div>
+            	<div class="bd">
+                	<ul class="supplier_list_product">
+                		<li th:each="company:${companyList}">
+                        	<h3><a href="javascript:void(0)"><span th:text="${company.title}">山东欣雨辰医疗设备有限公司</span></a><span style="background-color: #d5e6ff;border-radius: 2px;color: #2c81ff;display: inline-block;font-size: 12px;font-weight: normal;height: 12px;line-height: 1;margin-left: 20px;padding: 2px 4px;" th:if="${company.prouserStatus==3}">厂家直营</span></h3>
+                            <p class="tel">电话：<span th:text="${company.companyPhone}">020-2345678</span></p>
+                            <p class="pro_price">商品报价：<span class="price" th:text="${company.salesPrice}">58000.00</span></p>
+                            <div class="btns_box"><a href="javascript:void(0)" class="btns btns_link1"><i class="icon_chat"></i><span>立即咨询</span></a>
+                                <a th:href="@{/product/partsChoose.html(id=${company.prouId},userId=${company.proUserId})}" class="btns btns_link2"><span>查看商品详情</span></a></div>
+                        </li>
+                		<!--<li>-->
+                        	<!--<h3><a href="javascript:void(0)">山东欣雨辰医疗设备有限公司</a><span class="tags">厂家直营</span></h3>-->
+                            <!--<p class="tel">电话：020-2345678</p>-->
+                            <!--<p class="pro_price">商品报价：<span class="price">58000.00</span></p>-->
+                            <!--<div class="btns_box"><a href="javascript:void(0)" class="btns btns_link1 disabled"><i class="icon_chat"></i><span>立即咨询</span></a><a href="javascript:void(0)" class="btns btns_link2"><span>查看商品详情</span></a></div>-->
+                        <!--</li>-->
+                		<!--<li>-->
+                        	<!--<h3><a href="javascript:void(0)">山东欣雨辰医疗设备有限公司</a><span class="tags">厂家直营</span></h3>-->
+                            <!--<p class="tel">电话：020-2345678</p>-->
+                            <!--<p class="pro_price">商品报价：<span class="price">58000.00</span></p>-->
+                            <!--<div class="btns_box"><a href="javascript:void(0)" class="btns btns_link1"><i class="icon_chat"></i><span>立即咨询</span></a><a href="javascript:void(0)" class="btns btns_link2"><span>查看商品详情</span></a></div>-->
+                        <!--</li>-->
+                		<!--<li>-->
+                        	<!--<h3><a href="javascript:void(0)">山东欣雨辰医疗设备有限公司</a><span class="tags">厂家直营</span></h3>-->
+                            <!--<p class="tel">电话：020-2345678</p>-->
+                            <!--<p class="pro_price">商品报价：<span class="price">58000.00</span></p>-->
+                            <!--<div class="btns_box"><a href="javascript:void(0)" class="btns btns_link1"><i class="icon_chat"></i><span>立即咨询</span></a><a href="javascript:void(0)" class="btns btns_link2"><span>查看商品详情</span></a></div>-->
+                        <!--</li>-->
+                	</ul>
+                </div>
+            </div>
+        	<div class="mod_aside js_tabs_mod">
+            	<div class="hd">
+                	<ul class="mod_tabs">
+                		<li class="item js_tabs_nav current"><a href="javascript:void(0)">相关资讯</a></li>
+                		<li class="item js_tabs_nav"><a href="javascript:void(0)">成交记录</a></li>
+                	</ul>
+                </div>
+            	<div class="bd">
+                    <div class="mod_txt_list js_tabs_con">
+                        <ul>
+                            <li th:each="article:${articleList}">
+                                <a href="javascript:void(0)">
+                                    <strong>【<span th:text="${article.content}">公告</span>】 </strong>
+                                    <span th:text="${article.title}">一起仿制药专利纠纷引发的故事</span>
+                                </a>
+                                <span class="time" th:text="${#dates.format(article.createDate,'yyyy-MM-dd')}">2014-12-23</span>
+                            </li>
+                            <!--<li><a href="javascript:void(0)"><strong>【新闻】 </strong>一起仿制药专利纠纷引发的故事</a><span class="time">2014-12-23</span></li>-->
+                            <!--<li><a href="javascript:void(0)"><strong>【资讯】 </strong>一起仿制药专利纠纷引发的故事</a><span class="time">2014-12-23</span></li>-->
+                            <!--<li><a href="javascript:void(0)"><strong>【公告】 </strong>一起仿制药专利纠纷引发的故事</a><span class="time">2014-12-23</span></li>-->
+                            <!--<li><a href="javascript:void(0)"><strong>【公告】 </strong>一起仿制药专利纠纷引发的故事</a><span class="time">2014-12-23</span></li>-->
+                        </ul>
+                        <!--<div class="more_info"><a href="javascript:void(0)">更多<i class="gt">&gt;&gt;</i></a></div>-->
+                    </div>
+                	<div class="mod_txt_list js_tabs_con" style="display:none;">
+                		<ul>
+                			<li th:each="order:${productordersList}">
+                                <a href="javascript:void(0)">
+                                    <strong th:text="${order.proordMessrs}">【公告】 </strong>
+                                    <span th:text="${order.proordRental}">2一起仿制药专利纠纷引发的故事</span>
+                                </a>
+                                <span class="time" th:if="${order.createDate!=null}" th:text="${#dates.format(order.createDate,'yyyy-MM-dd')}">2014-12-23</span>
+                            </li>
+                			<!--<li><a href="javascript:void(0)"><strong>【新闻】 </strong>2一起仿制药专利纠纷引发的故事</a><span class="time">2014-12-23</span></li>-->
+                			<!--<li><a href="javascript:void(0)"><strong>【资讯】 </strong>2一起仿制药专利纠纷引发的故事</a><span class="time">2014-12-23</span></li>-->
+                			<!--<li><a href="javascript:void(0)"><strong>【公告】 </strong>2一起仿制药专利纠纷引发的故事</a><span class="time">2014-12-23</span></li>-->
+                			<!--<li><a href="javascript:void(0)"><strong>【公告】 </strong>2一起仿制药专利纠纷引发的故事</a><span class="time">2014-12-23</span></li>-->
+                		</ul>
+                        <!--<div class="more_info"><a href="javascript:void(0)">更多<i class="gt">&gt;&gt;</i></a></div>-->
+                	</div>
+                </div>
+            </div>
+        </div>
+		<div class="mod_detail_item mod_pro_desc clearfix">
+        	<div class="mod_main js_tabs_mod">
+            	<div class="hd">
+                  <ul class="mod_tabs">
+                    <li class="item js_tabs_nav current"><a href="javascript:void(0)">详细信息</a></li>
+                    <li class="item js_tabs_nav"><a href="javascript:void(0)">规格参数</a></li>
+                    <li class="item js_tabs_nav"><a href="javascript:void(0)">成交说明</a></li>
+                    <li class="item js_tabs_nav"><a href="javascript:void(0)">售后服务</a></li>
+                    <li class="item js_tabs_nav"><a href="javascript:void(0)">相关配件</a></li>
+                    <li class="item js_tabs_nav"><a href="javascript:void(0)">用户留言(<span th:text="${evaluateCount}">5</span>)</a></li>
+                  </ul>
+                </div>
+            	<div class="bd">
+                	<div class="p_desc_detail js_tabs_con" th:utext="${product.detail}">
+                    	<!--<img src="../../../static/thumb/detail_img_1.jpg" alt="" />-->
+                    	<!--<img src="../../../static/thumb/detail_img_2.jpg" alt="" />-->
+                    	<!--<img src="../../../static/thumb/detail_img_3.jpg" alt="" />-->
+                    	<!--<img src="../../../static/thumb/detail_img_4.jpg" alt="" />-->
+                    	<!--<img src="../../../static/thumb/detail_img_5.jpg" alt="" />-->
+                    	<!--<img src="../../../static/thumb/detail_img_6.jpg" alt="" />-->
+                    	<!--<img src="../../../static/thumb/detail_img_7.jpg" alt="" />-->
+                    	<!--<img src="../../../static/thumb/detail_img_8.jpg" alt="" />-->
+                    	<!--<img src="../../../static/thumb/detail_img_9.jpg" alt="" />-->
+                    </div>
+                    <div class="p_desc_cs js_tabs_con" style="display: none">
+                        <div class="mod_txt_list">
+                            <ul>
+                                <li th:each="nature:${natureList}">
+                                    <span th:text="${nature.name}+':'">关于商请</span>
+                                    <span style="margin-left: 10px;" th:text="${nature.natureValue}">2015-03-09</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="p_desc_sm js_tabs_con" style="display: none" th:utext="${product.deal}">成交说明</div>
+                    <div class="p_desc_fw js_tabs_con" style="display: none" th:utext="${product.sale}">售后服务</div>
+                    <div class="p_desc_pj js_tabs_con" style="display: none">
+                        <ul class="parts_list">
+                            <li class="item" th:each="parts:${partsList}">
+                                <div class="pic"><a href="javascript:void(0)"><img th:src="'http://114.215.80.184:80/'+${parts.imgPath}" style="height:220px;width:220px;"/></a></div>
+                                <div class="con">
+                                    <h3 class="title"><a href="javascript:void(0)"><span th:text="${parts.name}">专业生产和销售LED手术室无影灯 整体反射医用手术灯 病床 吊塔</span></a> </h3>
+                                    <div class="info">
+                                        <h3 class="info_hd">配件型号：</h3>
+                                        <div class="info_bd" th:text="${parts.version}">04390711</div>
+                                    </div>
+                                    <div class="info">
+                                        <h3 class="info_hd">配件说明：</h3>
+                                        <div class="info_bd" th:text="${parts.intro}">
+                                            <p>原装进口，人体工程学设计。</p>
+                                            <p>包括Prima SP2麻醉机主机，氧、笑、空三气源，机械6管流量计，具有辅助供氧及流量计背光灯；双罐位配一个英国PENLON原装挥发罐；</p>
+                                        </div>
+                                    </div>
+                                    <div class="info">
+                                        <h3 class="info_hd">配件售价：</h3>
+                                        <div class="info_bd"><span class="price"><i class="rmb">¥</i><i class="rmb_num" th:text="${parts.money}">58000.00</i></span></div>
+                                    </div>
+                                    <!--<div class="info">-->
+                                        <!--<h3 class="info_hd">配件售价：</h3>-->
+                                        <!--<div class="info_bd">-->
+											<!--<span class="p_amount">-->
+												<!--<a class="p_reduce p_disable" href="javascript:void(0)">-</a>-->
+												<!--<input type="text" value="1" class="text" />-->
+												<!--<a class="p_increase" href="javascript:void(0)">+</a>-->
+											<!--</span>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                </div>
+                            </li>
+                            <!--<li class="item">-->
+                                <!--<div class="pic"><a href="javascript:void(0)"><img src="thumb/img400x400.jpg" /></a></div>-->
+                                <!--<div class="con">-->
+                                    <!--<h3 class="title"><a href="javascript:void(0)">专业生产和销售LED手术室无影灯 整体反射医用手术灯 病床 吊塔</a> </h3>-->
+                                    <!--<div class="info">-->
+                                        <!--<h3 class="info_hd">配件型号：</h3>-->
+                                        <!--<div class="info_bd">04390711</div>-->
+                                    <!--</div>-->
+                                    <!--<div class="info">-->
+                                        <!--<h3 class="info_hd">配件说明：</h3>-->
+                                        <!--<div class="info_bd">-->
+                                            <!--<p>原装进口，人体工程学设计。</p>-->
+                                            <!--<p>包括Prima SP2麻醉机主机，氧、笑、空三气源，机械6管流量计，具有辅助供氧及流量计背光灯；双罐位配一个英国PENLON原装挥发罐；</p>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<div class="info">-->
+                                        <!--<h3 class="info_hd">配件售价：</h3>-->
+                                        <!--<div class="info_bd"><span class="price"><i class="rmb">¥</i><i class="rmb_num">58000.00</i></span></div>-->
+                                    <!--</div>-->
+
+                                    <!--<div class="info">-->
+                                        <!--<h3 class="info_hd">配件售价：</h3>-->
+                                        <!--<div class="info_bd">-->
+											<!--<span class="p_amount">-->
+												<!--<a class="p_reduce p_disable" href="javascript:void(0)">-</a>-->
+												<!--<input type="text" value="1" class="text" />-->
+												<!--<a class="p_increase" href="javascript:void(0)">+</a>-->
+											<!--</span>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            <!--</li>-->
+                        </ul>
+                        <!--<div class="pagination">-->
+                            <!--<a class="dis page-prev" href="javascript:void(0)">&lt;</a><a class="page-cur">1</a><a href="javascript:void(0)">2</a><a href="javascript:void(0)">3</a><span class="page-break">...</span><a href="javascript:void(0)">14</a><a class="page-next" href="javascript:void(0)">&gt;</a><span class="page-skip">共25页，到第<input class="page-num" type="text" />页<button id="page_submit" name="page_submit" class="btn_key page-submit" type="button">确定</button></span>-->
+                        <!--</div>-->
+                    </div>
+                    <div class="p_desc_ly js_tabs_con" style="display: none">
+                        <!--<ul class="mod_choose">-->
+                            <!--<li class="item"><input type="radio" name="radigroup1" id="radigroup1_0" class="radio" checked="checked" /><label for="radigroup1_0" class="label">全部(72)</label></li>-->
+                            <!--<li class="item"><input type="radio" name="radigroup1" id="radigroup1_1" class="radio" /><label for="radigroup1_1" class="label">好评(53)</label></li>-->
+                            <!--<li class="item"><input type="radio" name="radigroup1" id="radigroup1_1" class="radio" /><label for="radigroup1_1" class="label">中评(17)</label></li>-->
+                            <!--<li class="item"><input type="radio" name="radigroup1" id="radigroup1_1" class="radio" /><label for="radigroup1_1" class="label">差评(2)</label></li>-->
+                        <!--</ul>-->
+                        <div class="p_desc_ly_list">
+                            <div class="cart_tbody">
+                                <div class="cart_tbody_hd clearfix">
+                                    <div class="appraise">评价</div>
+                                    <div class="appraise_detail">评价内容</div>
+                                    <div class="buyers">买家名</div>
+                                </div>
+                                <div class="appraise_list clearfix" th:each="eva:${evaluateList}">
+                                    <div class="appraise" th:if="${eva.evaGrade==1}">好评</div>
+                                    <div class="appraise" th:if="${eva.evaGrade==2}">中评</div>
+                                    <div class="appraise" th:if="${eva.evaGrade==3}">差评</div>
+                                    <div class="appraise_detail">
+                                        <div class="decs" th:text="${eva.evaContent}">
+                                            <h3>山东欣雨辰生产电动手术床.</h3>
+                                            <p class="p_extend">颜色： 白色，规格：12345</p>
+                                        </div>
+                                    </div>
+                                    <div class="buyers">
+                                        <div class="decs">
+                                            <h3 th:text="${eva.usbuyname}">yicai</h3>
+                                            <p class="p_extend" th:text="${#dates.format(eva.createDate,'yyyy-MM-dd')}">2015年2月15日10：00</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--<div class="appraise_list clearfix">-->
+                                    <!--<div class="appraise">好评</div>-->
+                                    <!--<div class="appraise_detail">-->
+                                        <!--<div class="decs">-->
+                                            <!--<h3>山东欣雨辰生产电动手术床.</h3>-->
+                                            <!--<p class="p_extend">颜色： 白色，规格：12345</p>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<div class="buyers">-->
+                                        <!--<div class="decs">-->
+                                            <!--<h3>yicai</h3>-->
+                                            <!--<p class="p_extend">2015年2月15日10：00</p>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="appraise_list clearfix">-->
+                                    <!--<div class="appraise">好评</div>-->
+                                    <!--<div class="appraise_detail">-->
+                                        <!--<div class="decs">-->
+                                            <!--<h3>山东欣雨辰生产电动手术床.</h3>-->
+                                            <!--<p class="p_extend">颜色： 白色，规格：12345</p>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<div class="buyers">-->
+                                        <!--<div class="decs">-->
+                                            <!--<h3>yicai</h3>-->
+                                            <!--<p class="p_extend">2015年2月15日10：00</p>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="appraise_list clearfix">-->
+                                    <!--<div class="appraise">好评</div>-->
+                                    <!--<div class="appraise_detail">-->
+                                        <!--<div class="decs">-->
+                                            <!--<h3>山东欣雨辰生产电动手术床.</h3>-->
+                                            <!--<p class="p_extend">颜色： 白色，规格：12345</p>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<div class="buyers">-->
+                                        <!--<div class="decs">-->
+                                            <!--<h3>yicai</h3>-->
+                                            <!--<p class="p_extend">2015年2月15日10：00</p>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="appraise_list clearfix">-->
+                                    <!--<div class="appraise">好评</div>-->
+                                    <!--<div class="appraise_detail">-->
+                                        <!--<div class="decs">-->
+                                            <!--<h3>山东欣雨辰生产电动手术床.</h3>-->
+                                            <!--<p class="p_extend">颜色： 白色，规格：12345</p>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<div class="buyers">-->
+                                        <!--<div class="decs">-->
+                                            <!--<h3>yicai</h3>-->
+                                            <!--<p class="p_extend">2015年2月15日10：00</p>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                                <!--<div class="appraise_list clearfix">-->
+                                    <!--<div class="appraise">好评</div>-->
+                                    <!--<div class="appraise_detail">-->
+                                        <!--<div class="decs">-->
+                                            <!--<h3>山东欣雨辰生产电动手术床.</h3>-->
+                                            <!--<p class="p_extend">颜色： 白色，规格：12345</p>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                    <!--<div class="buyers">-->
+                                        <!--<div class="decs">-->
+                                            <!--<h3>yicai</h3>-->
+                                            <!--<p class="p_extend">2015年2月15日10：00</p>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+                            </div>
+                        </div>
+                        <!--<div class="pagination">-->
+                            <!--<a class="dis page-prev" href="javascript:void(0)">&lt;</a><a class="page-cur">1</a><a href="javascript:void(0)">2</a><a href="javascript:void(0)">3</a><span class="page-break">...</span><a href="javascript:void(0)">14</a><a class="page-next" href="javascript:void(0)">&gt;</a><span class="page-skip">共25页，到第<input class="page-num" type="text" />页<button id="page_submit" name="page_submit" class="btn_key page-submit" type="button">确定</button></span>-->
+                        <!--</div>-->
+
+
+                    </div>
+                </div>
+            </div>
+        	<div class="mod_aside">
+            	<div class="hd">
+                	<h2>同类产品</h2>
+                </div>
+            	<div class="bd">
+                	<ul class="pro_recom_list">
+                    	<li class="item" th:each="product:${productList}">
+                        	<div class="pic"><a href="javascript:void(0)"><img th:src="'http://114.215.80.184:80/'+${product.imagePath}" style="width: 180px;height: 180px;" alt="" /></a></div>
+                            <p class="other"><i class="rmb">&yen;</i><span th:text="${product.money}">.40~1.89万</span></p>
+                        	<h3><a href="javascript:void(0)"><span th:text="${product.name}">专业生产和销售LED手术室无影整体反射医用手术灯 病床 吊塔</span></a></h3>
+                            <p class="company"><i class="icon"></i><span class="c_name" th:text="${product.companyName}">曲阜市盛德医疗科技有限公司</span></p>
+                        </li>
+                    	<!--<li class="item">-->
+                        	<!--<div class="pic"><a href="javascript:void(0)"><img src="../../../static/thumb/img180x180.jpg" alt="" /></a></div>-->
+                            <!--<p class="other"><i class="rmb">&yen;</i>.40~1.89万</p>-->
+                        	<!--<h3><a href="javascript:void(0)">专业生产和销售LED手术室无影整体反射医用手术灯 病床 吊塔</a></h3>-->
+                            <!--<p class="company"><i class="icon"></i><span class="c_name">曲阜市盛德医疗科技有限公司</span></p>-->
+                        <!--</li>-->
+                    	<!--<li class="item">-->
+                        	<!--<div class="pic"><a href="javascript:void(0)"><img src="../../../static/thumb/img180x180.jpg" alt="" /></a></div>-->
+                            <!--<p class="other"><i class="rmb">&yen;</i>.40~1.89万</p>-->
+                        	<!--<h3><a href="javascript:void(0)">专业生产和销售LED手术室无影整体反射医用手术灯 病床 吊塔</a></h3>-->
+                            <!--<p class="company"><i class="icon"></i><span class="c_name">曲阜市盛德医疗科技有限公司</span></p>-->
+                        <!--</li>-->
+                    </ul>
+                </div>
+            </div>
+        </div>
+	</div>
+</div>
+<!-- 查看大图 start-->
+    <div class="dialog_filter" style="display:none;"></div>
+    <div class="dialog_box property_pop" style="display:none;">
+        <a class="close" href="javascript:void(0)"></a>
+        <div class="hd">
+            <h3 class="title" th:text="${product.name}">山东欣雨辰生产电动手术床</h3>
+        </div>
+        <div class="bd">
+            <div class="p_picView">
+                <!--<a id="right1" class="btn btn_prev" href="javascript:void(0)"></a>-->
+                <!--<a id="left1" class="btn btn_next" href="javascript:void(0)"></a>-->
+                <div class="view" id="wrapBox1">
+                    <style>#count1 li{float:left;width: 620px;height: 520px;}</style>
+                    <ul id="count1">
+                        <iframe id="iframe" width="450" height="480" frameborder="no" border="0" marginwidth="0" marginheight="0" scrolling="no" allowtransparency="yes"></iframe>
+
+                        <!--<li><img alt="图片1" src="../../../static/thumb/img800x800.jpg" /></li>-->
+                        <!--<li><img alt="图片1" src="../../../static/thumb/img800x800.jpg" /></li>-->
+                    </ul>
+                </div>
+                <!--<div class="scaling"><a href="javascript:void(0)" class="increase">+</a><a href="javascript:void(0)" class="reduce">-</a> </div>-->
+            </div>
+        </div>
+    </div>
+<!-- 查看大图 end-->
+
+<script type="text/javascript">
+    $("#picsList").picscroll({
+        btnNext: "#scrollR",
+        btnPrev: "#scrollL",
+        auto:false,
+        circular:false,
+        autospeed:5000,
+        visible:5,
+        scroll:1
+    });
+    $('#thumblist li a').click(function(e){
+        e.preventDefault();
+        $(this).parent().addClass('cur').siblings().removeClass('cur');
+        $('#J_view_img').attr('src',$(this).attr('data-img'));
+        /*$('#J_socurse_img').attr('href',$(this).attr('data-socurse'));*/
+    });
+    $(document).ready(function(){
+        $("#count1").dayuwscroll({
+            parent_ele:'#wrapBox1',
+            pre_btn:'#left1',
+            next_btn:'#right1',
+            path: 'left',
+            auto:false,
+            time:3000,
+            num:1,
+            gd_num:1,
+            waite_time:1000
+        });
+    });
+</script>
+
+    </div>
+</body>
+</html>

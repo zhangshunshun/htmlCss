@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>采购信息</title>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="crumbs"><a href="/">首页</a><span class="gt">&gt;</span><span class="current_page">采购信息</span></div>
+    <div class="mod_box notice_mod">
+        <div class="hd">
+            <h2 class="title">供应信息</h2><a href="/article/supplyList.html" class="more">更多&gt;&gt;</a>
+        </div>
+        <div class="bd">
+            <ul class="info_list">
+                <li th:each="a:${supplyPage.result}"><i class="drop"></i><a th:href="@{/supply/supplyDetails.html(id=${a.id})}" th:text="${a.title}">一起仿制药专利纠纷引发的故事</a><span class="time" th:text="${a.createDate}">2013-05-08 17:25:20</span></li>
+            </ul>
+        </div>
+    </div>
+    <div class="mod_box notice_mod">
+        <div class="hd">
+            <h2 class="title">求购信息</h2><a href="/article/purchaseList.html" class="more">更多&gt;&gt;</a>
+        </div>
+        <div class="bd">
+            <ul class="info_list">
+                <li th:each="a:${purchasePage.result}"><i class="drop"></i><a th:href="@{/supply/purchaseDetails.html(id=${a.id})}" th:text="${a.title}">一起仿制药专利纠纷引发的故事</a><span class="time" th:text="${a.createDate}">2013-05-08 17:25:20</span></li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

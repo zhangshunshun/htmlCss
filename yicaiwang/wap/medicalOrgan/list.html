@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>test</title>
+    <style>
+        .supplier_list li {
+            border:0;
+            padding: 40px 40px 40px 345px;
+            width:auto;
+            float:none;
+        }
+    </style>
+    <link href="../../../static/css/select.css" th:href="@{/static/css/select.css}" rel="stylesheet" type="text/css" />
+    <script>
+        $(function(){
+            var options = {
+                currentPage: $("[name=page]").val(),
+                totalPages: $("[name=totalPage]").val(),
+                onPageClicked:function(e,type,page){
+                    $("[name=page]").val(page);
+                    $("#searchForm").submit();
+                }
+            };
+            $('#page').bootstrapPaginator(options);
+
+            $('#select-province').select({
+                width:170,
+                search:true,
+                onSelected:function(e,$option){
+                    $.ajax({
+                        url:'/area/findCityByProvinceId.json',
+                        data:{provinceId:$option.val()},
+                        dataType:'json',
+                        success:function(res){
+                            var $city=$('#select-city');
+                            $city[0].length=1;
+                            $.each(res,function(i,n){
+                                $('<option/>').val(n.cityid).html(n.city).appendTo($city);
+                                $('#select-city').select('render');
+                            });
+                        }
+                    });
+                }
+            });
+            $('#select-city').select({
+                width:170,
+                search:true
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">医疗机构</span></div>
+    <div class="mod_box supplier_row">
+        <div class="hd form_hd">
+            <form id="searchForm" th:action="@{/medicalOrgan/list.html}" method="post">
+                <input type="hidden" name="page" th:value="${page.page}" />
+                <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+                <div class="select_box"><strong class="keyName">医疗机构名称：</strong><input type="text" name="filter['title']" th:value="${page.filter['title']}" class="input_txt"/></div>
+                <div class="select_box"><strong class="keyName">所在地区：</strong>
+                    <!--<div class="ui-select">-->
+                        <!--<div class="selectMod"><span class="select-input">请选择</span><span class="select-drop"><s class="arrow arrow-tthin"></s></span></div>-->
+                        <!--<ul class="select-list">-->
+                            <!--<li class="hover">请选择</li>-->
+                            <!--<li>选择1</li>-->
+                            <!--<li>选择2</li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                    <select id="select-province" name="filter['provinceId']">
+                        <option value="">------省------</option>
+                        <option th:each="p:${provinceList}" th:value="${p.provinceid}" th:text="${p.province}" th:selected="${p.provinceid==page.filter['provinceId']}"></option>
+                    </select>
+                    <select id="select-city" name="filter['cityId']">
+                        <option value="">------市------</option>
+                    </select>
+                </div>
+                <input class="btn_weak" type="submit" value="搜索"/>
+            </form>
+        </div>
+        <div class="bd">
+            <ul class="supplier_list">
+                <li th:each="c:${page.result}">
+                    <a th:href="@{/medicalOrgan/detail.html(id=${c.id})}" class="thumb"><img th:src="${c.logoUrl}" alt=""/></a>
+                    <h2><a th:href="@{/medicalOrgan/detail.html(id=${c.id})}" th:text="${c.title}">广州市第一人民医院</a></h2>
+                    <p class="sum">公司所在地：<span th:text="${c.provName+c.citName}">广州</span></p>
+                    <p class="intro">医院介绍：<span th:text="${c.introduction}">广州市第一人民医院是广州市卫生局下属大型综合性医院，是广州地区医疗、教学、科研、干部保健的重要基地。始建于1899年（光绪25年），名为“城西方便所”，解放后于1954年更名为“广州市第一人民医院”。医院由院本部、鹤洞分院两个院区组成，并经营管理广州市南沙中心医院。1993年被卫生部评定为广东省首批三级甲等医院。</span></p>
+                </li>
+            </ul>
+        </div>
+        <div id="page"></div>
+    </div>
+</div>
+</body>
+</html>

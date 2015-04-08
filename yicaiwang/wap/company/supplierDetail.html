@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	  xmlns:th="http://www.thymeleaf.org"
+	  layout:decorator="foreground/layout">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=8" />
+	<title>供应商详情</title>
+	<script>
+		$(function(){
+			var options = {
+				currentPage: $("[name=page]").val(),
+				totalPages: $("[name=totalPage]").val(),
+				onPageClicked:function(e,type,page){
+					$("[name=page]").val(page);
+					$("#searchForm").submit();
+				}
+			};
+			$('#page').bootstrapPaginator(options);
+		});
+
+	</script>
+
+</head>
+<body>
+<div id="content" layout:fragment="content">
+	<div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">供应商</span></div>
+
+	<form id="searchForm" th:action="@{/company/detail.htm}" method="post">
+		<input type="hidden" name="page" th:value="${page.page}" />
+		<input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+		<input type="hidden" name="companyId" th:value="${companyId}" />
+	</form>
+
+	<div class="main_right">
+		<div class="mod_box supplier_about">
+			<div class="hd">
+				<h2 class="title">公司概况</h2>
+			</div>
+			<div class="bd">
+				<div class="company_logo"><img src="${company.logo}" alt=""/></div>
+				<h1 class="name"><span th:text="${company.title}"></span></h1>
+
+				<div class="sum">
+					<img th:if="${isCredit==true}" src="../../../static/imgs/credit_img.png" alt=""/><span th:if="${isCredit==true}">诚信认证</span>&nbsp;&nbsp;&nbsp;&nbsp;
+					<img th:if="${isGold==true}" src="../../../static/imgs/credit_img.png" alt=""/><span th:if="${isGold==true}">金牌认证</span>
+				</div>
+
+				<div class="intro">
+					<p>
+						<span th:text="${company.introduction}"></span>
+						<!--广州市中尼医疗器械实业有限公司是一家专业从事医疗器械（数控调频脉冲治疗仪、普通中频低频治疗仪、立体动态三维治疗仪、记忆处方治疗仪、心脑血管、激光治疗仪、数显储存治疗仪等系列产品）的研发、生产、销售集于一体的高薪企业。公司严格执行医疗器械ISO13485体系管理，实施无尘车间生产。本着“以人为本、安全第一、质量第一的宗旨”， 狠抓产品质量，使产品性能在业界始终保持领先水平。-->
+					<!--公司生产的系列产品，全面应用于各大医院、门诊等医疗机构，以及疗养院、美容院、养生馆和家庭。主要适用于内科疾病、外科疾病、五官科疾病和皮肤科疾病等康复医学的治疗。尤其针对国内首创的立体动态三维治疗仪、记忆处方治疗仪、数显储存治疗仪的研制，迈入中国品牌顶级行列。-->
+					<!--产品设计先进，技术性强，含金量高。经过多次的升级研发，性能完善，输出性能平稳，疗效显著；且使用安全、容易操作，赢得广大用户的亲昵和信赖，已成为行业中的佼佼者。-->
+					<!--产品设计先进，技术性强，含金量高。经过多次的升级研发，性能完善，输出性能平稳，疗效显著；且使用安全、容易操作，赢得广大用户的亲昵和信赖，已成为行业中的佼佼者。-->
+					   <!--我公司坚持为用户提供“专业、优质、高效、贴心”的服务。时刻关注国内外同行业的发展现状，将“西方之媚与东方之柔”完美合璧，不断丰富自身的产品，以行业内的高标准从严要求自己，努力提升自身的专业程度以及服务质量。随时为顾客提供各项技术指导（包括仪器正确使用方法、经络学、理疗学、药物导入等药离子配置方法、药浓度配比）和MBA营销知识。-->
+					 <!--公司严守承诺、格守信誉，技术培训和售后服务均得到用户的一致赞誉，使用本公司产品，就是选择了经济实惠、更是选择舒心。公司坚持用企业文化提升企业核心竞争力，使企业在发展中树立起良好的社会形象。“行远必自迩、追求无止境”。“中尼”将一如既往的奋进不息，为建树美丽的事业奉献光和热，为锻造中国医疗器械产业丰碑而永远向前！-->
+					</p>
+				</div>
+			</div>
+		</div>
+		<div class="mod_box supplier_pro">
+			<div class="hd">
+				<h2 class="title">供应商产库</h2>
+			</div>
+			<div class="bd">
+				<ul class="pro_list">
+
+
+					<li th:each="a,s:${page.result}">
+						<a th:href="@{/product/productStandard.html(productId=${a.id})}" class="thumb">
+							<img src="${a.imagePath != null ?  'http://114.215.80.184/img'+a.imagePath: '../../../static/imgs/logo1.png'}" alt=""/></a>
+						<h4><a th:href="@{/product/productStandard.html(productId=${a.id})}"><span th:text="${a.productName}"></span></a></h4>
+						<p class="price"><span class="price_box"><dfn>&yen;</dfn><em><span th:text="${a.salesPrices}"></span></em>万</span></p>
+					</li>
+
+
+				</ul>
+			</div>
+			<div id="page"></div>
+			<!--<div class="pagination">-->
+				<!--<a class="dis page-prev" href="javascript:void(0)">&lt;</a><a class="page-cur">1</a><a href="javascript:void(0)">2</a><a href="javascript:void(0)">3</a><span class="page-break">...</span><a href="javascript:void(0)">14</a><a class="page-next" href="javascript:void(0)">&gt;</a><span class="page-skip">共25页，到第<input class="page-num" type="text" />页<button id="page_submit" name="page_submit" class="btn_key page-submit" type="button">确定</button></span>-->
+			<!--</div>-->
+		</div>
+	</div>
+	<div class="asid_left">
+		<div class="mod_box contact_mod">
+			<div class="hd">
+				<h3 class="title">联系方式</h3>
+			</div>
+			<div class="bd">
+				<p><strong class="keyName">联系人：</strong><span th:text="${linkman.name}"></span></p>
+				<p><strong class="keyName">联系电话：</strong><span th:text="${linkman.companyPhone}"></span></p>
+				<p><strong class="keyName">固定电话：</strong><span th:text="${company.companyPhone}"></span></p>
+
+				<a th:if="${sysUser!=null}" class="btn_normal" th:href="@{/memberCenter/writerEmail.html(sendName=${loginName})}">
+					<em class="ico contact_ico"></em>和我联系</a>
+
+			</div>
+		</div>
+		<div class="mod_box hotPor_mod">
+			<div class="hd">
+				<h3 class="title">热销产品</h3>
+			</div>
+			<div class="bd">
+				<ul class="pro_list_thumb">
+					<li th:each="product:${productListSaleGood}">
+						<a th:href="@{/product/productStandard.html(productId=${product.id})}" class="thumb">
+							<img th:src="${product.imagePath != null ?  'http://114.215.80.184/img'+product.imagePath: '../../../static/imgs/logo1.png'}" /> </a>
+						<h4><a th:href="@{/product/productStandard.html(productId=${product.id})}"> <span th:text="${product.name}"></span> </a></h4>
+						<p class="sum">成交: <span th:text="${product.saleCount}"></span> 台 </p>
+						<p class="price"><span class="price_box"><dfn>&yen;</dfn><em><span th:text="${product.money}"></span></em>万</span></p>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

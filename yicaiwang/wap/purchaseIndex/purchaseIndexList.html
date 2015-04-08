@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	  xmlns:th="http://www.thymeleaf.org"
+	  layout:decorator="foreground/layout">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=8" />
+	<title>采购指数列表</title>
+	<meta charset="utf-8"/>
+	<script>
+		$(function(){
+			var options = {
+				currentPage: $("[name=page]").val(),
+				totalPages: $("[name=totalPage]").val(),
+				onPageClicked:function(e,type,page){
+					$("[name=page]").val(page);
+					$("#searchForm").submit();
+				}
+			};
+			$('#page').bootstrapPaginator(options);
+//			$('.select-list li').click(function(){
+//				var s=$(this).html();
+//				$('#hidden-x').val(s=='请选择'?'':s);
+//			});
+		});
+	</script>
+
+</head>
+<body>
+<div id="content" layout:fragment="content">
+	<div class="crumbs"><a href="/">首页</a><span class="gt">&gt;</span><span class="current_page">采购指数</span></div>
+	<form id="searchForm" th:action="@{/purchaseIndex/toPurchaseIndex.htm}" method="post">
+		<input type="hidden" name="page" th:value="${page.page}" />
+		<input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+	</form>
+	<div class="quota_row">
+		<ul class="quota_list">
+			<li th:each="a,s:${page.result}">
+				<a th:href="@{/purchaseIndex/toPurchaseByDate.htm(productId=${a.productId},productName=${a.productName})}" title="点击查看详情">
+					<h4><span style="color: red;" th:text="${a.productName}"></span>价格指数
+						<img src="../../../static/imgs/data_ico.jpg" alt=""/></h4>
+					<p class="intro">
+						今日综合产品价格指数为<span th:text="${a.thisMonthBalance}"></span>。前一日综合产品价格指 数为
+						<span th:text="${a.lastMonthBalance}"></span>。该产品综合平均价格为<span th:text="${a.banlance}"></span>
+					</p>
+				</a>
+			</li>
+		</ul>
+	</div>
+	<div id="page"></div>
+</div>
+</body>
+</html>

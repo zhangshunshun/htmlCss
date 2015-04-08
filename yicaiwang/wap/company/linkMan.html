@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	  xmlns:th="http://www.thymeleaf.org"
+	  layout:decorator="foreground/layout-simple">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=8" />
+	<title>联系人管理</title>
+	<link href="../../../static/css/ace.min.css" th:href="@{/static/css/ace.min.css}" rel="stylesheet" type="text/css" />
+	<script>
+		$(function(){
+			//提交更新
+			$("#linkManForm").validate({
+				checkStart : true,
+				errorElement: 'span',
+				errorClass: 'help-inline',
+				focusInvalid: false,
+				rules : {
+					name : {required: true},
+					email:{required:true,email:true},
+					companyPhone:{required:true,isMobile:true},
+					jobTitle:{required:true}
+
+				},
+				messages : {
+					name : {required: "请填写姓名"},
+					email : {required: "请填写邮箱",email:"邮箱格式错误"},
+					companyPhone : {required: "请填写手机号码",isMobile:"手机号码格式错误"},
+					jobTitle : {required: "请填写职位"}
+				},
+				submitHandler : function(form) {
+					$("#loadingDiv").show();
+					$("#linkManForm").ajaxSubmit({
+						dataType:"json",
+						type:"post",
+						success:function(date,res,me){
+							if(date.suc){
+								$("#loadingDiv").hide();
+								$.alert("添加成功!",function(){
+									window.location.href="/company/toLinkMan.html";
+								});
+							}else {
+								$("#loadingDiv").hide();
+								$.alert("添加失败了！" + date.msg);
+							}
+						},error:function(a,b){console.info(a,b);}});
+				},
+				highlight: function (e) {
+					$(e).closest('.control-group').removeClass('info').addClass('error');
+				},
+				errorPlacement: function(error, element) {
+					if(element.is('[type=file]')){
+						error.addClass('right');
+					}
+					error.appendTo(element.parent());
+					element.css('borderColor','red');
+				}
+			});
+
+			$(".btn").click(function(){
+				$("#linkManId").val($(this).parents("td").parents("tr").find("td:first").html())
+				$("#linkManName").val($(this).parents("td").parents("tr").find("td").eq(1).html())
+				$("#linkManEmail").val($(this).parents("td").parents("tr").find("td").eq(2).html())
+				$("#linkManPhone").val($(this).parents("td").parents("tr").find("td").eq(3).html())
+				$("#linkManJobTitle").val($(this).parents("td").parents("tr").find("td").eq(4).html())
+
+				dialog({
+					title:'联系人修改',
+					content:$('#modal-man')[0],
+					width:650,
+					height:400
+
+				}).showModal();
+			});
+
+			$("#linkManUpdateForm").validate({
+				checkStart : true,
+				errorElement: 'span',
+				errorClass: 'help-inline',
+				focusInvalid: false,
+				rules : {
+					linkManEmail:{required:true,email:true},
+					linkManPhone:{required:true,isMobile:true},
+					linkManJobTitle:{required:true}
+				},
+				messages : {
+					linkManEmail : {required: "请填写邮箱",email:"邮箱格式错误"},
+					linkManPhone : {required: "请填写手机号码",isMobile:"手机号码格式错误"},
+					linkManJobTitle : {required: "请填写职位"}
+				},
+				submitHandler : function(form) {
+					$("#loadingDiv").show();
+					$("#linkManUpdateForm").ajaxSubmit({
+						dataType:"json",
+						type:"post",
+						success:function(date,res,me){
+							if(date.suc){
+								$("#loadingDiv").hide();
+								$.alert("修改成功!",function(){
+									window.location.href="/company/toLinkMan.html";
+								});
+							}else {
+								$("#loadingDiv").hide();
+								$.alert("修改失败了！" + date.msg);
+							}
+						},error:function(a,b){console.info(a,b);}});
+				},
+				highlight: function (e) {
+					$(e).closest('.control-group').removeClass('info').addClass('error');
+				}
+			});
+		});
+	</script>
+	<style>
+		#linkManForm .help-inline{
+			color:red;
+			position:absolute;
+			padding:0 10px;
+			background-color: #fff;
+			border-radius: 5px;
+			left:10px;
+			bottom:50px;
+			border:1px solid #ccc;
+			white-space: nowrap;
+		}
+		#linkManForm .help-inline:after,#linkManForm .help-inline:before{
+			content:"";
+			display:block;
+			border-width:12px 6px;
+			position:absolute;
+			bottom:-24px;
+			left:20px;
+			border-style:solid dashed dashed;
+			border-color:#ccc transparent transparent;
+			font-size:0;
+			line-height:0;
+		}
+		#linkManForm .help-inline:after{
+			bottom:-22px;
+			border-color:#fff transparent transparent;
+		}
+		#linkManForm .help-inline.right{
+			left:130px;
+			bottom:42px;
+			white-space: nowrap;
+		}
+		.contact_table .dv-inner{position:relative; }
+	</style>
+</head>
+<body class="account_container">
+<div id="content" layout:fragment="content">
+
+	<div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">联系人管理</span></div>
+	<div class="main_right">
+		<div class="cur_title"><h2>联系人管理</h2></div>
+		<div class="contact_mod">
+			<div class="bd">
+				<form id="linkManForm" action="/company/addLinkMan.json" method="post">
+				<input type="hidden" name="companyId" th:value="${company.id}" class="input_txt"/>
+					<table class="table_row contact_table">
+						<thead>
+							<tr>
+								<th class="name">姓名</th>
+								<th class="email">邮箱</th>
+								<th class="tel">手机</th>
+								<th class="job">职位</th>
+								<th class="operate">操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="a:${linkmanList}">
+								<td style="display:none" th:text="${a.id}"></td>
+								<td class="name" th:text="${a.name}"> </td>
+								<td class="email" th:text="${a.email}"></td>
+								<td class="tel" th:text="${a.companyPhone}"></td>
+								<td class="job" th:text="${a.jobTitle}"></td>
+
+								<td class="operate" th:if="${a.isDefault==0}">
+									<span class="status_disabled">不可更改</span>
+								</td>
+								<td class="operate" th:if="${a.isDefault==1}">
+									<!--<span class="status_disabled">修改</span>-->
+									<!--<input style="cursor: pointer" type="submit" id="submit" class="btn_weak" value="修改"/>-->
+									<a class="btn" href="javascript:void(0)">修改</a>
+								</td>
+							</tr>
+							<tr>
+								<td class="name">
+									<div class="dv-inner">
+										<input type="text" name="name" placeholder="姓名" class="input_txt"/>
+									</div>
+
+								</td>
+								<td class="email"><div class="dv-inner"><input type="text" name="email" placeholder="邮箱" class="input_txt"/></div></td>
+								<td class="tel"><div class="dv-inner"><input type="text" name="companyPhone" placeholder="手机" class="input_txt"/></div></td>
+								<td class="jobTitle"><div class="dv-inner"><input type="text" name="jobTitle" placeholder="职位" class="input_txt"/></div></td>
+								<td class="operate">
+									<!--<a class="btn_weak" href="javascript:void(0)">添加</a>-->
+									<input style="cursor: pointer" type="submit" id="submit" class="btn_weak" value="添加"/>
+								</td>
+							</tr>
+						</tbody>
+						<!--<tfoot>-->
+							<!--<tr>-->
+								<!--<td colspan="5"><a class="btn_weak" href="javascript:void(0)">添加联系人</a></td>-->
+							<!--</tr>-->
+						<!--</tfoot>-->
+					</table>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="asid_left">
+		<div class="account_menu">
+			<ul class="aside_menu">
+				<li>
+					<h3 class="menu_hd"><a href="javascript:void(0)">会员中心</a><i class="plus_ico minus_ico"></i></h3>
+					<div class="sub_menu" style="display: none;">
+						<a href="javascript:void(0)">心外科</a>
+						<a href="javascript:void(0)" >肿瘤科</a>
+						<a href="javascript:void(0)">妇科</a>
+						<a href="javascript:void(0)">口腔科</a>
+					</div>
+				</li>
+				<li>
+					<h3 class="menu_hd"><a href="javascript:void(0)">账户信息设置 </a><i class="minus_ico"></i></h3>
+					<div class="sub_menu" >
+						<a href="/memberCenter/accountInfo.html">个人信息</a>
+						<a href="/memberCenter/companyInfo.html">公司信息</a>
+						<a href="/user/toUpdatePassword.htm">密码修改</a>
+						<a href="javascript:void(0)" class="acitve">联系人管理</a>
+						<a href="/userNoteType/list.htm">发票信息</a>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+
+	<div id="modal-man" style="width:630px;display: none;">
+		<form id="linkManUpdateForm" action="/company/updateLinkMan.json" method="post">
+			<input type="hidden" name="linkManId" id="linkManId" />
+			<ul class="filed_info item_filed">
+				<li>
+					<label class="keyName">姓名：</label>
+					<div class="filed_con control-group">
+						<input readonly="readonly"  name="linkManName" id="linkManName" type="text" class="input_txt"  /></div>
+				</li>
+				<li>
+					<label class="keyName"><em class="star">*</em>邮箱：</label>
+					<div class="filed_con control-group">
+						<input id="linkManEmail"  type="text"  name="linkManEmail" class="input_txt"/></div>
+				</li>
+				<li>
+					<label class="keyName"><em class="star">*</em>手机：</label>
+					<div class="filed_con control-group">
+						<input id="linkManPhone" name="linkManPhone"  type="text" class="input_txt" /></div>
+				</li>
+				<li>
+					<label class="keyName"><em class="star">*</em>职位：</label>
+					<div class="filed_con control-group">
+						<input id="linkManJobTitle" name="linkManJobTitle" type="text" class="input_txt" /></div>
+				</li>
+				<li class="filed_action">
+					<input style="cursor: pointer" type="submit"  class="btn_key" value="修&nbsp;&nbsp;&nbsp;&nbsp;改"/>
+				</li>
+			</ul>
+		</form>
+	</div>
+
+</div>
+</body>
+</html>

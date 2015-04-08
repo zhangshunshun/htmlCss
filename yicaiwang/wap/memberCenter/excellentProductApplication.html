@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+    <link href="../../../static/css/ace.min.css" th:href="@{/static/css/ace.min.css}" rel="stylesheet" type="text/css" />
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+    <link href="../../../static/css/product.css" th:href="@{/static/css/product.css}" rel="stylesheet" type="text/css" />
+    <script src="../../../static/js/email.js"></script>
+    <!--表格样式 开始-->
+    <style type="text/css">
+        .dealer_table thead td{
+            font-size: 15px;
+            white-space:nowrap;
+            overflow: hidden;
+            font-weight: bold;
+        }
+        .dealer_table tbody td{
+            font-size: 13px;
+            white-space:nowrap;
+            overflow: hidden;
+        }
+        .dealer_table tbody td.name{
+            text-align: center;
+        }
+        .dialog_box {
+            background: none repeat scroll 0 0 #fff;
+            height: 445px;
+            margin: 0;
+            position: relative;
+            width:100%;
+            left:0;
+        }
+        .dialog_box .bd {
+            padding: 0px 20px;
+        }
+        #editcontent .help-inline{
+            color:red;
+            position:absolute;
+            padding:0 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            left:443px;
+            bottom:65px;
+            border:1px solid #ccc;
+        }
+        #editcontent .help-inline:after,#editcontent .help-inline:before{
+            content:"";
+            display:block;
+            border-width:12px 6px;
+            position:absolute;
+            bottom:-24px;
+            left:20px;
+            border-style:solid dashed dashed;
+            border-color:#ccc transparent transparent;
+            font-size:0;
+            line-height:0;
+        }
+        #editcontent .help-inline:after{
+            bottom:-22px;
+            border-color:#fff transparent transparent;
+        }
+        #editcontent .help-inline.right{
+            left:130px;
+            bottom:42px;
+            white-space: nowrap;
+        }
+        #div-product .clone{
+            background-color: #fff;
+            left: 20px;
+            position: absolute;
+            top: 0px;
+        }
+    </style>
+    <!--表格样式 结束-->
+    <script type="text/javascript" >
+        //修改方法
+        $( function(){
+            $('#search_btn').click(function(){
+                var keyword=$(this).prev().val();
+                $('#rows').children().show();
+                $('#rows').find('.name:not(:contains('+keyword+'))').closest('tr').hide();
+            });
+
+            $('.checkOne').prop('checked',false);
+            $('#ids').val('');
+            var againId=$('#againId').val();
+            if(againId){
+                $('#'+againId).prop('checked',true);
+                ok();
+            }
+
+
+            var $thead=$('#thead-product'),$div=$('#div-product'),$table=$div.children('table');
+            var $theadclone=$thead.clone().attr('id','');
+            var $tds=$thead.find('td');
+            var $tdsclone=$theadclone.find('td');
+            $div.scroll(function(){
+                var top=$(this).scrollTop();
+                var $clone=$div.find('.clone');
+                if($clone.length==0){
+                    $clone=$('<table/>').append($theadclone).addClass('clone dealer_table').appendTo($div)
+                            .height($thead.height())
+                            .width($thead.width());
+                    $tdsclone.each(function(i,n){
+                        $(n).width($tds.eq(i).width());
+                    });
+                    $theadclone.find('.checkAll').prop('checked',$thead.find('.checkAll')[0].checked);
+                }
+                if(top>0){
+                    $clone.show().css('top',top+'px');
+                }else{
+                    $clone.hide();
+                }
+
+
+            });
+            $('.bd').on('click','.checkAll',function(){
+                $('.checkOne:visible').prop('checked',this.checked);
+                $('.checkAll').prop('checked',this.checked);
+            });
+            $('.bd').on('click','.checkOne',function(){
+                $('.checkAll').prop('checked',$('.checkOne').length==$('.checkOne:checked').length);
+            });
+            $('#btn-plus').click(function(){
+                if($('#rows').children().length==0){
+                    $.alert('没有可供选择的待申请的优秀产品！<br/><br/>你可以点击右上角按钮查看申请记录。');
+                }else{
+                    $('#keyword').val('');
+                    $('#rows').children().show();
+                    $('.checkAll').prop('checked',$('.checkOne').length==$('.checkOne:checked').length);
+                    dialog({
+                        title:'添加要申请的优秀产品',
+                        content:$('#dialog_box')[0],
+                        width:1000,
+                        ok:ok,
+                        okValue:'确&nbsp;&nbsp;&nbsp;&nbsp;定'
+                    }).showModal();
+                }
+            });
+            function ok(){
+                var arr=[],
+                        $ul=$('#ul-list'),
+                        $hidden=$ul.find('li:hidden'),
+                        $plus=$ul.find('.plus');
+                $plus.prevAll(':not(li:hidden)').remove();
+
+                $('.checkOne:checked').each(function(i,n){
+                    arr.push($(n)[0].id);
+                    var $tr=$(n).closest('tr');
+                    var $copy=$hidden.clone().insertBefore($plus).show();
+                    $copy.find('img').attr('src',$tr.find('.imagePath').val());
+                    $copy.find('h3 a').html($tr.find('.name').html());
+                    $copy.find('.rmb').next().html($tr.find('.money').val());
+                    $copy.find('.sale span').html($tr.find('.salesCount').val());
+                });
+                $('#pay').val($('.checkOne:checked').length*20);
+                $('#ids').val(arr.join(','));
+            }
+            $("#editcontent").validate( {
+                checkStart : true,
+                errorElement: 'span',
+                errorClass: 'help-inline',
+                focusInvalid: false,
+                rules : {
+                    exceUsername : {
+                        required: true
+                    },
+                    exceEmail:{
+                        required: true,
+                        email:true
+                    },
+                    excePhone:{
+                        isPhone:true
+                    },
+                    exceMobile:{
+                        required:$('[name=excePhone]').val().length==0,
+                        isMobile:true
+                    }
+                },
+                messages : {
+                    exceUsername : {
+                        required : "请填写联系人"
+                    },
+                    exceEmail : {
+                        required : "请填写电子邮箱",
+                        email : "输入邮箱有误"
+                    },
+                    exceMobile:{
+                        required:'请填写手机'
+                    }
+                },
+                submitHandler : function(form) {
+                    if($('#ids').val().length==0){
+                        $.alert('请至少选择一个要申请的优秀产品！');
+                        return;
+                    }
+                    $("#editcontent").ajaxSubmit(function(date){
+                        if(date.suc){
+                            $.alert("申请已成功提交，请等待后台审核！",function(){
+                                location.replace('/memberCenter/excellentProductApplication.html');
+                            });
+                        }else {
+                            $.alert("申请提交失败了！" + date.msg);
+                        }
+                    });
+                },
+                highlight: function (e) {
+                    $(e).closest('.filed_con').removeClass('info').addClass('error');
+                }
+            });
+        });
+
+    </script>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>优秀产品认证</title>
+</head>
+<body>
+
+<div id="content" layout:fragment="content">
+    <input type="hidden" th:value="${againId}" id="againId"/>
+        <div class="crumbs">当前位置: <a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">优秀产品申请</span></div>
+        <div class="member_right">
+            <form action="/memberCenter/insertProductApplication.json" method="post" id="editcontent" enctype="multipart/form-data">
+            <div class="mod_box apply_mode">
+                <div class="hd">
+                    <h3 class="title">
+                        优秀产品展示申请
+                        <a th:if="${!detail}" style="font-size:13px;float:right;height:35px;margin: 8px 10px 0 0;line-height: 32px;" href="/memberCenter/excellentApplyList.html" class="btn_key">查看优秀产品申请记录</a>
+                    </h3><!-- <a href="javascript:void(0)" class="btn_key">申请融资</a> -->
+                </div>
+                <div class="bd apply_step">
+                    <ol th:class="${'step_area step_0'+(detail?step:'1')}">
+                        <li class="col_01"><em>提交<br/>申请</em></li>
+                        <li class="col_02"><em>专业审核人员<br/>进行信息预审</em></li>
+                        <li class="col_03"><em>通过申请，对外<br/>查询验证与展示</em></li>
+                    </ol>
+                </div>
+                <div class="hd">
+                    <h3 class="title">申请资料<span th:text="${detail?'查看':'填写'}">填写</span> <span th:if="${!detail}" class="sum">（每个优秀产品展示申请，需要扣除<em class="light">20枚</em>医采币的服务费用）</span></h3>
+                </div>
+                <div class="bd apply_info">
+                    <ul class="filed_info apply_filed" th:if="${!detail}">
+                        <li>
+                            <input type="hidden" name="exceCompanyid" th:value="${company.id}"/>
+                            <input type="hidden" name="ids" id="ids"/>
+                            <label class="keyName"><em class="star">*</em>公司名称：</label>
+                            <div class="filed_con"><input type="text" name="exceCompanname" placeholder="" class="input_txt" readonly="readonly" id="companyName" th:value="${company.title}"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>联系人：</label>
+                            <div class="filed_con"><input type="text" placeholder="" id="userName" name="exceUsername" class="input_txt" th:value="${linkmanDefault.name}"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>电子邮箱：</label>
+                            <div class="filed_con"><input type="text" name="exceEmail" id="email" class="input_txt" th:value="${linkmanDefault.email}"/></div>
+                            <p class="tip_text arrow_tip">审核通过后，会通过该邮箱通知</p>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>服务费：</label>
+                            <div class="filed_con"><input type="text" value="0" id="pay" class="input_txt w_s" readonly="readonly"/><em class="unit">枚</em></div>
+                            <p class="tip_text">（申请优秀产品数量乘以服务费用如：0*20）</p>
+                        </li>
+                        <li>
+                            <label class="keyName">固定电话：</label>
+                            <div class="filed_con"><input type="text" name="excePhone" id="phone" class="input_txt" readonly="readonly" th:value="${company.companyPhone}"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName">手机：</label>
+                            <div class="filed_con"><input type="text" th:value="${linkmanDefault.companyPhone}" name="exceMobile" id="mobile" class="input_txt"/></div>
+                            <span id="spanId"><p class="tip_text arrow_tip"><em class="star">*</em>(固定电话和手机至少填一项）</p></span>
+                        </li>
+                    </ul>
+                    <ul class="filed_info apply_filed" th:if="${detail}">
+                        <li>
+                            <label class="keyName">公司名称：</label>
+                            <div class="filed_con" th:text="${p.exceCompanname}"></div>
+                        </li>r
+                        <li>
+                            <label class="keyName">联系人：</label>
+                            <div class="filed_con" th:text="${p.exceUsername}"></div>
+                        </li>
+                        <li>
+                            <label class="keyName">电子邮箱：</label>
+                            <div class="filed_con" th:text="${p.exceEmail}"></div>
+                        </li>
+                        <li>
+                            <label class="keyName">固定电话：</label>
+                            <div class="filed_con" th:text="${p.excePhone}"></div>
+                        </li>
+                        <li>
+                            <label class="keyName">手机：</label>
+                            <div class="filed_con" th:text="${p.exceMobile}"></div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="hd">
+                    <h3 class="title">申请的优秀产品</h3>
+                </div>
+                <div class="bd apply_info">
+
+                    <ul style="border:none;" class="mod_p_recom_list" id="ul-list">
+                        <li class="item" style="border:none;display: none;">
+                            <div class="pic" style="border: 1px solid #ccc;">
+                                <a id="65" href="javascript:void(0)">
+                                    <img src="" alt=""/>
+                                </a>
+                            </div>
+                            <h3>
+                                <a id="65" href="javascript:void(0)">日本 日本株式会社戈德曼65</a>
+                            </h3>
+                            <p class="other">
+                                <i class="rmb">¥</i>
+                                <span>100</span>
+                            </p>
+                            <p class="sale">已售：<span>0</span>件</p>
+                        </li>
+                        <li class="item" style="border:none;" th:if="${detail}">
+                            <div class="pic" style="border: 1px solid #ccc;">
+                                <a id="65" href="javascript:void(0)">
+                                    <img th:src="${product.imagePath}" alt=""/>
+                                </a>
+                            </div>
+                            <h3>
+                                <a id="65" href="javascript:void(0)" th:text="${product.name}">日本 日本株式会社戈德曼65</a>
+                            </h3>
+                            <p class="other">
+                                <i class="rmb">¥</i>
+                                <span th:text="${#strings.isEmpty(product.money)?'-':product.money}">100</span>
+                            </p>
+                            <p class="sale">已售：<span th:text="${#strings.isEmpty(product.salesCount)?'0':product.salesCount}">0</span>件</p>
+                        </li>
+                        <li style="border: none;" class="item plus" th:if="${!detail}">
+                            <div class="filed_con filed_pic">
+                                <a href="javascript:void(0)" id="btn-plus" style="border: 2px dashed #c5c5c5;" class="add_pro thumb">+</a>
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="filed_info apply_filed" th:if="${!detail}">
+                        <li class="item filed_action">
+                            <input type="submit" class="btn_key" href="javascript:void(0)" value="提交申请" />
+                            <a class="btn_weak" href="javascript:void(0)">取消</a>
+                        </li>
+                    </ul>
+                    <ul class="filed_info apply_filed" th:if="${detail}">
+                        <li class="filed_action" th:if="${step==3 and p.exceState==2}">
+                            <span style="color:red;">优秀产品申请没有通过...</span><br/>
+                            <a class="btn_key" th:href="@{/memberCenter/excellentProductApplication.html(againId=${product.id})}">再次申请</a>
+                        </li>
+                        <li class="filed_action" th:if="${step==3 and p.exceState==1}" style="color:red;">
+                            优秀产品申请通过了，恭喜！
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            </form>
+        </div>
+        <div class="member_left">
+            <ul class=" member_menu">
+                <li><h3 class="menu_hd"><i class="minus_ico"></i><a href="javascript:void(0)">会员中心</a></h3>
+
+                </li>
+                <li>
+                    <h3 class="menu_hd"><i class="minus_ico"></i><a href="javascript:void(0)">常用功能</a></h3>
+                    <div class="sub_menu">
+                        <a href="/memberCenter/myBuy.html">我要买</a>
+                        <a href="/memberCenter/mySell.html">我要卖</a>
+                        <a href="javascript:void(0)">发布新产品</a>
+                        <a href="/product/myProduct.html ">我发布的产品</a>
+                        <a href="/memberCenter/excellentProductApplication.html">优秀产品认证</a>
+                        <a href="/memberCenter/excellent3DProductApplication.html">申请3D产品展示</a>
+                        <a href="/company/apply.html?t=1">企业诚信认证</a>
+                        <a href="/company/apply.html?t=2">企业金牌认证</a>
+                    </div>
+                </li>
+                <li>
+                    <h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">特色服务</a></h3>
+                    <div class="sub_menu" style="display: none;">
+                        <a href="/qualityEval/list.html">产品质量评估</a>
+                        <a href="/expertService/list.html">专家库</a>
+                        <a href="/financialProduct/list.html">金融服务</a>
+                    </div>
+                </li>
+                <li>
+                    <h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">我的关注</a></h3>
+                    <div class="sub_menu" style="display: none;">
+                        <a href="/memberCenter/findMyAttentionProduct.html">我关注的产品</a>
+                        <a href="/memberCenter/findMyAttentionCompany.html">我关注的企业</a>
+                        <a href="javascript:void(0)">我关注的价格指数</a>
+                    </div>
+                </li>
+                <li>
+                    <h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">客户服务</a></h3>
+                    <div class="sub_menu" style="display: none;">
+                        <a href="javascript:void(0)">投诉&;举报</a>
+                        <a href="/userNoteType/list.html">医采币发票申请</a>
+                        <a href="javascript:void(0)">联系客服</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="dialog_box" id="dialog_box" style="display:none;">
+            <div class="dialog_search">
+                <div class="search_tit">快速检索</div>
+                <div class="head_search">
+                    <div class="head_search_con" style="margin-top: 23px;">
+                        <input type="text" placeholder="输入产品名称" id="keyword" class="keyword"/>
+                        <input type="button" class="search_btn" id="search_btn" value="搜索" title="搜 索"/>
+                    </div>
+                </div>
+            </div>
+            <div class="bd" style="height:315px;overflow-y: auto;position: relative;" id="div-product">
+                <table class="dealer_table">
+                    <thead style="" id="thead-product">
+                    <tr style="">
+                        <td style="width: 58px;">
+                            <label><input class="checkAll" type="checkbox"/>全选</label>
+                        </td>
+                        <td style="width: 340px;">名称</td>
+                        <td style="width: 316px;">品牌</td>
+                        <td style="width: 168px;">型号</td>
+                        <td style="width: 61px;">原产地</td>
+                    </tr>
+                    </thead>
+                    <tbody id="rows">
+                        <tr th:each="p:${products}">
+                            <td>
+                                <input th:id="${p.id}" class="checkOne" type="checkbox"/>
+                                <input type="hidden" th:value="${p.imagePath}" class="imagePath" />
+                                <input type="hidden" th:value="${#strings.isEmpty(p.salesCount)?0:p.salesCount}" class="salesCount" />
+                                <input type="hidden" th:value="${#strings.isEmpty(p.money)?'-':p.money}" class="money" />
+                            </td>
+                            <td class="name" th:text="${p.name}">日本 日本株式会社戈德曼67</td>
+                            <td th:text="${p.brand}">戈德曼医疗器械国际贸易（上海）有限公司</td>
+                            <td th:text="${p.version}">TG6-AL1／TG6-AL1ST</td>
+                            <td th:text="${p.area}">上海</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            <!--<div style="text-align: center;">-->
+                <!--<a href="" class="btn-key">确定</a>-->
+            <!--</div>-->
+        </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>质量评估</title>
+
+    <script>
+        $(function(){
+            var options = {
+                currentPage: $("[name=page]").val(),
+                totalPages: $("[name=totalPage]").val(),
+                onPageClicked:function(e,type,page){
+                    $("[name=page]").val(page);
+                    $("#searchForm").submit();
+                }
+            };
+            $('#page').bootstrapPaginator(options);
+
+            var progress=$('#hidden-progress').val();
+            if(progress==1){
+                $.alert('你已经提交过申请，请等待后台审核！',function(){
+                    $('#hidden-progress').val('');
+                });
+            }else if(progress==2){
+                $.alert('你的申请已经通过！',function(){
+                    $('#hidden-progress').val('');
+                });
+            }
+        });
+    </script>
+</head>
+<body>
+
+<div id="content" layout:fragment="content">
+    <div class="crumbs"><a href="/">首页</a><span class="gt">&gt;</span><span class="current_page">质量评估</span></div>
+    <div class="mod_box notice_mod">
+        <form id="searchForm" th:action="@{/qualityEval/list.html}" method="post">
+            <input type="hidden" name="page" th:value="${page.page}" />
+            <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+            <input id="hidden-progress" type="hidden" th:value="${progress}" />
+            <div class="hd">
+                <h2 class="title">质量评估</h2>
+            </div>
+            <div class="bd">
+                    <ul class="info_list">
+                        <li th:each="a:${page.result}">
+                            <i class="drop"></i>
+                            <a th:href="@{/qualityEval/detail.html(id=${a.id})}" th:text="${a.title}">一起仿制药专利纠纷引发的故事</a>
+                            <span class="time" style="right:150px;" th:text="${#dates.format(a.createDate,'yyyy-MM-dd HH:mm:ss')}">2013-05-08 17:25:20</span>
+                            <a class="btn_key btn_apply" style="width:100px;position: absolute;top:13px;right:15px;padding:0px;" th:href="@{/qualityEvalApply/form.html(id=${a.id},from='list')}">申请评估</a>
+                        </li>
+                    </ul>
+                <div id="page"></div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

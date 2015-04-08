@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>产品中心</title>
+    <link href="../../../static/css/product.css" th:href="@{/static/css/product.css}" rel="stylesheet" type="text/css" />
+    <script>
+        $(function(){
+            $('.index_focus').slides({
+                preload: true,
+                preloadImage: 'img/loading.gif',
+                play: 5000,
+                pause: 2500,
+                hoverPause: true
+            });
+        });
+        function gotoDetail(id){
+            window.location.href="/product/productStandard.html?productId="+id;
+        }
+        function gotoCompany(id){
+            window.location.href="/company/detail.html?companyId="+id;
+        }
+        function changeClass(id){
+            $("#category").val(id);
+            $("#searchForm").submit();
+        }
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+<div class="container">
+<div class="wrap">
+<div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><a href="javascript:void(0)">产品中心</a><span class="gt">&gt;</span><span class="current_page">科室解决方案</span></div>
+<div class="mod_col2">
+    <form action="/product/searchProduct.html" id="searchForm">
+        <input type="hidden" name="filter[category]" id="category" th:value="${page.filter['category']}"/>
+    </form>
+    <div class="mod_p_aside">
+        <div class="mod_p_sortnav">
+            <ul class="mod_p_sortnav_list">
+                <li class="item" th:each="category,s1:${categoryList}" th:if="${9>=s1.count}">
+                    <h3 class="hd"><a href="javascript:void(0)" th:id="${category.id}" onclick="changeClass(this.id)" class="cur" th:text="${category.name}"></a></h3>
+                    <div class="bd">
+                        <a href="javascript:void(0)" th:each="child,s:${category.child}" onclick="changeClass(this.id)" th:id="${child.id}" th:if="${3>=s.count}" th:text="${child.name}">无影灯</a>
+                    </div>
+                </li>
+            </ul>
+            <div class="mod_p_sort_more"><a href="/product/searchProduct.html">查看所有分类<i class="gt">&gt;&gt;</i></a></div>
+        </div>
+    </div>
+    <div class="mod_p_main">
+        <div class="index_focus mod_focus_img">
+            <div class="slides_container">
+                <a href="javascript:void(0)" class="index_focus_pic"><img src="thumb/img958x320.jpg" alt=""/><h2 class="index_focus_info">家长如何早期发现自己的孩子有自闭症</h2></a>
+                <a href="javascript:void(0)" class="index_focus_pic"><img src="thumb/img958x320.jpg" alt=""/><h2 class="index_focus_info">家长如何早期发现自己的孩子有自闭症</h2></a>
+                <a href="javascript:void(0)" class="index_focus_pic"><img src="thumb/img958x320.jpg" alt=""/><h2 class="index_focus_info">家长如何早期发现自己的孩子有自闭症</h2></a>
+                <a href="javascript:void(0)" class="index_focus_pic"><img src="thumb/img958x320.jpg" alt=""/><h2 class="index_focus_info">家长如何早期发现自己的孩子有自闭症</h2></a>
+            </div>
+        </div>
+        <div class="mod_p_recom">
+            <h2 class="hd"><a href="/product/findGreatProducts.html">优秀产品</a></h2>
+            <ul class="mod_p_recom_list">
+                <li class="item" th:each="good:${productListForGood}">
+                <div class="pic"><a href="javascript:void(0)" th:id="${good.id}" onclick="gotoDetail(this.id)"><img th:src="'http://114.215.80.184:80'+${good.imagePath}" alt=""/></a></div>
+                <h3><a href="javascript:void(0)" th:id="${good.id}" onclick="gotoDetail(this.id)" th:text="${good.name}">专业生产和销售LED手术室无影整体反射医用手术灯 病床 吊塔</a></h3>
+                <p class="other"><i class="rmb">&yen;</i><span th:text="${good.money}"></span></p>
+                <p class="sale">已售：<span th:text="${good.saleCount==null}?'0':${good.saleCount}"></span>件</p>
+            </li>
+            </ul>
+        </div>
+    </div>
+</div>
+    <div class="mod_col3" th:each="office:${page.result}">
+        <div class="mod_p_aside">
+            <div class="mod_p_item">
+                <h2 class="mod_p_item_hd" th:text="${office.name}"></h2>
+                <div class="mod_p_item_pro">
+                    <div class="pic"><a href="javascript:void(0)"><img th:src="'http://114.215.80.184:80'+${office.productOfOffice[0].imagePath}" alt=""/></a></div>
+                    <h3><a href="javascript:void(0)" th:id="${office.productOfOffice[0].id}" th:text="${office.productOfOffice[0].name}" onclick="gotoDetail(this.id)">耳鼻喉科用耳鼻喉科用...</a></h3>
+                    <p class="other"><i class="rmb">&yen;</i><span  th:text="${office.productOfOffice[0].money}" ></span></p>
+                    <p class="sale">已售：<span  th:text="${office.productOfOffice[0].saleCount!=null?office.productOfOffice[0].saleCount:'0'}" ></span>件</p>
+                </div>
+            </div>
+        </div>
+        <div class="mod_p_main">
+            <div class="mod_p_products">
+                <ul class="cont">
+                    <li class="item" th:each="product,s:${office.productOfOffice}" th:if="${s.count!=1}">
+                        <div class="pic"><img th:src="'http://114.215.80.184:80'+${product.imagePath}" alt=""/></div>
+                        <div class="summary">
+                            <h3><a href="javascript:void(0)" onclick="gotoDetail(this.id)" th:id="${product.id}" th:text="${product.name}">耳鼻喉科用耳鼻喉科用...</a></h3>
+                            <p class="desc"><i class="rmb">&yen;</i><span th:text="${product.money}"></span></p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="mod_p_extra">
+            <div class="mod_p_item">
+                <h2 class="mod_p_item_hd">热门供应商</h2>
+                <div class="mod_p_item_bd">
+                    <ul class="mod_p_item_list">
+                        <li th:each="company:${office.companyList}">
+                            <h3><a href="javascript:void(0)" th:id="${company.id}" onclick="gotoCompany(this.id)" th:text="${company.title}">泗洪县明达医疗器械有限公司</a></h3>
+                            <p class="desc">
+                                <span class="item item_sale"><i class="numb" th:text="'已卖'+${company.saleCount==null?'0':company.saleCount}"></i>件产品</span>
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</body>
+</html>

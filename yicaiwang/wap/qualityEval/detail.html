@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>质量评估详细</title>
+    <script>
+        $(function(){
+            var progress=$('#hidden-progress').val();
+            if(progress==1){
+                $.alert('你已经提交过申请，请等待后台审核！',function(){
+                    $('#hidden-progress').val('');
+                });
+            }else if(progress==2){
+                $.alert('你的申请已经通过！',function(){
+                    $('#hidden-progress').val('');
+                });
+            }
+        });
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <input id="hidden-progress" type="hidden" th:value="${progress}" />
+    <input id="hidden-id" type="hidden" th:value="${qualityEval.id}" />
+    <div class="crumbs"><a href="/">首页</a><span class="gt">&gt;</span><span class="current_page" >质量评估</span></div>
+    <div class="detail_main" style="width:100%;">
+        <div class="notice_detail" style="position: relative;">
+            <a class="btn_key" th:href="@{/qualityEvalApply/form.html(id=${qualityEval.id},from='detail')}" style="width:100px;position: absolute;top:13px;right:15px;padding:0px;">申请评估</a>
+            <div class="hd">
+                <h1 class="page_title" th:text="${qualityEval.title}">关于商请开展“公立医院改革发展基金”试点工作的函（政府）</h1>
+                <div class="title_info"><span class="time" th:text="${#dates.format(qualityEval.createDate,'yyyy-MM-dd HH:mm:ss')}">2014-06-16 17:09:16</span></div>
+            </div>
+            <div class="bd">
+                <p id="article-content" class="fix" th:utext="${qualityEval.content}">最近，国务院常务会议要求重点推进六大领域消费，养老服务占了一席之地。在去年，国务院印发了《关于加快发展养老服务业最近，国务院常务会议要求重点推进六大领域消费，养老服务占了一席之地。在去年，国务院印发了《关于加快发展养老服务业</p>
+            </div>
+            <div th:if="${not #strings.isEmpty(qualityEval.attachment)}" class="attachment" style="border-top:1px dotted #ccc;margin-top:30px;padding:10px;">
+                <a class="btn_key icon-download" th:href="${qualityEval.attachment2}" style="padding:10px 20px;">下载附件</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

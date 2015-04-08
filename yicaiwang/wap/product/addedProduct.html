@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>我要卖</title>
+    <script type="text/javascript" src="../../../js/product.js?t=123"></script>
+    <script type="text/javascript" src="../../../js/previewimg.js"></script>
+    <script type="text/javascript">
+        /*<![CDATA[*/
+        function three(id){
+            var keyword=$("#keyword").val();
+            window.location.href="/product/searchProductByType.html?keyword="+keyword+"&type=1&scope=1&category="+id;
+        }
+        jQuery(function(){
+            $("#searchMyProduct").click(function(){
+                var keyword=$("#keyword").val();
+                window.location.href="/product/searchProductByType.html?keyword="+keyword+"&type=-1&category=0";
+            })
+            $("#searchProduct").click(function(){
+                var type=-1;
+                var keyword=$("#keyword").val();
+                if($(".current").text()=='产品'){
+                    type=1
+                }else{
+                    type=2
+                }
+                $("#class").hide();
+                $(".dialog_filter").hide();
+                $("#productSelect").show();
+                window.location.href="/product/searchProductByType.html?keyword="+keyword+"&type="+type+"&category=0";
+            })
+        })
+        function changeToItem(item){
+            $(".current").removeClass();
+            $(item).parent().prop("class","current")
+            if($(item).text()=='供应商'){
+                $("#searchMyProduct").prop("type","hidden")
+            }else{
+                $("#searchMyProduct").prop("type","button")
+            }
+        }
+        /*]]>*/
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+
+    <div class="container">
+        <div class="wrap">
+            <div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">发票管理</span></div>
+            <div class="main_right">
+                <div class="cur_title"><h2>上架新商品</h2></div>
+                <div class="mod_box">
+                    <div class="hd">
+                        <h3 class="title">产品基本信息</h3>
+                    </div>
+                    <div class="bd">
+                        <div class="not_pro"><i></i>尚未选择上架产品</div>
+                        <div class="add_pro_box">
+                            <a href="javascript:void(0)" class="add_pro js_btn">+</a>
+                            <a href="javascript:void(0)" class="add_btn">选择上架商品</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="mod_box">
+                    <div class="hd">
+                        <h3 class="title">售价及库存信息</h3>
+                    </div>
+                    <div class="bd">
+                        <div class="not_pro"><i></i>尚未选择上架产品</div>
+                    </div>
+                </div>
+                <div class="mod_box">
+                    <div class="hd">
+                        <h3 class="title">其他信息</h3>
+                    </div>
+                    <div class="bd">
+                        <ul class="other_info">
+                            <li><label class="name">物流费用：</label><span class="option"><input type="radio"/>卖方承担运费</span><span class="option"><input type="radio"/>买方承担运费</span></li>
+                            <li><label class="name">发票支持：</label><span class="option"><input type="radio"/>普通发票</span><span class="option"><input type="radio"/>增值税发票</span></li>
+                            <li><label class="name">备注：</label><textarea name="" class="textarea"></textarea></li>
+                            <li><label class="name"></label><input type="button" onclick="javascript:$.alert('请先选择产品')" class="btn btn-info" value="上架发布"/><input type="button" class="btn btn_gray" value="取 消"/></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="asid_left">
+                <div class="account_menu">
+                    <ul class="aside_menu prodouct_bar">
+                        <li><h3 class="menu_hd">常用功能</h3></li>
+                        <li class="active"><a href="javascript:void(0)">上架的新产品</a><i class="minus_ico"></i></li>
+                        <li><a href="javascript:void(0)">批量导人产品</a><i class="minus_ico"></i></li>
+                        <li><a href="javascript:void(0)">发布供应信息</a><i class="minus_ico"></i></li>
+                        <li><a href="javascript:void(0)">我卖出的产品</a><i class="minus_ico"></i></li>
+                        <li><a href="javascript:void(0)">我的产品库</a><i class="minus_ico"></i></li>
+                        <li><a href="javascript:void(0)">我的投标信息</a><i class="minus_ico"></i></li>
+                        <li><a href="javascript:void(0)">我的供应信息</a><i class="minus_ico"></i></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="dialog_filter" style="display:none;"></div>
+    <div class="dialog_box" id="class" style="display:none;">
+        <a href="javascript:void(0)" class="close"></a>
+        <div class="hd">
+            <h3 class="title">选择上架新商品</h3>
+        </div>
+        <div class="bd">
+            <div class="dialog_search">
+                <div class="search_tit">快速检索</div>
+                <div class="head_search">
+                    <ul class="head_search_tabs">
+                        <li class="current"><a name="DB-1-1" title="产品" href="javascript:void(0);" onclick="changeToItem(this)">产品</a></li>
+                        <!--<li><a name="DB-1-2" title="供应商" href="javascript:void(0)" onclick="changeToItem(this)">供应商</a></li>-->
+                    </ul>
+                    <div class="head_search_con">
+                        <form>
+                            <input type="text" placeholder="输入名字/拼音首字母" id="keyword" class="keyword"/>
+                            <input type="button" class="search_btn" id="searchProduct" value="搜索" title="搜 索"/>
+                        </form>
+                    </div><input type="button" id="searchMyProduct" class="btn_weak" value="上架自家产品" title="上架自家产品"/>
+                </div>
+            </div>
+            <div class="classify_mod">
+                <div class="search_tit">按分类搜索</div>
+                <ul class="classify_ul" style="margin-left: 100px;">
+                    <li class="item" style="width: 210px;">
+                        <div class="s_input"><i></i><input type="text" placeholder="输入名称快速搜索" class="keyword" id="search-2"/></div>
+                        <ul class="s_menu" id="form-field-select-2">
+                            <li th:each="nature:${list}" th:id="${nature.id}" th:name="${nature.name}"><a href="javascript:void(0)"><i>&gt;</i><span th:text="${nature.name}"></span></a></li>
+                        </ul>
+                    </li>
+                    <li class="item" id="widget-box-2" style="display: none;width: 210px;">
+                        <div class="s_input"><i></i><input type="text" placeholder="输入名称快速搜索" class="keyword" id="search-3"/>
+                            <input type="hidden" id="hidden-search-pid" />
+                        </div>
+                        <ul class="s_menu" id="form-field-select-3">
+                            <li><a href="javascript:void(0)"><i>&gt;</i>分类一</a></li>
+                        </ul>
+                    </li>
+                    <li class="item" id="widget-box-3" style="display: none;width: 210px;">
+                        <div class="s_input"><i></i><input type="text" placeholder="输入名称快速搜索" class="keyword" id="search-4"/>
+                            <input type="hidden" id="search-4-pid" />
+                        </div>
+                        <ul class="s_menu" id="form-field-select-4">
+                            <li><a href="javascript:void(0)"><i>&gt;</i>分类三</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>我要卖</title>
+    <script type="text/javascript">
+        /*<![CDATA[*/
+        $(function(){
+            var options = {
+                currentPage: $("[name=page]").val(),
+                totalPages: $("[name=totalPage]").val(),
+                onPageClicked:function(e,type,page){
+                    $("[name=page]").val(page);
+                    $("#searchForm").submit();
+                }
+            }
+            if($("[name=totalPage]").val()>1){
+                $('#page').bootstrapPaginator(options);
+            }
+        });
+        function addedThisProduct(id){
+            window.location.href="/product/addedProductDetail.html?id="+id;
+        }
+        /*]]>*/
+    </script>
+    <style type="text/css">
+        .mybtn {
+            padding: 0;
+            border: 0 solid;
+            float: left;
+            color: 	#333 !important;
+        }
+    </style>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <form action="/product/searchProductByType.html" id="searchForm">
+        <input type="hidden"  name="page" th:value="${page.page}" />
+        <input type="hidden"  name="totalPage" th:value="${page.totalPage}" />
+        <input type="hidden"  name="filter['keyword']" th:value="${page.filter['keyword']}" />
+        <input type="hidden"  name="filter['type']" th:value="${page.filter['type']}" />
+        <input type="hidden"  name="filter['category']" th:value="${page.filter['category']}" />
+    </form>
+    <div class="container">
+        <div class="re_product">
+            <div class="bd">
+                <ul class="pro_list">
+                    <li th:each="product:${page.result}">
+                        <a href="javascript:void(0)" class="pic"><img src="thumb/213x197.jpg"/></a>
+                        <h3 class="name"><a href="javascript:void(0)" th:text="${product.name}">专业生产和销售LED手术室无影灯 整体反射医用手术灯 病床 吊塔</a></h3>
+                        <div class="name"><span th:text="${product.companyName}"></span></div>
+                        <div class="btn_box">
+                            <a href="javascript:void(0)" onclick="addedThisProduct(this.id)" th:id="${product.id}"  style="width: 213px;" class="mybtn">上架该产品</a>
+                        </div>
+                    </li>
+                </ul>
+                <div class="pagination">
+                    <div id="page"></div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>金融产品</title>
+    <script>
+        $(function(){
+            var progress=$('#hidden-progress').val();
+            if(progress==1){
+                $.alert('你已经提交过申请，请等待后台审核！',function(){
+                    $('#hidden-progress').val('');
+                });
+            }
+            var options = {
+                currentPage: $("[name=page]").val(),
+                totalPages: $("[name=totalPage]").val(),
+                onPageClicked:function(e,type,page){
+                    $("[name=page]").val(page);
+                    $("#searchForm").submit();
+                }
+            };
+            $('#page').bootstrapPaginator(options);
+        });
+
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <input id="hidden-progress" type="hidden" th:value="${progress}" />
+    <div class="crumbs"><a href="/">首页</a><span class="gt">&gt;</span><span class="current_page">金融产品</span></div>
+    <div class="mod_box financial_mod">
+        <form id="searchForm" th:action="@{/financialProduct/list.html}" method="post">
+            <input type="hidden" name="page" th:value="${page.page}" />
+            <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+            <div class="hd">
+                <h2 class="title">金融产品</h2>
+            </div>
+            <div class="bd">
+                <ul class="financial_pro_list">
+                    <li th:each="p:${page.result}">
+                        <a th:href="@{/financialProduct/detail.html(id=${p.id})}" class="thumb">
+                            <img th:if="${#strings.isEmpty(p.picUrl)}" th:src="@{/static/thumb/thumb_160x200.jpg}" alt=""/>
+                            <img th:if="${!#strings.isEmpty(p.picUrl)}" th:src="${p.picUrl2}" alt=""/>
+                        </a>
+                        <h2><a th:href="@{/financialProduct/detail.html(id=${p.id})}" th:text="${p.name}">企业贷款业务</a></h2>
+                        <div th:if="${!#strings.isEmpty(p.description)}">
+                            <p th:each="desc:${#strings.arraySplit(p.description,'。')}" th:if="${!#strings.isEmpty(desc)}"><i class="drop"></i><span th:text="${#strings.abbreviate(#strings.trim(desc),30)}">根据客户实际情况，免费设计贷款方案</span></p>
+                        </div>
+                        <dl class="other_r">
+                            <dt>贷款咨询：</dt>
+                            <dd>
+                                <p class="tel_box">
+                                    <i class="ico tel_ico"></i><strong class="number">400 890 0016 </strong>转<strong class="number"> 28779</strong>
+                                </p>
+                                <a class="btn_stress" th:href="@{/financialApply/form.html(id=${p.id})}">免费申请贷款</a>
+                            </dd>
+                        </dl>
+                    </li>
+
+                </ul>
+            </div>
+        </form>
+        <div id="page"></div>
+    </div>
+</div>
+</body>
+</html>

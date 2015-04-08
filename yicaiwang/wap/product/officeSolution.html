@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>产品中心</title>
+    <link href="../../../static/css/product.css" th:href="@{/static/css/product.css}" rel="stylesheet" type="text/css" />
+    <script>
+        $(function(){
+                var options = {
+                    currentPage: $("[name=page]").val(),
+                    totalPages: $("[name=totalPage]").val(),
+                    onPageClicked:function(e,type,page){
+                        $("[name=page]").val(page);
+                        $("#searchForm").submit();
+                    }
+                }
+                $('#page').bootstrapPaginator(options);
+            $('.index_focus').slides({
+                preload: true,
+                preloadImage: 'img/loading.gif',
+                play: 5000,
+                pause: 2500,
+                hoverPause: true
+            });
+        });
+        function gotoDetail(id){
+            window.location.href="/product/productStandard.html?productId="+id;
+        }
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+<div class="container container_plan">
+<div class="wrap">
+<div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><a href="javascript:void(0)">产品中心</a><span class="gt">&gt;</span><span class="current_page">科室解决方案</span></div>
+    <form action="/product/officeSolution.html" id="searchForm">
+        <input type="hidden"  name="page" th:value="${page.page}" />
+        <input type="hidden"  name="totalPage" th:value="${page.totalPage}" />
+    </form>
+<div class="mod_col3" th:each="office:${page.result}">
+    <div class="mod_p_aside">
+        <div class="mod_p_item">
+            <h2 class="mod_p_item_hd" th:text="${office.name}"></h2>
+            <div class="mod_p_item_pro">
+                <div class="pic"><a href="javascript:void(0)"><img th:src="'http://114.215.80.184:80'+${office.productOfOffice[0].imagePath}" alt=""/></a></div>
+                <h3><a href="javascript:void(0)" th:id="${office.productOfOffice[0].id}" th:text="${office.productOfOffice[0].name}" onclick="gotoDetail(this.id)">耳鼻喉科用耳鼻喉科用...</a></h3>
+                <p class="other"><i class="rmb">&yen;</i><span  th:text="${office.productOfOffice[0].money}" ></span></p>
+                <p class="sale">已售：<span  th:text="${office.productOfOffice[0].saleCount}" ></span>件</p>
+            </div>
+        </div>
+    </div>
+    <div class="mod_p_main">
+        <div class="mod_p_products">
+            <ul class="cont">
+                <li class="item" th:each="product,s:${office.productOfOffice}" th:if="${s.count!=1}">
+                    <div class="pic"><img th:src="'http://114.215.80.184:80'+${product.imagePath}" alt=""/></div>
+                    <div class="summary">
+                        <h3><a href="javascript:void(0)" onclick="gotoDetail(this.id)" th:id="${product.id}" th:value="${product.name}">耳鼻喉科用耳鼻喉科用...</a></h3>
+                        <p class="desc"><i class="rmb">&yen;</i><span th:text="${product.money}"></span></p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="mod_p_extra">
+        <div class="mod_p_item">
+            <h2 class="mod_p_item_hd">热门供应商</h2>
+            <div class="mod_p_item_bd">
+                <ul class="mod_p_item_list">
+                    <li th:each="company:${office.companyList}">
+                        <h3><a href="javascript:void(0)" th:id="${company.id}" onclick="gotoCompany(this.id)" th:text="${company.title}">泗洪县明达医疗器械有限公司</a></h3>
+                        <p class="desc">
+                            <span class="item item_sale"><i class="numb" th:text="'已卖'+${company.saleCount==null?'0':company.saleCount}"></i>件产品</span>
+                        </p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="pagination">
+    <div id="page"></div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

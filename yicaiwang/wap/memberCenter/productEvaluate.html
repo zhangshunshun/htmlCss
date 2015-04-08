@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+    <link href="../../../static/newcss/common.css" th:href="@{/static/newcss/common.css}" rel="stylesheet" type="text/css" />
+    <script>
+        $(function(){
+
+            var options = {
+                currentPage: $("[name=page]").val(),
+                totalPages: $("[name=totalPage]").val(),
+                onPageClicked:function(e,type,page){
+                    $("[name=page]").val(page);
+                    $("#searchForm").submit();
+                }
+            };
+            $('#page').bootstrapPaginator(options);
+
+
+            //提交
+            $(".submit_btn").click(function(){
+                var evaComuserid = $("#userId").val();   //卖家的Id
+                var evaProductid = $("#productId").val();      //产品Id
+                var evaGrade = $(".hao:checked").val();          //等级
+                var evaContent =$("#evaContent").val();          //内容
+                if(evaContent.length > 0){
+                    $.ajax({
+                        url: "/evaluate/saveEvaluate.json",
+                        type: 'POST',
+                        data: {
+                            "evaComuserid": evaComuserid,
+                            "evaProductid": evaProductid,
+                            "evaGrade": evaGrade,
+                            "evaContent": evaContent
+                        },
+                        dataType: 'JSON',
+                        success: function (date) {
+                            if (date.suc) {
+                                $.alert("评论成功!");
+                            } else {
+                                $.alert("评论失败！");
+                            }
+                        }
+
+                    });
+                }else {
+                    $("#validate").show();
+                    return false
+                }
+            })
+        });
+
+    </script>
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>商品评价</title>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+<div class="crumbs"><a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">我要买</span></div>
+
+        <div class="head_content_1200">
+            <div class="hc_left">
+                <ul class="hc_left_ul">
+                    <li class="hover"><a href="">常用功能</a></li>
+                    <li><a href="">常用功能</a></li>
+                    <li><a href="">常用功能</a></li>
+                    <li><a href="">常用功能</a></li>
+                    <li><a href="">常用功能</a></li>
+                    <li><a href="">常用功能</a></li>
+                </ul>
+            </div>
+
+            <div class="hc_right">
+                <div class="hc_right_top">我做的评价</div>
+                    <ul class="hc_right_ul">
+                        <li>
+                            <label class="keyName" >卖家姓名: </label>
+
+                            <div class="filed_con">
+                             <span th:text="${sysUser.loginName}"></span>
+                                <input type="hidden" th:value="${sysUser.id}" id="userId"/>
+                                <!--<input type="text" name="parentName" class="input_txt" maxlength="20"/>-->
+                            </div>
+                        </li>
+                        <li>
+                            <label class="keyName" >产品名称: </label>
+
+                            <div class="filed_con">
+                                <span th:text="${product.name}"></span>
+                                <input type="hidden" th:value="${product.id}" id="productId"/>
+                                <!--<input type="text" name="parentName" class="input_txt" maxlength="20"/>-->
+                            </div>
+                        </li>
+                        <li>
+                            <label class="keyName" >买家等级: </label>
+
+                            <div class="filed_con">
+                                <input type="radio" class="hao" name="hao" value="1" checked="checked"/>
+                                <span>好评</span>
+                            </div>
+
+                            <div class="filed_con">
+                                <input type="radio" class="hao" name="hao" value="2"/>
+                                <span>中评</span>
+                            </div>
+
+                            <div class="filed_con">
+                                <input type="radio" class="hao"  name="hao" value="3"/>
+                                <span>差评</span>
+                            </div>
+
+                        </li>
+                        <li>
+                            <label class="keyName" >评价内容: </label>
+
+                            <div class="filed_con">
+                                <textarea name="parentName" class="input_textarea" rows="6" id="evaContent" ></textarea>
+                                <div>
+                                    <span id="validate" style="color:red;display: none">*内容不能为空</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <a href="" class="submit_btn">保&nbsp;&nbsp;存</a>
+                            <a href="/memberCenter/myBuy.html" class="cancel_btn">取&nbsp;&nbsp;消</a>
+                        </li>
+                    </ul>
+            </div>
+        </div>
+
+</div>
+</body>
+</html>

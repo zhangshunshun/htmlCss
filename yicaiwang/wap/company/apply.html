@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-simple">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>申请<th:block th:text="${t==1?'诚信':'金牌'}"></th:block>供应商认证</title>
+    <link href="../../../static/css/ace.min.css" th:href="@{/static/css/ace.min.css}" rel="stylesheet" type="text/css" />
+    <script>
+        $(function(){
+            //提交更新
+            var validator=$("#editcontent").validate( {
+                checkStart : true,
+                errorElement: 'span',
+                errorClass: 'help-inline',
+                focusInvalid: false,
+                rules : {
+                    applicant : {
+                        required: true
+                    },
+                    email:{
+                        required:true
+                    },
+                    mobilePhone:{
+                        required:$('[name=fixedPhone]').val().length==0
+                    }
+                },
+                messages : {
+                    applicant : {
+                        required: '请填写联系人姓名'
+                    },
+                    email:{
+                        required:'请填写电子邮件'
+                    },
+                    mobilePhone:{
+                        required:'请填写手机'
+                    }
+                },
+                submitHandler : function(form) {
+                    $("#editcontent").ajaxSubmit(function(date){
+                        if(date.suc){
+                            $.alert("申请已成功提交，请等待后台审核！",function(){
+                                location.replace('/company/apply.html?t='+$('#hidden-t').val());
+                            });
+                        }else {
+                            alert("申请提交失败了！" + date.msg);
+                        }
+                    });
+                },
+                highlight: function (e) {
+                    $(e).closest('.control-group').removeClass('info').addClass('error');
+                },
+                errorPlacement: function(error, element) {
+                    error.appendTo(element.parent());
+                    element.css('borderColor','red');
+                }
+            });
+        });
+    </script>
+    <style>
+        #editcontent .help-inline{
+            color:red;
+            position:absolute;
+            padding:0 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            left:443px;
+            bottom:65px;
+            border:1px solid #ccc;
+        }
+        #editcontent .help-inline:after,#editcontent .help-inline:before{
+            content:"";
+            display:block;
+            border-width:12px 6px;
+            position:absolute;
+            bottom:-24px;
+            left:20px;
+            border-style:solid dashed dashed;
+            border-color:#ccc transparent transparent;
+            font-size:0;
+            line-height:0;
+        }
+        #editcontent .help-inline:after{
+            bottom:-22px;
+            border-color:#fff transparent transparent;
+        }
+        #editcontent .help-inline.right{
+            left:130px;
+            bottom:42px;
+            white-space: nowrap;
+        }
+        .btn_key[disabled]:hover {background-color:rgb(238,238,238);color:rgb(132,132,132);}
+    </style>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="crumbs">当前位置: <a href="javascript:void(0)">首页</a><span class="gt">&gt;</span><span class="current_page">我的金融服务</span></div>
+    <div class="member_right">
+        <div class="mod_box apply_mode">
+            <div class="hd">
+                <h3 class="title"><span th:text="${t==1?'诚信':'金牌'}"></span>供应商认证申请</h3>
+            </div>
+            <div class="bd apply_step">
+                <ol th:class="${'step_area step_0'+step}">
+                    <li class="col_01"><em>提交<br/>申请</em></li>
+                    <li class="col_02"><em>专业审核人员<br/>进行信息预审</em></li>
+                    <li class="col_03"><em>通过申请，对外<br/>查询验证与展示</em></li>
+                </ol>
+            </div>
+            <div class="hd">
+                <h3 class="title">申请信息<span th:text="${step==1?'填写':'查看'}">填写</span> <span class="sum" th:if="${step==1}">（企业<span th:text="${t==1?'诚信':'金牌'}"></span>供应商认证申请，需要扣除<em class="light">5枚</em>医采币的服务费用）</span></h3>
+            </div>
+            <div class="bd apply_info">
+                <form action="/company/apply/submit.json" method="post" id="editcontent" enctype="multipart/form-data">
+                    <input type="hidden" name="companyId" th:value="${company.id}"/>
+                    <input id="hidden-t" type="hidden" name="type" th:value="${t}"/>
+                    <ul class="filed_info apply_filed" th:if="${step==1}">
+                        <li>
+                            <label class="keyName"><em class="star">*</em>公司名称：</label>
+                            <div class="filed_con"><input type="text" name="companyName" readonly="readonly" th:value="${company.title}" value="广州市中尼医疗器械实业有限公司" class="input_txt"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>公司所在地：</label>
+                            <div class="filed_con"><input type="text" readonly="readonly" th:value="${company.citName}" value="广州" class="input_txt"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName">固定电话：</label>
+                            <div class="filed_con"><input type="text" name="fixedPhone" readonly="readonly" th:value="${company.companyPhone}" value="020-23456786" class="input_txt"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>联系人：</label>
+                            <div class="filed_con"><input type="text" name="applicant" th:value="${linkman.name}" value="张三" class="input_txt"/></div>
+                        </li>
+                        <li>
+                            <label class="keyName"><em class="star">*</em>电子邮件：</label>
+                            <div class="filed_con"><input type="text" name="email" th:value="${linkman.email}" value="zhongni001@163.com" class="input_txt"/></div>
+                            <p class="tip_text arrow_tip">审核通过后，会通过该邮箱通知</p>
+                        </li>
+                        <li>
+                            <label class="keyName">手机：</label>
+                            <div class="filed_con"><input type="text" name="mobilePhone" th:value="${linkman.companyPhone}" value="13712121212" class="input_txt"/></div>
+                            <p class="tip_text arrow_tip"><em class="star">*</em>(固定电话和手机至少填一项）</p>
+                        </li>
+                        <li class="filed_action">
+                            <input type="submit" class="btn_key" href="javascript:void(0)" value="提交申请" />
+                            <a class="btn_weak" href="javascript:void(0)">取消</a></li>
+                    </ul>
+                    <ul class="filed_info apply_filed" th:if="${step!=1}">
+                        <li>
+                            <label class="keyName">公司名称：</label>
+                            <div class="filed_con" th:text="${company.title}"></div>
+                        </li>
+                        <li>
+                            <label class="keyName">公司所在地：</label>
+                            <div class="filed_con" th:text="${company.citName}"></div>
+                        </li>
+                        <li>
+                            <label class="keyName">固定电话：</label>
+                            <div class="filed_con" th:text="${company.companyPhone}"></div>
+                        </li>
+                        <li>
+                            <label class="keyName">联系人：</label>
+                            <div class="filed_con" th:text="${apply.applicant}"></div>
+                        </li>
+                        <li>
+                            <label class="keyName">电子邮件：</label>
+                            <div class="filed_con" th:text="${apply.email}"></div>
+                        </li>
+                        <li>
+                            <label class="keyName">手机：</label>
+                            <div class="filed_con" th:text="${apply.mobilePhone}"></div>
+                        </li>
+                        <li class="filed_action" th:if="${step==3 and apply.progress==3}">
+                            <span style="color:red;">企业<span th:text="${t==1?'诚信':'金牌'}"></span>供应商认证申请没有通过...</span><br/>
+                            <a class="btn_key" th:href="@{/company/apply.html(again=1,t=${t})}">再次申请</a>
+                        </li>
+                        <li class="filed_action" th:if="${step==3 and apply.progress==2}" style="color:red;">
+                            企业<span th:text="${t==1?'诚信':'金牌'}"></span>供应商认证申请通过了，恭喜！
+                        </li>
+                    </ul>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="member_left">
+        <ul class=" member_menu">
+            <li><h3 class="menu_hd"><i class="minus_ico"></i><a href="javascript:void(0)">会员中心</a></h3>
+                <div class="sub_menu">
+                    <a href="javascript:void(0)">我的金融服务</a>
+                    <a href="/company/apply.html?t=1" th:class="${t==1?'active':''}">申请诚信供应商认证</a>
+                    <a href="/company/apply.html?t=2" th:class="${t==2?'active':''}">申请金牌供应商认证</a>
+                    <a href="javascript:void(0)">我关注的企业</a>
+                    <a href="javascript:void(0)">我关注的价格指数</a>
+                    <a href="javascript:void(0)">我关注的产品</a>
+                    <a href="javascript:void(0)">优秀产品申请</a>
+                    <a href="javascript:void(0)">3D产品申请</a>
+                    <a href="javascript:void(0)">我的质量评估</a>
+                    <a href="javascript:void(0)">现金充值</a>
+                    <a href="javascript:void(0)">医采币充值</a>
+                    <a href="javascript:void(0)">现金交易明细</a>
+                    <a href="javascript:void(0)">医采币交易明细</a>
+                    <a href="javascript:void(0)">提现</a>
+                </div>
+            </li>
+            <li>
+                <h3 class="menu_hd"><i class="minus_ico"></i><a href="javascript:void(0)">常用功能</a></h3>
+                <div class="sub_menu">
+                    <a href="javascript:void(0)">我要买</a>
+                    <a href="javascript:void(0)">我要卖</a>
+                    <a href="javascript:void(0)">发布新产品</a>
+                    <a href="javascript:void(0)">我发布的产品</a>
+                    <a href="javascript:void(0)">优秀产品认证</a>
+                    <a href="javascript:void(0)">企业诚信认证</a>
+                </div>
+            </li>
+            <li>
+                <h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">特色服务</a></h3>
+                <div class="sub_menu" style="display: none;">
+                    <a href="javascript:void(0)">产品质量评估</a>
+                    <a href="javascript:void(0)">专家库</a>
+                    <a href="javascript:void(0)">金融服务</a>
+                </div>
+            </li>
+            <li>
+                <h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">我的关注</a></h3>
+                <div class="sub_menu" style="display: none;">
+                    <a href="javascript:void(0)">我关注的产品</a>
+                    <a href="javascript:void(0)">我关注的企业</a>
+                    <a href="javascript:void(0)">我关注的价格指数</a>
+                </div>
+            </li>
+            <li>
+                <h3 class="menu_hd"><i class="plus_ico"></i><a href="javascript:void(0)">客户服务</a></h3>
+                <div class="sub_menu" style="display: none;">
+                    <a href="javascript:void(0)">投诉&amp;举报</a>
+                    <a href="javascript:void(0)">医采币发票申请</a>
+                    <a href="javascript:void(0)">联系客服</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

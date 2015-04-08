@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="foreground/layout-brief-new" >
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>支付成功</title>
+    <script>
+        $(function() {
+            jump(3);
+        });
+        //3秒倒计时
+        function jump(count) {
+            window.setTimeout(function(){
+                count--;
+                if(count > 0) {
+                    $('#threeSecond').html(count);
+                    jump(count);
+                } else {
+                    window.location.href="/memberCenter/index.html";
+                }
+            }, 1000);
+        }
+    </script>
+</head>
+<body>
+<div id="content" layout:fragment="content">
+    <div class="zhifu_content_1200">
+        <div class="zf_lb">
+            <table align="center" >
+                <tr>
+                    <td><img src="../../../static/imgs/hpp_4.jpg" /></td>
+                    <td><img src="../../../static/imgs/hpp_1.jpg" /></td>
+                    <td><img src="../../../static/imgs/hpp_3.jpg" /></td>
+                    <td><img src="../../../static/imgs/hpp_1.jpg" /></td>
+                    <td><img src="../../../static/imgs/hpp_9.jpg" /></td>
+                </tr>
+                <tr>
+                    <td colspan="2">确认订单信息</td>
+
+                    <td>付款</td>
+                    <td></td>
+                    <td>完成</td>
+                </tr>
+            </table>
+        </div>
+        <div class="zf_dingdan">
+            订单号：<span class="font_blue">3047325430545</span>
+        </div>
+
+        <div class="zf_success">
+            <table align="center" >
+                <tr>
+                    <td rowspan="2"><img src="../../../static/imgs/hpp_5.jpg" /></td>
+                    <td class="font_18"><strong>支付成功</strong></td>
+                </tr>
+                <tr>
+                    <td >付款成功后<span id="threeSecond">3</span>秒，跳转到会员中心！</td>
+                </tr>
+            </table>
+        </div>
+     </div>
+    </div>
+</body>
+</html>
