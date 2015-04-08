@@ -1,0 +1,71 @@
+body{background-color:#f5f5f5;}
+.wrap{width: 1015px;}
+.light{color:#0a71d7;}
+.top_bar{background-color: #f5f5f5;border-bottom:1px solid #dedede;}
+.top_nav{height: 35px;line-height: 35px;text-align: right;color:#ccc;}
+.top_bar .wrap{height: 35px;}
+
+.head{margin-bottom: 38px;}
+.head .wrap{padding: 20px 0;}
+.logo{position: relative;float: left;left: auto;top: auto;margin-right: 20px;width: 120px;height: 60px;}
+.logo a{height: 60px;background:url(../imgs/signin_logo.png) 0 0 no-repeat;}
+.sum_logo{float: left;padding-left: 20px;height: 60px;line-height: 60px;border-left:1px solid #dedede;font-size: 18px;}
+
+.signin_wrap{margin-bottom: 30px;padding: 6px;background-color:#eee;border-radius:5px;}
+.signin_mod{border:1px solid #dedede;background-color:#fff;}
+.signin_mod .item_filed{padding: 50px 0;}
+.signin_mod .item_filed+.item_filed{border-top:1px solid #dedede;}
+.signin_mod .bd{padding: 50px 75px;}
+.signin_mod .reg_tips{line-height: 60px;text-align: center;font-size: 18px;font-weight: 400;color:#f00;}
+.signin_mod .hd{height: 55px;line-height: 53px;margin-bottom: -1px;border:1px solid #e3e3e3;border-right:none;border-left:none;background-color:#f7f7f7;}
+.signin_mod .hd h2{padding-left:35px;font-size: 24px;color:#666;}
+.signin_mod .hd_tab a{float: left;width:170px;text-align:center;font-size: 18px;font-weight: 400;border-right:1px solid #e3e3e3;border-top:3px solid #f6f6f6;}
+.signin_mod .hd_tab a.current{height: 53px;color:#333;border-top-color:#2c81ff;background-color:#fff;}
+.signin_mod .hd_tab a:hover{text-decoration: none;}
+
+.filed_info{padding-left: 35px;overflow: hidden;zoom:1;line-height: 38px;font-size: 16px;}
+.filed_info .input_txt{height: 34px;line-height: 34px;width: 300px;font-size: 12px;}
+.filed_info .w_s{width: 140px;}
+.filed_info .filed_con a{color:#186be5;}
+.filed_info .upload_tips{font-size: 14px;}
+.filed_action .btn_key{margin-right: 20px;padding: 0;*padding: 0;width: 300px;height: 38px;line-height: 38px;}
+.filed_info li:after{content:".";height:0;visibility:hidden;display:block;clear:both;font-size:0;line-height:0;}
+.filed_info li{*zoom:1;}
+.filed_info li{padding:0 0 30px 250px;position: relative;}
+.filed_info li label.keyName{position: absolute;left:0;top: 0;padding-right: 20px;display: inline-block;width: 230px;line-height: 36px;color:#333;text-align: right;font-size: 14px;font-weight: 400;}
+.filed_info li label.keyName .star{padding-right: 5px;color:#f00;}
+.filed_info li .ui-select{display: inline-block;*display: inline;width: 140px;margin-right: 10px;}
+.filed_info li .ui-select li{padding-bottom: 0;font-size: 14px;}
+.filed_info li.address .ui-select{width: 140px;margin-right: 10px;}
+.filed_info li.checkbox_area{margin-top: -10px;padding-top:0;padding-bottom: 20px;font-size: 12px;}
+.filed_info li.checkbox_area input{margin-right: 5px;}
+.filed_info li .apply_btn{padding: 0;*padding: 0;width: 140px;height: 35px;line-height: 35px;color:#333;}
+.filed_info li .tip_text{position: absolute;left:250px;line-height: 20px;font-size: 12px;}
+.filed_info li .arrow_tip{color:#f00;}
+.filed_info li.verify{font-size: 12px;}
+.filed_info li.verify img{margin: 0px 10px;}
+.filed_info li.filed_action .text_link{position: absolute;left: 460px;top: 50px;font-size: 12px;color:#186be5;}
+.filed_info li.capital em{display: inline-block;margin: 0px 10px;}
+.filed_info li.filed_logo .logo_box{padding-top: 20px;}
+.filed_info li.filed_logo .thumb{width: 140px;height: 140px;}
+.filed_info li .textarea{padding: 5px;width: 420px;height: 100px;}
+.login_info{padding: 30px 0;margin: 0 auto;width: 350px;}
+.login_info li{padding-left: 0;}
+.login_info li .filed_con{position: relative;}
+.login_info li .filed_con .ico{position: absolute;left:10px;top: 7px;}
+.login_info li .filed_con .input_txt{text-indent:40px;font-size: 14px;width:320px;}
+.login_info li .tips_l{position: absolute;line-height: 25px;font-size: 12px;}
+.login_info li .tips_r{position: absolute;left:250px;line-height: 25px;font-size: 12px;}
+.login_info li .login_tips{color:#f00;}
+.login_info li .btn_key{width: 320px;background-color:#01b44b;border-radius:0;}
+.login_info li .btn_key:hover{background-color:#00973e;}
+
+
+
+
+
+
+
+
+
+
